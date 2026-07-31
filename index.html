@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="FlowSnap is a fast, simple interface for saving media you are authorised to download.">
+  <meta name="theme-color" content="#2563eb">
+  <meta property="og:title" content="FlowSnap — Fast, simple media saving">
+  <meta property="og:description" content="Paste a public media link and continue with an authorised download workflow.">
+  <meta property="og:type" content="website">
+  <title>FlowSnap — Fast, simple media saving</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container nav-wrap">
+      <a class="brand" href="#top" aria-label="FlowSnap home"><span class="brand-mark">F</span><span>FlowSnap</span></a>
+      <button class="menu-toggle" aria-expanded="false" aria-controls="main-nav" aria-label="Toggle navigation">☰</button>
+      <nav id="main-nav" class="main-nav" aria-label="Primary navigation">
+        <a href="#how">How it works</a><a href="#features">Features</a><a href="#faq">FAQ</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="hero" id="download">
+      <div class="container hero-inner">
+        <p class="eyebrow">FAST · SIMPLE · CLEAN</p>
+        <h1>Save media without the fuss</h1>
+        <p class="hero-copy">Paste a public link and continue with a download workflow you are authorised to use.</p>
+        <form class="download-form" id="download-form" novalidate>
+          <div class="input-shell">
+            <input id="video-url" type="url" inputmode="url" autocomplete="url" placeholder="Paste a link here" aria-label="Media link" required>
+            <button class="paste-btn" type="button" id="paste-btn">Paste</button>
+          </div>
+          <button class="download-btn" type="submit">Continue</button>
+        </form>
+        <p class="form-message" id="form-message" role="status" aria-live="polite"></p>
+        <p class="hero-note">Only save content you own or have permission to download.</p>
+      </div>
+    </section>
+
+    <section class="feature-strip" id="features">
+      <div class="container feature-grid">
+        <article class="feature-card"><div class="feature-icon">∞</div><div><h2>Simple access</h2><p>A focused interface without unnecessary steps.</p></div></article>
+        <article class="feature-card"><div class="feature-icon">✓</div><div><h2>Responsive</h2><p>Designed to feel natural on mobile, tablet, and desktop.</p></div></article>
+        <article class="feature-card"><div class="feature-icon">↗</div><div><h2>Ready to connect</h2><p>Prepared for an authorised API or backend service.</p></div></article>
+      </div>
+    </section>
+
+    <section class="content-section" id="how">
+      <div class="container narrow">
+        <div class="section-heading"><span class="section-kicker">HOW IT WORKS</span><h2>Three quick steps</h2><p>The front end is ready today. A lawful processing service can be connected later.</p></div>
+        <div class="steps">
+          <article class="step"><span class="step-number">1</span><div><h3>Copy a public link</h3><p>Open the source platform and copy the link to content you are permitted to save.</p></div></article>
+          <article class="step"><span class="step-number">2</span><div><h3>Paste it into FlowSnap</h3><p>Use the input above or the paste button on supported browsers.</p></div></article>
+          <article class="step"><span class="step-number">3</span><div><h3>Continue securely</h3><p>Connect the form to your approved backend or official API when you are ready.</p></div></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="showcase-section">
+      <div class="container showcase-grid">
+        <div class="device-art" aria-hidden="true"><div class="phone"><div class="phone-speaker"></div><div class="phone-screen"><div class="mock-video"><span>▶</span></div><div class="mock-line wide"></div><div class="mock-line"></div><div class="mock-button">Copy link</div></div></div><span class="floating-badge badge-one">HD</span><span class="floating-badge badge-two">MP4</span></div>
+        <div class="showcase-copy"><span class="section-kicker">BUILT FOR EVERY SCREEN</span><h2>Clean on mobile. Comfortable on desktop.</h2><p>FlowSnap uses accessible controls, responsive spacing, and a lightweight static build that works well on free GitHub Pages hosting.</p><ul class="check-list"><li>No account required for the interface</li><li>No browser extension needed</li><li>Fast static hosting</li></ul></div>
+      </div>
+    </section>
+
+    <section class="content-section muted"><div class="container narrow article-copy"><h2>A solid zero-cost starting point</h2><p>This version gives you the full public-facing website, branding, legal pages, responsive design, and deployment files. The form currently validates a URL and demonstrates the user journey.</p><p>Actual media processing is intentionally not included. That part should be connected only to a service you are legally authorised to operate.</p></div></section>
+
+    <section class="faq-section" id="faq">
+      <div class="container narrow">
+        <div class="section-heading"><span class="section-kicker">COMMON QUESTIONS</span><h2>Frequently asked questions</h2></div>
+        <div class="faq-list">
+          <details><summary>Does FlowSnap download real files yet?</summary><p>Not yet. This launch version is a polished front end. The button validates the link and is ready to be connected to an authorised backend.</p></details>
+          <details><summary>Can this be hosted for free?</summary><p>Yes. The site is static and can be published through GitHub Pages at no hosting cost.</p></details>
+          <details><summary>Can I connect a custom domain later?</summary><p>Yes. You can launch on a free github.io address now and add a purchased domain later.</p></details>
+          <details><summary>Can the colours and wording be changed?</summary><p>Yes. Everything is editable in the included HTML, CSS, and JavaScript files.</p></details>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-grid"><div><a class="brand footer-brand" href="#top"><span class="brand-mark">F</span><span>FlowSnap</span></a><p>A clean media-saving interface for authorised workflows.</p></div><div class="footer-links"><a href="#how">How it works</a><a href="#features">Features</a><a href="#faq">FAQ</a><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a></div></div>
+    <div class="container footer-bottom"><span>© <span id="year"></span> FlowSnap</span><span>Not affiliated with TikTok, ByteDance, or other media platforms.</span></div>
+  </footer>
+  <script src="script.js"></script>
+</body>
+</html>
