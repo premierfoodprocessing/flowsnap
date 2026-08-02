@@ -119,8 +119,8 @@ def get_formats(url: str) -> dict:
     formats = []
 
     for item in info.get("formats") or []:
-        has_video = item.get("vcodec") not in (None, "none")
-        has_audio = item.get("acodec") not in (None, "none")
+        has_video = item.get("vcodec") != "none"
+        has_audio = item.get("acodec") != "none"
 
         if not has_video:
             continue

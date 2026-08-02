@@ -78,3 +78,60 @@ def test_get_formats_returns_sanitized_video_options(monkeypatch):
             },
         ],
     }
+
+
+class FakeDirectMediaYoutubeDL:
+    def __init__(self, options):
+        self.options = options
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        return False
+
+    def extract_info(self, url, download):
+        return {
+            "title": "flower",
+            "formats": [
+                {
+                    "format_id": "mp4",
+                    "ext": "mp4",
+                    "protocol": "https",
+                    "vcodec": None,
+                    "acodec": None,
+                    "width": None,
+                    "height": None,
+                    "resolution": None,
+                }
+            ],
+        }
+
+
+def test_get_formats_keeps_direct_media_with_unknown_codecs(
+    monkeypatch,
+):
+    monkeypatch.setattr(
+        extractor,
+        "YoutubeDL",
+        FakeDirectMediaYoutubeDL,
+    )
+
+    result = extractor.get_formats(
+        "https://example.com/flower.mp4"
+    )
+
+    assert result == {
+        "title": "flower",
+        "formats": [
+            {
+                "format_id": "mp4",
+                "extension": "mp4",
+                "resolution": "unknown",
+                "quality": "unknown",
+                "filesize": None,
+                "has_audio": True,
+                "has_video": True,
+            }
+        ],
+    }
