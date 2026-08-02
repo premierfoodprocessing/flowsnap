@@ -103,3 +103,26 @@ Verify the media preview card with a successful extraction.
 Add controlled download formats and an authorised download endpoint.
 
 Prepare the backend for public deployment.
+
+
+
+
+---
+
+## 2026-08-02 - Session 3: End-to-End Verification
+
+### Completed
+
+- Tested the backend root and health endpoints.
+- Verified malformed and unsupported URL handling.
+- Confirmed successful metadata extraction using MDN's public example video.
+- Verified the complete frontend-to-backend workflow.
+- Confirmed the media result card displays extracted metadata.
+- Updated the result card to hide the preview pane when no thumbnail is available.
+- Revalidated JavaScript syntax and Git whitespace checks.
+
+### Result
+
+FlowSnap's metadata workflow now works from browser submission through backend extraction and frontend presentation.
+
+TikTok compatibility remains dependent on TikTok's changing access controls, but FlowSnap handles those failures cleanly.

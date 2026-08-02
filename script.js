@@ -97,8 +97,17 @@ form?.addEventListener('submit', async (event) => {
       throw new Error(apiMessage);
     }
 
-	resultThumbnail.src = data.thumbnail || '';
-	resultThumbnail.alt = `Preview for ${data.title || 'media'}`;
+	const hasThumbnail = Boolean(data.thumbnail);
+
+	resultCard.classList.toggle('no-thumbnail', !hasThumbnail);
+
+	if (hasThumbnail) {
+	  resultThumbnail.src = data.thumbnail;
+	  resultThumbnail.alt = `Preview for ${data.title || 'media'}`;
+	} else {
+	  resultThumbnail.removeAttribute('src');
+	  resultThumbnail.alt = '';
+	}
 
 	resultPlatform.textContent =
 	  `${data.extractor || 'Media'} found`.toUpperCase();
