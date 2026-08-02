@@ -126,3 +126,61 @@ Prepare the backend for public deployment.
 FlowSnap's metadata workflow now works from browser submission through backend extraction and frontend presentation.
 
 TikTok compatibility remains dependent on TikTok's changing access controls, but FlowSnap handles those failures cleanly.
+
+
+---
+
+## 2026-08-02 - Session 4: Automated Testing Foundation
+
+### Completed
+
+- Added pytest and a dedicated development requirements file.
+- Added a clean FastAPI TestClient configuration using httpx2.
+- Created permanent automated tests for:
+  - Root service status
+  - Health status
+  - Invalid URL validation
+  - Successful metadata responses
+  - Structured extraction errors
+  - Hidden internal server errors
+- Added registered test switches for:
+  - Live external-platform tests
+  - Future download-feature tests
+- Added an opt-in live integration test using MDN's public demonstration video.
+- Added a gated failing test for the future formats endpoint.
+- Used the failing test to implement `/api/media/formats`.
+- Added sanitized media-format extraction.
+- Added unit coverage for:
+  - Audio-only format exclusion
+  - Combined audio/video formats
+  - Video-only formats
+  - Resolution and quality labels
+  - Exact and approximate file sizes
+- Promoted the completed formats-endpoint test into the permanent regression suite.
+
+### Test-Driven Findings
+
+The initial suite discovered that unexpected API errors returned a different response structure from known extraction errors.
+
+The API was corrected to return a consistent `internal_error` code and safe public message.
+
+The formats feature then completed a deliberate red-to-green cycle:
+
+1. Activated test returned HTTP 404.
+2. Formats endpoint and extraction service were implemented.
+3. Test passed.
+4. Test was promoted into the permanent suite.
+
+### Current Test Baseline
+
+- Standard suite: 9 passed, 1 live test skipped.
+- Live-enabled suite: 10 passed.
+- No warnings.
+
+---
+
+Next milestone:
+
+Display available media formats in the frontend.
+
+Create the next gated test for authorised media downloading.
