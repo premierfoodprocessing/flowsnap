@@ -184,3 +184,39 @@ Next milestone:
 Display available media formats in the frontend.
 
 Create the next gated test for authorised media downloading.
+
+
+
+---
+
+## 2026-08-03 - Session 5: Developer Toolkit and Live Format Regression
+
+### Completed
+
+- Live-tested the new `/api/media/formats` endpoint.
+- Discovered that direct media files with unknown codec values were incorrectly excluded.
+- Inspected the raw yt-dlp format contract.
+- Added a regression test for direct media with unknown codecs.
+- Updated format classification to distinguish unknown codecs from explicit `none` codecs.
+- Verified the correction with stable and live test suites.
+- Added `scripts/start-dev.sh` to launch both servers and open FlowSnap.
+- Added duplicate-server protection.
+- Added `scripts/check-dev.sh` with stable and live test switches.
+- Added server health, script syntax and Git whitespace checks.
+- Added `scripts/stop-dev.sh` with project-directory safety checks.
+- Configured launcher terminals to close when their server processes stop.
+- Replaced the outdated frontend-only README with current development documentation.
+
+### Current Test Baseline
+
+- Stable suite: 10 passed, 1 live test skipped.
+- Live-enabled suite: 11 passed.
+- All server, launcher syntax and Git whitespace checks pass.
+
+### Development Commands
+
+```bash
+./scripts/start-dev.sh
+./scripts/check-dev.sh --tests
+./scripts/check-dev.sh --live
+./scripts/stop-dev.sh

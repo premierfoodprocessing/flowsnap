@@ -1,34 +1,40 @@
 # FlowSnap
 
-A lightweight, responsive one-page website prepared for free deployment on GitHub Pages.
+FlowSnap is a lightweight multi-platform media workflow with a responsive static frontend and a FastAPI processing backend.
 
-## What is included
+The project currently accepts public media URLs, extracts metadata, reports structured errors and returns sanitized format options. Actual media downloading is not yet enabled.
 
-- Responsive landing page
-- Mobile navigation
-- URL validation and clipboard paste interaction
-- Privacy and terms pages
-- SEO and social metadata
-- SVG favicon
-- GitHub Pages compatibility
+## Current features
 
-## Important limitation
+- Responsive one-page frontend
+- Clipboard paste and URL validation
+- FastAPI backend
+- Health and status endpoints
+- Media metadata extraction
+- Sanitized media-format options
+- TikTok-specific browser impersonation
+- Structured API error responses
+- Media preview card
+- Automated unit, API and live integration tests
+- One-command development controls
+- GitHub Pages-compatible frontend
 
-This project is a front-end website only. It does not download or process media. Connect it only to a lawful, authorised backend or official API, and only process content the user owns or has permission to save.
+## Development controls
 
-## Publish on GitHub Pages
-
-1. Create a new public repository, for example `flowsnap`.
-2. Upload every file in this folder to the repository root.
-3. Open **Settings → Pages**.
-4. Under **Build and deployment**, choose **Deploy from a branch**.
-5. Select the `main` branch and `/ (root)`, then save.
-6. GitHub will provide a URL similar to `https://YOUR-USERNAME.github.io/flowsnap/`.
-
-## Run locally
+From the project root:
 
 ```bash
-python3 -m http.server 8080
-```
+# Start the backend and frontend
+./scripts/start-dev.sh
 
-Then open `http://localhost:8080`.
+# Check servers and script syntax
+./scripts/check-dev.sh
+
+# Run checks and stable automated tests
+./scripts/check-dev.sh --tests
+
+# Run checks, stable tests and live integration tests
+./scripts/check-dev.sh --live
+
+# Stop the development servers
+./scripts/stop-dev.sh
