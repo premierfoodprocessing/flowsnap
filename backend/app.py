@@ -1,10 +1,30 @@
-from fastapi import FastAPI
+
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel, HttpUrl
+from fastapi.middleware.cors import CORSMiddleware
+
+from services.extractor import MediaExtractionError, get_metadata
 
 app = FastAPI(
     title="FlowSnap API",
     version="0.1.0",
-    description="Multi-platform media metadata and download API.",
+    description="Multi-platform media metadata API.",
 )
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "https://premierfoodprocessing.github.io",
+        "http://127.0.0.1:5500",
+        "http://localhost:5500",
+    ],
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+class MediaRequest(BaseModel):
+    url: HttpUrl
 
 
 @app.get("/")
@@ -19,3 +39,23 @@ def root() -> dict[str, str]:
 @app.get("/health")
 def health() -> dict[str, str]:
     return {"status": "healthy"}
+
+
+@app.post("/api/media/info")
+def media_info(request: MediaRequest) -> dict:
+    try:
+        return get_metadata(str(request.url))
+
+    except MediaExtractionError as exc:
+        raise HTTPException(
+            status_code=422,
+            detail={
+                "code": exc.code,
+                "message": exc.message,
+            },
+        ) from exc
+    except Exception as exc:
+        raise HTTPException(
+            status_code=500,
+            detail="An unexpected error occurred.",
+        ) from exc

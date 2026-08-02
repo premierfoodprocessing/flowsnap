@@ -45,3 +45,61 @@ Identify the platform.
 Return metadata.
 
 No downloading yet.
+
+
+
+---
+
+## 2026-08-02 - Session 2: The Media Engine
+
+FlowSnap can now accept a public media URL and request metadata from its local processing API.
+
+### Completed
+
+- Created the media extraction service in `backend/services/extractor.py`.
+- Added the `/api/media/info` API endpoint.
+- Added structured extraction errors for:
+  - Platform access restrictions
+  - Private or permission-controlled media
+  - Unsupported URLs
+  - General extraction failures
+- Configured CORS for:
+  - The live GitHub Pages website
+  - Local frontend development
+- Connected the frontend Continue button to the FastAPI backend.
+- Successfully extracted metadata from a public TikTok video.
+- Added TikTok-specific Chrome impersonation for JavaScript challenge compatibility.
+- Added frontend handling for API and connection errors.
+- Added a media preview card for:
+  - Thumbnail
+  - Title
+  - Creator
+  - Duration
+  - Platform
+  - Original source link
+- Added Python cache exclusions to `.gitignore`.
+- Validated the JavaScript syntax and Git whitespace checks.
+
+### Technical Finding
+
+TikTok may return JavaScript challenges or HTTP 403 responses after repeated requests.
+
+FlowSnap now reports these failures clearly instead of presenting a generic server error. Chrome impersonation improved TikTok compatibility, but rate limiting and platform-side access controls must be considered before public backend deployment.
+
+### Current Status
+
+The Media Engine is implemented and has successfully returned TikTok metadata.
+
+The local frontend and backend are connected.
+
+The media preview interface is implemented and awaiting final successful browser verification after TikTok’s temporary access restriction clears.
+
+---
+
+Next milestone:
+
+Verify the media preview card with a successful extraction.
+
+Add controlled download formats and an authorised download endpoint.
+
+Prepare the backend for public deployment.
