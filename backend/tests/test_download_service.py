@@ -94,3 +94,52 @@ def test_prepare_download_rejects_unknown_format():
     assert error.value.message == (
         "The selected media format is not available."
     )
+
+@pytest.mark.download
+def test_prepare_download_saves_retrievable_job():
+    from services.downloads import prepare_download
+
+    class FakeAnalysisStore:
+        def get(self, analysis_id):
+            assert analysis_id == "analysis-test-123"
+
+            return {
+                "title": "Test Video",
+                "webpage_url": "https://example.com/video",
+                "formats": [
+                    {
+                        "format_id": "18",
+                        "extension": "mp4",
+                    }
+                ],
+            }
+
+    class FakeJobStore:
+        def __init__(self):
+            self.saved_job = None
+
+        def save(self, job):
+            self.saved_job = job
+            return "test-job-123"
+
+    job_store = FakeJobStore()
+
+    result = prepare_download(
+        store=FakeAnalysisStore(),
+        job_store=job_store,
+        analysis_id="analysis-test-123",
+        format_id="18",
+    )
+
+    assert job_store.saved_job == {
+        "source_url": "https://example.com/video",
+        "title": "Test Video",
+        "format_id": "18",
+        "extension": "mp4",
+        "filename": "Test Video.mp4",
+    }
+
+    assert result["job_id"] == "test-job-123"
+    assert result["download_url"] == (
+        "/api/media/download/test-job-123"
+    )

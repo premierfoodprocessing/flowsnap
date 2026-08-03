@@ -13,6 +13,7 @@ def prepare_download(
     store,
     analysis_id: str,
     format_id: str,
+    job_store=None,
     id_factory: Callable[[], str] = lambda: uuid4().hex,
 ) -> dict:
     analysis = store.get(analysis_id)
@@ -43,13 +44,25 @@ def prepare_download(
 
     title = analysis.get("title") or "media"
     extension = selected_format.get("extension") or "mp4"
-    job_id = id_factory()
+
+    job = {
+        "source_url": analysis.get("webpage_url"),
+        "title": title,
+        "format_id": str(format_id),
+        "extension": extension,
+        "filename": f"{title}.{extension}",
+    }
+
+    if job_store is None:
+        job_id = id_factory()
+    else:
+        job_id = job_store.save(job)
 
     return {
         "status": "ready",
         "job_id": job_id,
         "title": title,
         "format_id": str(format_id),
-        "filename": f"{title}.{extension}",
+        "filename": job["filename"],
         "download_url": f"/api/media/download/{job_id}",
     }
