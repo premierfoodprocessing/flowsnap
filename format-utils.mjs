@@ -127,3 +127,57 @@ export function buildPreparePayload(
     format_id: normalizedFormatId,
   };
 }
+
+
+export function buildDownloadUrl(
+  apiBaseUrl,
+  downloadUrl,
+) {
+  const normalizedBase = String(apiBaseUrl ?? '').trim();
+  const normalizedDownloadUrl = String(downloadUrl ?? '').trim();
+
+  if (!normalizedBase || !normalizedDownloadUrl) {
+    return null;
+  }
+
+  try {
+    const apiUrl = new URL(normalizedBase);
+    const resolvedUrl = new URL(
+      normalizedDownloadUrl,
+      `${apiUrl.origin}/`,
+    );
+
+    if (
+      !['http:', 'https:'].includes(apiUrl.protocol) ||
+      resolvedUrl.origin !== apiUrl.origin ||
+      !resolvedUrl.pathname.startsWith('/api/media/download/')
+    ) {
+      return null;
+    }
+
+    return resolvedUrl.href;
+  } catch {
+    return null;
+  }
+}
+
+
+export function startBrowserDownload(
+  documentObject,
+  downloadUrl,
+) {
+  if (!documentObject?.body || !downloadUrl) {
+    return false;
+  }
+
+  const link = documentObject.createElement('a');
+  link.href = downloadUrl;
+  link.download = '';
+  link.hidden = true;
+
+  documentObject.body.append(link);
+  link.click();
+  link.remove();
+
+  return true;
+}

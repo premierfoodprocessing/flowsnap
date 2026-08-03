@@ -1,8 +1,10 @@
 
 import {
+  buildDownloadUrl,
   buildPreparePayload,
   chooseDefaultFormat,
   describeFormat,
+  startBrowserDownload,
 } from './format-utils.mjs';
 const API_BASE_URL = 'http://127.0.0.1:8000';
 
@@ -301,9 +303,26 @@ prepareButton?.addEventListener(
         throw new Error(apiMessage);
       }
 
+      const downloadUrl = buildDownloadUrl(
+        API_BASE_URL,
+        data.download_url,
+      );
+
+      if (!downloadUrl) {
+        throw new Error(
+          'FlowSnap received an invalid download link.',
+        );
+      }
+
+      if (!startBrowserDownload(document, downloadUrl)) {
+        throw new Error(
+          'FlowSnap could not start the browser download.',
+        );
+      }
+
       prepareStatus.textContent =
-        `${data.filename} is prepared. ` +
-        'Download delivery is not enabled yet.';
+        `${data.filename || 'Your file'} is ready. ` +
+        'Your download has started.';
     } catch (error) {
       if (error instanceof TypeError) {
         prepareStatus.textContent =

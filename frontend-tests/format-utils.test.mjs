@@ -2,10 +2,12 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 
 import {
+  buildDownloadUrl,
   buildPreparePayload,
   chooseDefaultFormat,
   describeFormat,
   formatFileSize,
+  startBrowserDownload,
 } from '../format-utils.mjs';
 
 test('formatFileSize presents decimal file sizes', () => {
@@ -167,5 +169,108 @@ test('buildPreparePayload rejects a missing format ID', () => {
       '',
     ),
     null,
+  );
+});
+
+
+test('buildDownloadUrl resolves a backend download path', () => {
+  assert.equal(
+    buildDownloadUrl(
+      'http://127.0.0.1:8000',
+      '/api/media/download/job-123',
+    ),
+    'http://127.0.0.1:8000/api/media/download/job-123',
+  );
+});
+
+
+test('buildDownloadUrl accepts an absolute URL from the backend', () => {
+  assert.equal(
+    buildDownloadUrl(
+      'http://127.0.0.1:8000',
+      'http://127.0.0.1:8000/api/media/download/job-123',
+    ),
+    'http://127.0.0.1:8000/api/media/download/job-123',
+  );
+});
+
+
+test('buildDownloadUrl rejects another origin', () => {
+  assert.equal(
+    buildDownloadUrl(
+      'http://127.0.0.1:8000',
+      'https://example.com/api/media/download/job-123',
+    ),
+    null,
+  );
+});
+
+
+test('buildDownloadUrl rejects a non-download API path', () => {
+  assert.equal(
+    buildDownloadUrl(
+      'http://127.0.0.1:8000',
+      '/api/media/formats',
+    ),
+    null,
+  );
+});
+
+
+test('buildDownloadUrl rejects a missing URL', () => {
+  assert.equal(
+    buildDownloadUrl('http://127.0.0.1:8000', ''),
+    null,
+  );
+});
+
+
+test('startBrowserDownload clicks and removes a temporary link', () => {
+  const events = [];
+  const link = {
+    click() {
+      events.push('click');
+    },
+    remove() {
+      events.push('remove');
+    },
+  };
+  const documentObject = {
+    createElement(tagName) {
+      assert.equal(tagName, 'a');
+      return link;
+    },
+    body: {
+      append(element) {
+        assert.equal(element, link);
+        events.push('append');
+      },
+    },
+  };
+
+  assert.equal(
+    startBrowserDownload(
+      documentObject,
+      'http://127.0.0.1:8000/api/media/download/job-123',
+    ),
+    true,
+  );
+  assert.equal(
+    link.href,
+    'http://127.0.0.1:8000/api/media/download/job-123',
+  );
+  assert.equal(link.download, '');
+  assert.equal(link.hidden, true);
+  assert.deepEqual(events, ['append', 'click', 'remove']);
+});
+
+
+test('startBrowserDownload rejects an unavailable document', () => {
+  assert.equal(
+    startBrowserDownload(
+      null,
+      'http://127.0.0.1:8000/api/media/download/job-123',
+    ),
+    false,
   );
 });
