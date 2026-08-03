@@ -28,6 +28,23 @@ export function formatFileSize(bytes) {
 }
 
 
+export function resolveApiBaseUrl(locationObject) {
+  const hostname = String(
+    locationObject?.hostname ?? '',
+  ).trim().toLowerCase();
+
+  if (
+    hostname === '127.0.0.1' ||
+    hostname === 'localhost' ||
+    hostname === '[::1]'
+  ) {
+    return 'http://127.0.0.1:8000';
+  }
+
+  return 'https://flowsnap-api.onrender.com';
+}
+
+
 export function describeFormat(format) {
   const quality =
     format.quality && format.quality !== 'unknown'

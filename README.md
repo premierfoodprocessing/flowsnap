@@ -2,7 +2,7 @@
 
 FlowSnap is a lightweight multi-platform media workflow with a responsive static frontend and a FastAPI processing backend.
 
-The project currently accepts public media URLs, extracts metadata, reports structured errors and returns sanitized format options. Actual media downloading is not yet enabled.
+The project accepts authorised public media URLs, extracts metadata, presents sanitized format options, prepares short-lived download jobs and delivers completed files through the browser.
 
 ## Current features
 
@@ -23,6 +23,11 @@ The project currently accepts public media URLs, extracts metadata, reports stru
 - Short-lived in-memory media analysis storage
 - Validated download-preparation requests
 - Structured preparation errors for expired analyses and unavailable formats
+- Secure one-time download jobs
+- Isolated temporary download directories and automatic cleanup
+- Browser file delivery with same-backend URL validation
+- Public FastAPI backend on Render
+- Automatic local/production API selection
 
 ## Development controls
 
@@ -79,11 +84,10 @@ cd ..
 node --test frontend-tests/*.test.mjs
 ```
 
-Current test baseline:
+Current test baseline after the deployment connection:
 
-- Frontend suite: 11 passed
-- Backend stable suite: 19 passed, 1 live test skipped
-- Backend live-enabled suite: 20 passed
+- Frontend suite: 21 passed
+- Backend download-enabled suite: 35 passed, 1 live test skipped
 
 ## API endpoints
 
@@ -92,7 +96,9 @@ Current test baseline:
 - `POST /api/media/info`
 - `POST /api/media/formats`
 - `POST /api/media/prepare`
+- `GET /api/media/download/{job_id}`
 - Interactive documentation: `http://127.0.0.1:8000/docs`
+- Public API: `https://flowsnap-api.onrender.com`
 
 ## Project structure
 
@@ -120,14 +126,11 @@ FlowSnap/
 
 ## Current limitations
 
-- The GitHub Pages frontend still points to a backend running on `127.0.0.1`.
-- Public visitors cannot process links until the backend is deployed.
 - TikTok may return changing JavaScript challenges or temporary HTTP 403 responses.
-- Format options are displayed but cannot yet initiate downloads.
-- Actual media downloading is not yet implemented.
-- Download preparation is implemented, but actual file delivery is not yet enabled.
-- Prepared download jobs are not yet stored or served by a download endpoint.
-- The temporary analysis store is held in application memory and is cleared when the backend restarts.
+- Render's free service may sleep after inactivity, making the first request slower.
+- Downloads depend on each source platform permitting server-side access.
+- Download jobs and media analyses are held in application memory and are cleared when the backend restarts.
+- Render's filesystem is temporary; FlowSnap intentionally removes completed download files after delivery.
 ## Responsible use
 
 FlowSnap should only process public content that the user owns or is authorised to save. Platform rules, copyright and applicable laws must be respected.

@@ -220,6 +220,7 @@ Create the next gated test for authorised media downloading.
 ./scripts/check-dev.sh --tests
 ./scripts/check-dev.sh --live
 ./scripts/stop-dev.sh
+```
 
 ---
 
@@ -299,3 +300,31 @@ Next milestone:
 Create a gated failing test for controlled file delivery.
 
 Keep monetisation readiness and responsible ad placement in the design.
+
+
+---
+
+## 2026-08-03 - Session 8: Download Delivery and Public Backend
+
+### Completed
+
+- Added secure, short-lived, one-time download jobs.
+- Added selected-format delivery through yt-dlp.
+- Isolated every delivery in a temporary directory.
+- Added path validation and automatic temporary-file cleanup.
+- Connected the frontend Prepare download action to browser file delivery.
+- Verified a complete YouTube workflow from link analysis to a playable MP4 with video and audio.
+- Expanded the verified baseline to 18 frontend tests and 33 passing backend tests with one intentional live-platform skip.
+- Deployed the FastAPI backend to Render at `https://flowsnap-api.onrender.com`.
+- Verified the public root and `/health` endpoints.
+- Added automatic frontend API selection: Render for the published site and `127.0.0.1:8000` for local development.
+- Added production-routing and GitHub Pages CORS regression tests.
+
+### Result
+
+FlowSnap now has a working end-to-end download pipeline and a publicly reachable backend. The GitHub Pages frontend is ready to use Render without disrupting local development.
+
+### Current Test Baseline
+
+- Frontend suite: 21 passed.
+- Backend download-enabled suite: 35 passed, 1 live test skipped.

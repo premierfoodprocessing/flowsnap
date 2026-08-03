@@ -4,9 +4,10 @@ import {
   buildPreparePayload,
   chooseDefaultFormat,
   describeFormat,
+  resolveApiBaseUrl,
   startBrowserDownload,
 } from './format-utils.mjs';
-const API_BASE_URL = 'http://127.0.0.1:8000';
+const API_BASE_URL = resolveApiBaseUrl(window.location);
 
 const menuButton = document.querySelector('.menu-toggle');
 const nav = document.querySelector('.main-nav');

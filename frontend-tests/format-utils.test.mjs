@@ -7,8 +7,36 @@ import {
   chooseDefaultFormat,
   describeFormat,
   formatFileSize,
+  resolveApiBaseUrl,
   startBrowserDownload,
 } from '../format-utils.mjs';
+
+test('resolveApiBaseUrl uses the local backend during development', () => {
+  for (const hostname of ['127.0.0.1', 'localhost', '[::1]']) {
+    assert.equal(
+      resolveApiBaseUrl({ hostname }),
+      'http://127.0.0.1:8000',
+    );
+  }
+});
+
+
+test('resolveApiBaseUrl uses Render on GitHub Pages', () => {
+  assert.equal(
+    resolveApiBaseUrl({
+      hostname: 'premierfoodprocessing.github.io',
+    }),
+    'https://flowsnap-api.onrender.com',
+  );
+});
+
+
+test('resolveApiBaseUrl defaults safely to Render', () => {
+  assert.equal(
+    resolveApiBaseUrl(undefined),
+    'https://flowsnap-api.onrender.com',
+  );
+});
 
 test('formatFileSize presents decimal file sizes', () => {
   assert.equal(formatFileSize(950), '950 B');

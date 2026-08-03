@@ -26,6 +26,33 @@ def test_health_returns_healthy():
     assert response.json() == {"status": "healthy"}
 
 
+def test_github_pages_origin_is_allowed_by_cors():
+    response = client.options(
+        "/api/media/formats",
+        headers={
+            "Origin": "https://premierfoodprocessing.github.io",
+            "Access-Control-Request-Method": "POST",
+        },
+    )
+
+    assert response.status_code == 200
+    assert response.headers["access-control-allow-origin"] == (
+        "https://premierfoodprocessing.github.io"
+    )
+
+
+def test_unknown_origin_is_not_allowed_by_cors():
+    response = client.options(
+        "/api/media/formats",
+        headers={
+            "Origin": "https://example.com",
+            "Access-Control-Request-Method": "POST",
+        },
+    )
+
+    assert "access-control-allow-origin" not in response.headers
+
+
 def test_media_info_rejects_invalid_url():
     response = client.post(
         "/api/media/info",
