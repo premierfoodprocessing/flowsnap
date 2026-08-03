@@ -220,3 +220,36 @@ Create the next gated test for authorised media downloading.
 ./scripts/check-dev.sh --tests
 ./scripts/check-dev.sh --live
 ./scripts/stop-dev.sh
+
+---
+
+## 2026-08-03 - Session 6: Tested Frontend Format Options
+
+### Completed
+
+- Added frontend tests using Node's built-in test runner.
+- Added tested file-size and format-description utilities.
+- Enriched `/api/media/formats` with preview metadata.
+- Avoided extracting the same platform URL twice.
+- Connected the result card to the formats endpoint.
+- Added visible format quality, file type, size and audio status.
+- Added frontend tests and module syntax checks to `check-dev.sh`.
+- Verified the interface using MDN's public flower video.
+- Completed the previously truncated README.
+
+### Test Baseline
+
+- Frontend suite: 5 passed.
+- Backend stable suite: 11 passed, 1 live test skipped.
+- Backend live-enabled suite: 12 passed.
+- Full development checker: passed.
+
+### Result
+
+FlowSnap now retrieves preview metadata and format options in one extraction and displays them in the browser.
+
+---
+
+Next milestone:
+
+Add format selection and create a gated test for the authorised download endpoint.

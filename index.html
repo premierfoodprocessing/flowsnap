@@ -38,34 +38,39 @@
         </form>
         <p class="form-message" id="form-message" role="status" aria-live="polite"></p>
 
-	<section class="media-result" id="media-result" hidden>
-	  <img
-	    class="result-thumbnail"
-	    id="result-thumbnail"
-	    src=""
-	    alt="Media preview"
-	  >
+        <section class="media-result" id="media-result" hidden>
+          <img
+            class="result-thumbnail"
+            id="result-thumbnail"
+            src=""
+            alt="Media preview"
+          >
 
-	  <div class="result-details">
-	    <p class="result-label" id="result-platform">MEDIA FOUND</p>
-	    <h2 id="result-title">Media title</h2>
+          <div class="result-details">
+            <p class="result-label" id="result-platform">MEDIA FOUND</p>
+            <h2 id="result-title">Media title</h2>
 
-	    <div class="result-meta">
-	      <span id="result-uploader"></span>
-	      <span id="result-duration"></span>
-	    </div>
+            <div class="result-meta">
+              <span id="result-uploader"></span>
+              <span id="result-duration"></span>
+            </div>
 
-	    <a
-	      class="result-source"
-	      id="result-source"
-	      href="#"
-	      target="_blank"
-	      rel="noopener noreferrer"
-	    >
-	      View original
-	    </a>
-	  </div>
-	</section>
+            <div class="format-options" id="format-options" hidden>
+              <p class="format-heading">Available formats</p>
+              <div class="format-list" id="format-list"></div>
+            </div>
+
+            <a
+              class="result-source"
+              id="result-source"
+              href="#"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              View original
+            </a>
+          </div>
+        </section>
 
         <p class="hero-note">Only save content you own or have permission to download.</p>
       </div>
@@ -116,6 +121,6 @@
     <div class="container footer-grid"><div><a class="brand footer-brand" href="#top"><span class="brand-mark">F</span><span>FlowSnap</span></a><p>A clean media-saving interface for authorised workflows.</p></div><div class="footer-links"><a href="#how">How it works</a><a href="#features">Features</a><a href="#faq">FAQ</a><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a></div></div>
     <div class="container footer-bottom"><span>© <span id="year"></span> FlowSnap</span><span>Not affiliated with TikTok, ByteDance, or other media platforms.</span></div>
   </footer>
-  <script src="script.js"></script>
+<script type="module" src="script.js?v=2"></script>
 </body>
 </html>

@@ -57,6 +57,11 @@ def test_get_formats_returns_sanitized_video_options(monkeypatch):
 
     assert result == {
         "title": "Test Video",
+        "uploader": None,
+        "duration": None,
+        "thumbnail": None,
+        "webpage_url": None,
+        "extractor": None,
         "formats": [
             {
                 "format_id": "18",
@@ -123,6 +128,11 @@ def test_get_formats_keeps_direct_media_with_unknown_codecs(
 
     assert result == {
         "title": "flower",
+        "uploader": None,
+        "duration": None,
+        "thumbnail": None,
+        "webpage_url": None,
+        "extractor": None,
         "formats": [
             {
                 "format_id": "mp4",
@@ -135,3 +145,48 @@ def test_get_formats_keeps_direct_media_with_unknown_codecs(
             }
         ],
     }
+
+class FakeRichMediaYoutubeDL:
+    def __init__(self, options):
+        self.options = options
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        return False
+
+    def extract_info(self, url, download):
+        return {
+            "title": "Test Video",
+            "uploader": "FlowSnap Tester",
+            "duration": 42,
+            "thumbnail": "https://example.com/thumbnail.jpg",
+            "webpage_url": "https://example.com/video",
+            "extractor": "TestPlatform",
+            "formats": [],
+        }
+
+
+def test_get_formats_includes_preview_metadata(monkeypatch):
+    monkeypatch.setattr(
+        extractor,
+        "YoutubeDL",
+        FakeRichMediaYoutubeDL,
+    )
+
+    result = extractor.get_formats(
+        "https://example.com/video"
+    )
+
+    assert result["title"] == "Test Video"
+    assert result["uploader"] == "FlowSnap Tester"
+    assert result["duration"] == 42
+    assert result["thumbnail"] == (
+        "https://example.com/thumbnail.jpg"
+    )
+    assert result["webpage_url"] == (
+        "https://example.com/video"
+    )
+    assert result["extractor"] == "TestPlatform"
+    assert result["formats"] == []

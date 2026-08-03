@@ -103,10 +103,30 @@ else
 fi
 
 
+if node --input-type=module --check < "$PROJECT_DIR/script.js"; then
+  pass "Frontend module syntax"
+else
+  fail "Frontend module syntax"
+fi
+
+
 if [[ "$RUN_TESTS" == true ]]; then
   echo
-  echo "Automated tests"
-  echo "---------------"
+  echo "Frontend tests"
+  echo "--------------"
+
+  if (
+    cd "$PROJECT_DIR"
+    node --test frontend-tests/*.test.mjs
+  ); then
+    pass "Frontend automated tests"
+  else
+    fail "Frontend automated tests"
+  fi
+
+  echo
+  echo "Backend tests"
+  echo "-------------"
 
   if [[ "$RUN_LIVE" == true ]]; then
     if (

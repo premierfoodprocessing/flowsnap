@@ -38,3 +38,88 @@ From the project root:
 
 # Stop the development servers
 ./scripts/stop-dev.sh
+
+
+```
+
+The start script opens dedicated terminal windows for:
+
+- FastAPI on `http://127.0.0.1:8000`
+- Frontend on `http://127.0.0.1:5500`
+
+It then opens FlowSnap in the default browser and avoids starting duplicate servers.
+
+## Automated tests
+
+Development dependencies are stored separately in `backend/requirements-dev.txt`.
+
+Run the stable backend suite:
+
+```bash
+cd backend
+source .venv/bin/activate
+python -m pytest
+```
+
+Run the live-enabled backend suite:
+
+```bash
+python -m pytest --run-live
+```
+
+Run the frontend suite:
+
+```bash
+cd ..
+node --test frontend-tests/*.test.mjs
+```
+
+Current test baseline:
+
+- Frontend suite: 5 passed
+- Backend stable suite: 11 passed, 1 live test skipped
+- Backend live-enabled suite: 12 passed
+
+## API endpoints
+
+- `GET /`
+- `GET /health`
+- `POST /api/media/info`
+- `POST /api/media/formats`
+- Interactive documentation: `http://127.0.0.1:8000/docs`
+
+## Project structure
+
+```text
+FlowSnap/
+├── backend/
+│   ├── services/
+│   ├── tests/
+│   ├── app.py
+│   ├── pytest.ini
+│   ├── requirements.txt
+│   └── requirements-dev.txt
+├── docs/
+│   └── DEVLOG.md
+├── frontend-tests/
+├── scripts/
+│   ├── start-dev.sh
+│   ├── check-dev.sh
+│   └── stop-dev.sh
+├── format-utils.mjs
+├── index.html
+├── script.js
+└── styles.css
+```
+
+## Current limitations
+
+- The GitHub Pages frontend still points to a backend running on `127.0.0.1`.
+- Public visitors cannot process links until the backend is deployed.
+- TikTok may return changing JavaScript challenges or temporary HTTP 403 responses.
+- Format options are displayed but cannot yet initiate downloads.
+- Actual media downloading is not yet implemented.
+
+## Responsible use
+
+FlowSnap should only process public content that the user owns or is authorised to save. Platform rules, copyright and applicable laws must be respected.

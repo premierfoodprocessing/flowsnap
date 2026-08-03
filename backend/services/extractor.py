@@ -153,8 +153,12 @@ def get_formats(url: str) -> dict:
                 "has_video": has_video,
             }
         )
-
     return {
         "title": info.get("title") or "Untitled media",
+        "uploader": info.get("uploader"),
+        "duration": info.get("duration"),
+        "thumbnail": info.get("thumbnail"),
+        "webpage_url": info.get("webpage_url"),
+        "extractor": info.get("extractor"),
         "formats": formats,
     }
