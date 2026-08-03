@@ -1,4 +1,3 @@
-
 from fastapi.testclient import TestClient
 
 import app as app_module
@@ -7,9 +6,8 @@ import app as app_module
 client = TestClient(app_module.app)
 
 
-
-def test_download_formats_endpoint_is_available(monkeypatch):
-    expected = {
+def test_download_formats_endpoint_stores_analysis(monkeypatch):
+    analysis = {
         "title": "Test Video",
         "formats": [
             {
@@ -24,10 +22,23 @@ def test_download_formats_endpoint_is_available(monkeypatch):
         ],
     }
 
+    saved_analyses = []
+
+    class FakeAnalysisStore:
+        def save(self, supplied_analysis):
+            saved_analyses.append(supplied_analysis)
+            return "analysis-test-123"
+
     monkeypatch.setattr(
         app_module,
         "get_formats",
-        lambda url: expected,
+        lambda url: analysis,
+    )
+
+    monkeypatch.setattr(
+        app_module,
+        "analysis_store",
+        FakeAnalysisStore(),
         raising=False,
     )
 
@@ -37,4 +48,8 @@ def test_download_formats_endpoint_is_available(monkeypatch):
     )
 
     assert response.status_code == 200
-    assert response.json() == expected
+    assert saved_analyses == [analysis]
+    assert response.json() == {
+        "analysis_id": "analysis-test-123",
+        **analysis,
+    }

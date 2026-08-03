@@ -18,6 +18,11 @@ The project currently accepts public media URLs, extracts metadata, reports stru
 - Automated unit, API and live integration tests
 - One-command development controls
 - GitHub Pages-compatible frontend
+- Automatic preferred-format selection
+- Temporary opaque analysis identifiers
+- Short-lived in-memory media analysis storage
+- Validated download-preparation requests
+- Structured preparation errors for expired analyses and unavailable formats
 
 ## Development controls
 
@@ -76,9 +81,9 @@ node --test frontend-tests/*.test.mjs
 
 Current test baseline:
 
-- Frontend suite: 5 passed
-- Backend stable suite: 11 passed, 1 live test skipped
-- Backend live-enabled suite: 12 passed
+- Frontend suite: 11 passed
+- Backend stable suite: 19 passed, 1 live test skipped
+- Backend live-enabled suite: 20 passed
 
 ## API endpoints
 
@@ -86,6 +91,7 @@ Current test baseline:
 - `GET /health`
 - `POST /api/media/info`
 - `POST /api/media/formats`
+- `POST /api/media/prepare`
 - Interactive documentation: `http://127.0.0.1:8000/docs`
 
 ## Project structure
@@ -119,7 +125,9 @@ FlowSnap/
 - TikTok may return changing JavaScript challenges or temporary HTTP 403 responses.
 - Format options are displayed but cannot yet initiate downloads.
 - Actual media downloading is not yet implemented.
-
+- Download preparation is implemented, but actual file delivery is not yet enabled.
+- Prepared download jobs are not yet stored or served by a download endpoint.
+- The temporary analysis store is held in application memory and is cleared when the backend restarts.
 ## Responsible use
 
 FlowSnap should only process public content that the user owns or is authorised to save. Platform rules, copyright and applicable laws must be respected.

@@ -1,5 +1,9 @@
-import { describeFormat } from './format-utils.mjs';
 
+import {
+  buildPreparePayload,
+  chooseDefaultFormat,
+  describeFormat,
+} from './format-utils.mjs';
 const API_BASE_URL = 'http://127.0.0.1:8000';
 
 const menuButton = document.querySelector('.menu-toggle');
@@ -18,7 +22,11 @@ const resultDuration = document.getElementById('result-duration');
 const resultSource = document.getElementById('result-source');
 const formatOptions = document.getElementById('format-options');
 const formatList = document.getElementById('format-list');
+const prepareActions = document.getElementById('prepare-actions');
+const prepareButton = document.getElementById('prepare-button');
+const prepareStatus = document.getElementById('prepare-status');
 
+let currentAnalysisId = '';
 
 function formatDuration(totalSeconds) {
   if (!Number.isFinite(totalSeconds)) {
@@ -31,9 +39,9 @@ function formatDuration(totalSeconds) {
   return `${minutes}:${String(seconds).padStart(2, '0')}`;
 }
 
-
 function renderFormats(formats) {
   formatList.replaceChildren();
+  formatList.removeAttribute('data-selected-format-id');
 
   if (!Array.isArray(formats) || formats.length === 0) {
     const emptyMessage = document.createElement('p');
@@ -46,25 +54,65 @@ function renderFormats(formats) {
     return;
   }
 
+  const defaultFormatId = chooseDefaultFormat(formats);
+  const optionButtons = [];
+
+  function updateSelection(formatId) {
+    formatList.dataset.selectedFormatId = formatId;
+
+    for (const button of optionButtons) {
+      const selected =
+        button.dataset.formatId === formatId;
+
+      button.classList.toggle('is-selected', selected);
+      button.setAttribute(
+        'aria-pressed',
+        String(selected),
+      );
+
+      const status = button.querySelector(
+        '.format-status',
+      );
+
+      status.textContent = selected
+        ? 'Selected'
+        : 'Select';
+    }
+  }
+
   for (const format of formats) {
-    const option = document.createElement('div');
+    const formatId = String(format.format_id);
+
+    const option = document.createElement('button');
+    option.type = 'button';
     option.className = 'format-option';
-    option.dataset.formatId = format.format_id;
+    option.dataset.formatId = formatId;
+    option.setAttribute('aria-pressed', 'false');
 
     const description = document.createElement('span');
+    description.className = 'format-description';
     description.textContent = describeFormat(format);
 
     const status = document.createElement('span');
     status.className = 'format-status';
-    status.textContent = 'Detected';
+    status.textContent = 'Select';
 
     option.append(description, status);
+
+    option.addEventListener('click', () => {
+      updateSelection(formatId);
+    });
+
+    optionButtons.push(option);
     formatList.append(option);
+  }
+
+  if (defaultFormatId !== null) {
+    updateSelection(String(defaultFormatId));
   }
 
   formatOptions.hidden = false;
 }
-
 
 menuButton?.addEventListener('click', () => {
   const open = nav.classList.toggle('open');
@@ -102,6 +150,11 @@ form?.addEventListener('submit', async (event) => {
   resultCard.hidden = true;
   formatOptions.hidden = true;
   formatList.replaceChildren();
+
+  currentAnalysisId = '';
+  prepareActions.hidden = true;
+  prepareButton.disabled = false;
+  prepareStatus.textContent = '';
 
   try {
     const url = new URL(submittedUrl);
@@ -180,6 +233,15 @@ form?.addEventListener('submit', async (event) => {
 
     renderFormats(data.formats);
 
+
+    currentAnalysisId =
+      String(data.analysis_id ?? '').trim();
+
+    prepareActions.hidden =
+      !currentAnalysisId ||
+      !formatList.dataset.selectedFormatId;
+
+
     resultCard.hidden = false;
     message.textContent = 'Media information ready.';
   } catch (error) {
@@ -198,6 +260,64 @@ form?.addEventListener('submit', async (event) => {
   }
 });
 
+prepareButton?.addEventListener(
+  'click',
+  async () => {
+    const payload = buildPreparePayload(
+      currentAnalysisId,
+      formatList.dataset.selectedFormatId,
+    );
+
+    if (!payload) {
+      prepareStatus.textContent =
+        'Select an available format first.';
+      return;
+    }
+
+    prepareButton.disabled = true;
+    prepareStatus.textContent =
+      'Preparing your selected format…';
+
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/api/media/prepare`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(payload),
+        },
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        const apiMessage =
+          data.detail?.message ||
+          data.detail?.[0]?.msg ||
+          'FlowSnap could not prepare this format.';
+
+        throw new Error(apiMessage);
+      }
+
+      prepareStatus.textContent =
+        `${data.filename} is prepared. ` +
+        'Download delivery is not enabled yet.';
+    } catch (error) {
+      if (error instanceof TypeError) {
+        prepareStatus.textContent =
+          'FlowSnap could not reach the processing service.';
+      } else {
+        prepareStatus.textContent =
+          error.message ||
+          'FlowSnap could not prepare this format.';
+      }
+    } finally {
+      prepareButton.disabled = false;
+    }
+  },
+);
 
 document.getElementById('year').textContent =
   new Date().getFullYear();

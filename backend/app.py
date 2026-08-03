@@ -3,11 +3,18 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, HttpUrl
 from fastapi.middleware.cors import CORSMiddleware
 
+from services.analysis_store import AnalysisStore
+from services.downloads import (
+    DownloadPreparationError,
+    prepare_download as build_download_job,
+)
 from services.extractor import (
     MediaExtractionError,
     get_formats,
     get_metadata,
 )
+
+analysis_store = AnalysisStore()
 
 app = FastAPI(
     title="FlowSnap API",
@@ -30,6 +37,22 @@ app.add_middleware(
 class MediaRequest(BaseModel):
     url: HttpUrl
 
+
+
+class PrepareDownloadRequest(BaseModel):
+    analysis_id: str
+    format_id: str
+
+
+def prepare_download(
+    analysis_id: str,
+    format_id: str,
+) -> dict:
+    return build_download_job(
+        store=analysis_store,
+        analysis_id=analysis_id,
+        format_id=format_id,
+    )
 
 @app.get("/")
 def root() -> dict[str, str]:
@@ -67,11 +90,16 @@ def media_info(request: MediaRequest) -> dict:
             },
         ) from exc
 
-
 @app.post("/api/media/formats")
 def media_formats(request: MediaRequest) -> dict:
     try:
-        return get_formats(str(request.url))
+        analysis = get_formats(str(request.url))
+        analysis_id = analysis_store.save(analysis)
+
+        return {
+            "analysis_id": analysis_id,
+            **analysis,
+        }
     except MediaExtractionError as exc:
         raise HTTPException(
             status_code=422,
@@ -80,6 +108,34 @@ def media_formats(request: MediaRequest) -> dict:
                 "message": exc.message,
             },
         ) from exc
+    except Exception as exc:
+        raise HTTPException(
+            status_code=500,
+            detail={
+                "code": "internal_error",
+                "message": "An unexpected error occurred.",
+            },
+        ) from exc
+
+@app.post("/api/media/prepare")
+def media_prepare(
+    request: PrepareDownloadRequest,
+) -> dict:
+    try:
+        return prepare_download(
+            request.analysis_id,
+            request.format_id,
+        )
+
+    except DownloadPreparationError as exc:
+        raise HTTPException(
+            status_code=422,
+            detail={
+                "code": exc.code,
+                "message": exc.message,
+            },
+        ) from exc
+
     except Exception as exc:
         raise HTTPException(
             status_code=500,

@@ -142,3 +142,61 @@ body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSy
   color: var(--muted);
   font-size: 0.88rem;
 }
+
+.format-option {
+  width: 100%;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.format-option:hover {
+  border-color: #bfdbfe;
+  background: #eef4ff;
+}
+
+.format-option.is-selected {
+  border-color: var(--blue);
+  background: #eaf1ff;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.12);
+}
+
+.format-option.is-selected .format-status {
+  color: var(--blue2);
+}
+
+.prepare-actions {
+  margin-top: 18px;
+}
+
+.prepare-button {
+  width: 100%;
+  border: 0;
+  border-radius: 10px;
+  padding: 13px 18px;
+  background: var(--blue);
+  color: #fff;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 10px 22px rgba(37, 99, 235, 0.2);
+}
+
+.prepare-button:hover {
+  background: var(--blue2);
+  transform: translateY(-1px);
+}
+
+.prepare-button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+  transform: none;
+}
+
+.prepare-status {
+  min-height: 24px;
+  margin: 10px 0 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 700;
+}

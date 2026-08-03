@@ -253,3 +253,49 @@ FlowSnap now retrieves preview metadata and format options in one extraction and
 Next milestone:
 
 Add format selection and create a gated test for the authorised download endpoint.
+
+
+---
+
+## 2026-08-03 - Session 7: Secure Download Preparation
+
+### Completed
+
+- Added automatic preferred-format selection.
+- Preferred the highest-quality combined video-and-audio format.
+- Added accessible selectable format controls.
+- Added tested preparation-payload creation.
+- Added opaque media-analysis identifiers.
+- Added short-lived in-memory analysis storage.
+- Added analysis expiry handling.
+- Added download-preparation service validation.
+- Added `/api/media/prepare`.
+- Added structured errors for expired analyses and unavailable formats.
+- Verified the preparation workflow in the browser.
+- Promoted all completed preparation tests into the permanent suite.
+
+### Security Design
+
+The browser submits only an opaque analysis ID and selected format ID.
+
+The backend retrieves the trusted stored analysis and validates the requested format. The browser does not supply a raw download URL.
+
+### Test Baseline
+
+- Frontend suite: 11 passed.
+- Backend stable suite: 19 passed, 1 live test skipped.
+- Backend live-enabled suite: 20 passed.
+
+### Current Boundary
+
+FlowSnap can analyse, select and prepare a media format.
+
+Actual file delivery remains disabled.
+
+---
+
+Next milestone:
+
+Create a gated failing test for controlled file delivery.
+
+Keep monetisation readiness and responsible ad placement in the design.
