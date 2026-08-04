@@ -140,7 +140,7 @@ def test_get_formats_keeps_direct_media_with_unknown_codecs(
                 "resolution": "unknown",
                 "quality": "unknown",
                 "filesize": None,
-                "has_audio": True,
+                "has_audio": False,
                 "has_video": True,
             }
         ],
