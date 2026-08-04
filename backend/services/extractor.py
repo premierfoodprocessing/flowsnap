@@ -1,6 +1,7 @@
 from urllib.parse import urlparse
 
 from yt_dlp import YoutubeDL
+from services.ytdlp_config import build_ytdlp_options
 from yt_dlp.networking.impersonate import ImpersonateTarget
 from yt_dlp.utils import DownloadError
 
@@ -13,7 +14,7 @@ class MediaExtractionError(Exception):
 
 
 def get_metadata(url: str) -> dict:
-    options = {
+    options = build_ytdlp_options() | {
         "quiet": True,
         "skip_download": True,
         "noplaylist": True,
@@ -66,7 +67,7 @@ def get_metadata(url: str) -> dict:
         "extractor": info.get("extractor"),
     }
 def get_formats(url: str) -> dict:
-    options = {
+    options = build_ytdlp_options() | {
         "quiet": True,
         "skip_download": True,
         "noplaylist": True,

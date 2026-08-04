@@ -31,3 +31,5 @@ backend/.venv/
 # Coverage
 .coverage
 htmlcov/
+
+backend/.env

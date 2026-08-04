@@ -365,3 +365,47 @@ FlowSnap now preserves audio-aware format information throughout preparation and
 Next milestone:
 
 Verify the audio-aware workflow with a live YouTube download, then deploy the backend update and confirm production delivery.
+
+
+---
+
+## 2026-08-04 - Session 10: Environment-Aware yt-dlp Configuration
+
+### Completed
+
+- Added a shared environment-aware yt-dlp configuration service.
+- Applied the shared configuration to metadata extraction, format discovery and file delivery.
+- Added optional Deno JavaScript runtime configuration.
+- Added optional remote EJS component support for YouTube extraction.
+- Added optional Chromium cookie loading for local development.
+- Kept browser-cookie loading disabled by default for production safety.
+- Added `backend/.env.example` documenting the available configuration.
+- Excluded the private `backend/.env` file from Git.
+- Added unit tests for safe defaults and configured local operation.
+- Added a dedicated live YouTube metadata test while retaining the generic MDN media test.
+- Verified successful live extraction from both MDN and YouTube.
+
+### Configuration Design
+
+FlowSnap now builds yt-dlp options from environment variables through one shared configuration service.
+
+Local development can enable Deno, remote EJS components and Chromium cookies without placing machine-specific paths or private browser data in source control. Production continues to use safe defaults unless the corresponding environment variables are explicitly configured.
+
+### Test Baseline
+
+- Standard backend suite: 23 passed, 17 gated tests skipped.
+- Live extraction suite: 2 passed.
+- Verified platforms in the live suite: generic public media and YouTube.
+- Working tree passed `git diff --check`.
+
+### Result
+
+FlowSnap can successfully extract current YouTube metadata using optional local compatibility settings while preserving safe production defaults.
+
+The shared configuration is also available to the download-delivery path.
+
+---
+
+Next milestone:
+
+Verify an audio-aware YouTube file download locally, deploy the backend configuration update and confirm production delivery.

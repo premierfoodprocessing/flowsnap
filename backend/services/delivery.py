@@ -1,6 +1,7 @@
 from pathlib import Path
 from typing import Callable
 
+from services.ytdlp_config import build_ytdlp_options
 from yt_dlp import YoutubeDL
 from yt_dlp.utils import DownloadError
 
@@ -37,7 +38,7 @@ def download_media(
             f"{format_id}+bestaudio/{format_id}"
         )
 
-    options = {
+    options = build_ytdlp_options() | {
         "quiet": True,
         "noplaylist": True,
         "format": format_selector,
