@@ -409,3 +409,45 @@ The shared configuration is also available to the download-delivery path.
 Next milestone:
 
 Verify an audio-aware YouTube file download locally, deploy the backend configuration update and confirm production delivery.
+
+---
+
+## 2026-08-04 - Session 11: Live Audio-Aware YouTube Delivery Verification
+
+### Completed
+
+- Ran the FlowSnap backend and frontend locally.
+- Analysed a live public YouTube video through the browser workflow.
+- Selected a `240p · MP4 · 223.8 KB · video only` source format.
+- Prepared and completed the download through FlowSnap.
+- Confirmed that the downloaded file played with both picture and sound.
+- Inspected the completed file with `ffprobe`.
+- Verified separate video and audio streams in the delivered MP4.
+
+### Verification Result
+
+The completed file contained:
+
+- Video: H.264 at 320 × 240.
+- Audio: Opus.
+- Container: MP4.
+- Source selection: video only.
+
+This confirms that FlowSnap’s delivery service successfully used the audio-aware selector to retrieve and merge the best available audio with the selected video-only stream.
+
+### Result
+
+The complete local workflow is now verified:
+
+1. Analyse a public YouTube link.
+2. Display available formats.
+3. Select a video-only format.
+4. Prepare a secure, short-lived download job.
+5. Retrieve and merge the selected video with audio.
+6. Deliver a playable file containing both streams.
+
+---
+
+Next milestone:
+
+Deploy the environment-aware backend update to Render, configure the required production-safe extraction settings and verify the complete production delivery workflow.
