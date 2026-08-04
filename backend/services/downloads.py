@@ -49,6 +49,9 @@ def prepare_download(
         "source_url": analysis.get("webpage_url"),
         "title": title,
         "format_id": str(format_id),
+        "has_audio": bool(
+            selected_format.get("has_audio")
+        ),
         "extension": extension,
         "filename": f"{title}.{extension}",
     }
@@ -63,6 +66,7 @@ def prepare_download(
         "job_id": job_id,
         "title": title,
         "format_id": str(format_id),
+        "has_audio": job["has_audio"],
         "filename": job["filename"],
         "download_url": f"/api/media/download/{job_id}",
     }

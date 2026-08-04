@@ -19,6 +19,7 @@ def download_media(
 ) -> Path:
     source_url = job.get("source_url")
     format_id = job.get("format_id")
+    has_audio = job.get("has_audio") is True
 
     if not source_url or not format_id:
         raise DownloadDeliveryError(
@@ -29,10 +30,17 @@ def download_media(
     output_dir = Path(output_dir).resolve()
     output_dir.mkdir(parents=True, exist_ok=True)
 
+    if has_audio:
+        format_selector = str(format_id)
+    else:
+        format_selector = (
+            f"{format_id}+bestaudio/{format_id}"
+        )
+
     options = {
         "quiet": True,
         "noplaylist": True,
-        "format": str(format_id),
+        "format": format_selector,
         "paths": {
             "home": str(output_dir),
             "temp": str(output_dir),

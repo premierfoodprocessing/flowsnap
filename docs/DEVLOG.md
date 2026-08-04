@@ -328,3 +328,40 @@ FlowSnap now has a working end-to-end download pipeline and a publicly reachable
 
 - Frontend suite: 21 passed.
 - Backend download-enabled suite: 35 passed, 1 live test skipped.
+
+
+---
+
+## 2026-08-04 - Session 9: Audio-Aware Format Delivery
+
+### Completed
+
+- Preserved the selected format's audio capability in short-lived download jobs.
+- Returned `has_audio` in the download-preparation response.
+- Kept combined video-and-audio formats on their original yt-dlp selector.
+- Added automatic best-audio merging for video-only formats.
+- Added a selected-video-only fallback when no separate audio stream is available.
+- Added regression coverage for both combined and video-only formats.
+- Verified the complete download-enabled backend suite.
+
+### Delivery Design
+
+Formats that already contain audio use their selected format ID directly.
+
+Video-only formats use `selected-format+bestaudio/selected-format`, allowing yt-dlp to merge the best available audio while retaining a safe video-only fallback.
+
+### Current Test Baseline
+
+- Frontend suite: 21 passed.
+- Backend stable suite: 21 passed, 16 gated tests skipped.
+- Backend download-enabled suite: 36 passed, 1 live-platform test skipped.
+
+### Result
+
+FlowSnap now preserves audio-aware format information throughout preparation and delivery. Selecting a higher-quality video-only format no longer silently prevents yt-dlp from including available audio.
+
+---
+
+Next milestone:
+
+Verify the audio-aware workflow with a live YouTube download, then deploy the backend update and confirm production delivery.

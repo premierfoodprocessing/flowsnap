@@ -14,6 +14,7 @@ def test_prepare_download_builds_job_from_stored_analysis():
                     {
                         "format_id": "18",
                         "extension": "mp4",
+                        "has_audio": True,
                     }
                 ],
             }
@@ -30,6 +31,7 @@ def test_prepare_download_builds_job_from_stored_analysis():
         "job_id": "test-job-123",
         "title": "Test Video",
         "format_id": "18",
+        "has_audio": True,
         "filename": "Test Video.mp4",
         "download_url": (
             "/api/media/download/test-job-123"
@@ -77,6 +79,7 @@ def test_prepare_download_rejects_unknown_format():
                     {
                         "format_id": "18",
                         "extension": "mp4",
+                        "has_audio": True,
                     }
                 ],
             }
@@ -110,6 +113,7 @@ def test_prepare_download_saves_retrievable_job():
                     {
                         "format_id": "18",
                         "extension": "mp4",
+                        "has_audio": True,
                     }
                 ],
             }
@@ -135,6 +139,7 @@ def test_prepare_download_saves_retrievable_job():
         "source_url": "https://example.com/video",
         "title": "Test Video",
         "format_id": "18",
+        "has_audio": True,
         "extension": "mp4",
         "filename": "Test Video.mp4",
     }
