@@ -1,3 +1,4 @@
+import pytest
 from services import extractor
 
 
@@ -190,3 +191,42 @@ def test_get_formats_includes_preview_metadata(monkeypatch):
     )
     assert result["extractor"] == "TestPlatform"
     assert result["formats"] == []
+
+
+class FakeYoutubeBotChallengeYoutubeDL:
+    def __init__(self, options):
+        self.options = options
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        return False
+
+    def extract_info(self, url, download):
+        raise extractor.DownloadError(
+            "Sign in to confirm you’re not a bot."
+        )
+
+
+def test_get_formats_identifies_youtube_bot_challenge(
+    monkeypatch,
+):
+    monkeypatch.setattr(
+        extractor,
+        "YoutubeDL",
+        FakeYoutubeBotChallengeYoutubeDL,
+    )
+
+    with pytest.raises(
+        extractor.MediaExtractionError
+    ) as captured_error:
+        extractor.get_formats(
+            "https://www.youtube.com/watch?v=test"
+        )
+
+    assert captured_error.value.code == "platform_blocked"
+    assert captured_error.value.message == (
+        "YouTube is temporarily refusing access from "
+        "FlowSnap's download server. Please try again later."
+    )

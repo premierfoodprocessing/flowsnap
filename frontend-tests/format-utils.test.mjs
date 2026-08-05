@@ -5,6 +5,7 @@ import {
   buildDownloadUrl,
   buildPreparePayload,
   chooseDefaultFormat,
+  describeAudioNotice,
   describeFormat,
   formatFileSize,
   resolveApiBaseUrl,
@@ -301,4 +302,34 @@ test('startBrowserDownload rejects an unavailable document', () => {
     ),
     false,
   );
+});
+
+
+test('describeAudioNotice identifies video-only formats', () => {
+  assert.equal(
+    describeAudioNotice({
+      has_video: true,
+      has_audio: false,
+    }),
+    (
+      'This format contains video only. '
+      + 'FlowSnap will add audio during preparation.'
+    ),
+  );
+});
+
+
+test('describeAudioNotice stays empty when audio is included', () => {
+  assert.equal(
+    describeAudioNotice({
+      has_video: true,
+      has_audio: true,
+    }),
+    '',
+  );
+});
+
+
+test('describeAudioNotice stays empty without a format', () => {
+  assert.equal(describeAudioNotice(null), '');
 });

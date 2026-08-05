@@ -3,6 +3,7 @@ import {
   buildDownloadUrl,
   buildPreparePayload,
   chooseDefaultFormat,
+  describeAudioNotice,
   describeFormat,
   resolveApiBaseUrl,
   startBrowserDownload,
@@ -25,6 +26,7 @@ const resultDuration = document.getElementById('result-duration');
 const resultSource = document.getElementById('result-source');
 const formatOptions = document.getElementById('format-options');
 const formatList = document.getElementById('format-list');
+const formatAudioNotice = document.getElementById('format-audio-notice');
 const prepareActions = document.getElementById('prepare-actions');
 const prepareButton = document.getElementById('prepare-button');
 const prepareStatus = document.getElementById('prepare-status');
@@ -45,6 +47,8 @@ function formatDuration(totalSeconds) {
 function renderFormats(formats) {
   formatList.replaceChildren();
   formatList.removeAttribute('data-selected-format-id');
+  formatAudioNotice.textContent = '';
+  formatAudioNotice.hidden = true;
 
   if (!Array.isArray(formats) || formats.length === 0) {
     const emptyMessage = document.createElement('p');
@@ -62,6 +66,14 @@ function renderFormats(formats) {
 
   function updateSelection(formatId) {
     formatList.dataset.selectedFormatId = formatId;
+    const selectedFormat = formats.find(
+      (format) => String(format.format_id) === formatId,
+    );
+    const audioNotice =
+      describeAudioNotice(selectedFormat);
+
+    formatAudioNotice.textContent = audioNotice;
+    formatAudioNotice.hidden = !audioNotice;
 
     for (const button of optionButtons) {
       const selected =

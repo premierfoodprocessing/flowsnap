@@ -198,3 +198,18 @@ export function startBrowserDownload(
 
   return true;
 }
+
+
+export function describeAudioNotice(format) {
+  if (
+    format?.has_video === true
+    && format?.has_audio === false
+  ) {
+    return (
+      'This format contains video only. '
+      + 'FlowSnap will add audio during preparation.'
+    );
+  }
+
+  return '';
+}

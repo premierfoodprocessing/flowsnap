@@ -85,6 +85,26 @@ def get_formats(url: str) -> dict:
     except DownloadError as exc:
         error_text = str(exc).lower()
 
+        youtube_bot_challenge = (
+            hostname == "youtube.com"
+            or hostname.endswith(".youtube.com")
+            or hostname == "youtu.be"
+            or hostname.endswith(".youtu.be")
+        ) and (
+            "confirm you're not a bot" in error_text
+            or "confirm you’re not a bot" in error_text
+            or "sign in to confirm" in error_text
+        )
+
+        if youtube_bot_challenge:
+            raise MediaExtractionError(
+                code="platform_blocked",
+                message=(
+                    "YouTube is temporarily refusing access from "
+                    "FlowSnap's download server. Please try again later."
+                ),
+            ) from exc
+
         if (
             "403" in error_text
             or "forbidden" in error_text

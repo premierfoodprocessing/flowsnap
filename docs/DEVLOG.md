@@ -1,4 +1,4 @@
-# FlowSnap Development Log
+## FlowSnap Development Log
 
 ---
 
@@ -451,3 +451,50 @@ The complete local workflow is now verified:
 Next milestone:
 
 Deploy the environment-aware backend update to Render, configure the required production-safe extraction settings and verify the complete production delivery workflow.
+
+
+## 2026-08-05 - Session 12: Clear Platform Errors and Audio Selection Guidance
+
+### Completed
+
+- Identified YouTube sign-in and bot-confirmation challenges during format discovery.
+- Returned a structured `platform_blocked` error when YouTube refuses access from the download server.
+- Added regression coverage for YouTube bot-challenge detection.
+- Added a tested frontend rule for identifying video-only format selections.
+- Added a dynamic interface notice explaining that FlowSnap will add audio during preparation.
+- Updated the notice automatically when the default or user-selected format changes.
+- Hid the notice when the selected format already contains audio.
+- Added accessible live-status behaviour and matching warning styling.
+
+### Error Handling
+
+When YouTube returns a sign-in or bot-confirmation challenge, FlowSnap now reports:
+
+`YouTube is temporarily refusing access from FlowSnap's download server. Please try again later.`
+
+This prevents the temporary platform restriction from being presented as an unsupported link or unexplained extraction failure.
+
+### Audio Guidance
+
+When a video-only format is selected, the interface now explains:
+
+`This format contains video only. FlowSnap will add audio during preparation.`
+
+The notice disappears automatically when the selected format already includes audio.
+
+### Test Baseline
+
+- Frontend suite: 24 passed.
+- Standard backend suite: 24 passed, 17 gated tests skipped.
+- Download-enabled backend suite: 39 passed, 2 live-platform tests skipped.
+- Working tree passed `git diff --check`.
+
+### Result
+
+FlowSnap now communicates both temporary YouTube access restrictions and audio-aware format behaviour more clearly. Users receive an actionable platform message when YouTube blocks the server and reassurance that video-only selections will receive audio during preparation.
+
+---
+
+Next milestone:
+
+Deploy the environment-aware backend and interface updates, configure the required production-safe yt-dlp settings on Render and verify the complete production workflow.
