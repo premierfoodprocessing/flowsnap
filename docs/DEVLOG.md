@@ -675,3 +675,23 @@ SEO milestone S0 is in progress. The next task is SEO-003: add Contact and Copyr
 ### Current Status
 
 SEO milestone S0 is in progress. The next task is SEO-004: publish the current verified platform-support matrix.
+
+---
+
+## 2026-08-07 - Session 22: Verified Platform Status Page
+
+### Completed
+
+- Completed SEO-004 and SEO milestone S0.
+- Added a public Supported Platforms and Current Status page.
+- Published separate local and production results for TikTok, Instagram, Facebook and YouTube.
+- Documented TikTok's intermittent access, duplicate-format and historical audio-label limitations.
+- Documented Instagram and Facebook video-only detection and verified audio-aware delivery.
+- Clearly marked YouTube as locally verified but currently unavailable through the production backend.
+- Added responsible-use, verification-date and no-guarantee language.
+- Linked the status page from the homepage FAQ and footer.
+- Added regression coverage for platform results and limitations.
+
+### Current Status
+
+SEO milestone S0 is complete. The next milestone is S1, beginning with SEO-005: choose the long-term production domain and canonical URL convention.

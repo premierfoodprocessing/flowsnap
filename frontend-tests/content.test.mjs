@@ -22,6 +22,10 @@ const copyrightHtml = await readFile(
   new URL('../copyright.html', import.meta.url),
   'utf8',
 );
+const supportedPlatformsHtml = await readFile(
+  new URL('../supported-platforms.html', import.meta.url),
+  'utf8',
+);
 
 
 test('homepage describes the live download workflow', () => {
@@ -109,4 +113,44 @@ test('copyright page provides a takedown process', () => {
   assert.match(copyrightHtml, /Information to include/);
   assert.match(copyrightHtml, /submitted in good faith/);
   assert.match(copyrightHtml, /does not control or permanently host/);
+});
+
+
+test('platform page reports verified local and production results', () => {
+  for (const platform of [
+    'TikTok',
+    'Instagram',
+    'Facebook',
+    'YouTube',
+  ]) {
+    assert.match(supportedPlatformsHtml, new RegExp(`<h2>${platform}</h2>`));
+  }
+
+  assert.match(
+    supportedPlatformsHtml,
+    /<strong>Last verified:<\/strong> August 7, 2026/,
+  );
+  assert.match(
+    supportedPlatformsHtml,
+    /<strong>Production workflow:<\/strong> Currently unavailable\./,
+  );
+});
+
+
+test('platform page discloses current limitations', () => {
+  assert.match(supportedPlatformsHtml, /intermittently refuse extraction/);
+  assert.match(supportedPlatformsHtml, /format labelled with audio/);
+  assert.match(
+    supportedPlatformsHtml,
+    /YouTube is temporarily refusing access/,
+  );
+  assert.match(
+    supportedPlatformsHtml,
+    /does not guarantee that every link/,
+  );
+});
+
+
+test('homepage links to current platform status', () => {
+  assert.match(indexHtml, /href="supported-platforms\.html"/);
 });

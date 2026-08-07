@@ -305,7 +305,7 @@ SEO changes should normally be evaluated over weeks or months, not hours.
 
 ### S0 — Truth and Trust
 
-Status: **In progress**
+Status: **Complete**
 
 Deliverables:
 
@@ -392,7 +392,7 @@ Exit criteria:
 | SEO-001 | Correct outdated homepage and FAQ claims                       | Current production  | Complete |
 | SEO-002 | Update Privacy and Terms for live processing                   | Data-flow review    | Complete |
 | SEO-003 | Add Contact and Copyright/Takedown pages                       | Approved contact    | Complete |
-| SEO-004 | Publish an accurate supported-platform matrix                  | Live verification   | Planned |
+| SEO-004 | Publish an accurate supported-platform matrix                  | Live verification   | Complete |
 | SEO-005 | Select the long-term domain and canonical convention           | Hosting decision    | Planned |
 | SEO-006 | Add unique metadata, canonicals, robots and sitemap            | SEO-005             | Planned |
 | SEO-007 | Register Search Console and record the baseline                 | SEO-006             | Planned |
@@ -420,4 +420,4 @@ The first revenue placement should not activate until the monetisation readiness
 
 SEO is now specified but not implemented.
 
-FlowSnap is at S0. SEO-001 through SEO-003 are complete. The next task is SEO-004: publish an accurate supported-platform matrix based on current live verification.
+FlowSnap has completed S0. SEO-001 through SEO-004 are complete. The next milestone is S1, beginning with SEO-005: select the long-term production domain and canonical URL convention.
