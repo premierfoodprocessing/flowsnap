@@ -3,7 +3,7 @@ import shutil
 import tempfile
 from pathlib import Path
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Response
 from fastapi.responses import FileResponse
 from pydantic import BaseModel, HttpUrl
 from fastapi.middleware.cors import CORSMiddleware
@@ -24,6 +24,11 @@ from services.extractor import (
 
 analysis_store = AnalysisStore()
 download_job_store = DownloadJobStore()
+favicon_path = (
+    Path(__file__).resolve().parent.parent
+    / "assets"
+    / "favicon.svg"
+)
 
 app = FastAPI(
     title="FlowSnap API",
@@ -75,6 +80,19 @@ def root() -> dict[str, str]:
         "version": "0.1.0",
         "status": "online",
     }
+
+
+@app.head("/")
+def root_head() -> Response:
+    return Response(status_code=200)
+
+
+@app.get("/favicon.ico", response_class=FileResponse)
+def favicon() -> FileResponse:
+    return FileResponse(
+        favicon_path,
+        media_type="image/svg+xml",
+    )
 
 
 @app.get("/health")

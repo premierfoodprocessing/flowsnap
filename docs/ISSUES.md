@@ -29,8 +29,8 @@ This file is the lightweight issue tracker for FlowSnap. It records confirmed bu
 | FS-005 | A failed download can navigate away and display raw backend JSON            | Resolved      | Medium   |
 | FS-006 | Analysis and download repeat media extraction                               | Investigating | High     |
 | FS-007 | Different TikTok video IDs appeared during one testing sequence             | Investigating | Medium   |
-| FS-008 | Render health probe receives `405 Method Not Allowed` for `HEAD /`          | Open          | Low      |
-| FS-009 | Backend returns `404 Not Found` for `/favicon.ico`                          | Open          | Low      |
+| FS-008 | Render health probe receives `405 Method Not Allowed` for `HEAD /`          | Resolved      | Low      |
+| FS-009 | Backend returns `404 Not Found` for `/favicon.ico`                          | Resolved      | Low      |
 | FS-010 | Hibernation left duplicate local backend processes running                  | Monitoring    | Low      |
 | FS-011 | Mobile filename and download controls are cramped                           | Open          | Low      |
 | FS-012 | Browser may save downloads to an unexpected directory                       | External      | Low      |
@@ -39,7 +39,7 @@ This file is the lightweight issue tracker for FlowSnap. It records confirmed bu
 
 ## FS-001 — TikTok extraction sometimes fails locally
 
-* **Status:** Open
+* **Status:** Resolved
 * **Severity:** High
 * **Environment:** Ubuntu local backend
 * **Platform:** TikTok
@@ -287,11 +287,15 @@ The service remains healthy because `/health` returns `200 OK`, but some automat
 
 Add support for `HEAD /` or configure Render to use `/health` exclusively.
 
+### Resolution
+
+The backend now accepts `HEAD /` and returns `200 OK` without changing the existing JSON response for `GET /`.
+
 ---
 
 ## FS-009 — Missing backend favicon
 
-* **Status:** Open
+* **Status:** Resolved
 * **Severity:** Low
 * **Environment:** Backend
 
@@ -305,6 +309,10 @@ GET /favicon.ico HTTP/1.1
 ### Impact
 
 None on the download workflow. This is primarily log noise and browser presentation.
+
+### Resolution
+
+The backend now serves FlowSnap's existing SVG favicon from `/favicon.ico` with the correct image media type.
 
 ---
 
@@ -402,4 +410,4 @@ When a new issue is discovered:
 
 ## Last Updated
 
-2026-08-07 — Updated FS-002, FS-003 and FS-005 after live platform verification.
+2026-08-07 — Resolved FS-008 and FS-009 backend routing noise.

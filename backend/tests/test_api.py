@@ -19,6 +19,23 @@ def test_root_returns_service_status():
     }
 
 
+def test_root_accepts_head_requests():
+    response = client.head("/")
+
+    assert response.status_code == 200
+    assert response.content == b""
+
+
+def test_backend_serves_favicon():
+    response = client.get("/favicon.ico")
+
+    assert response.status_code == 200
+    assert response.headers["content-type"].startswith(
+        "image/svg+xml"
+    )
+    assert response.content.startswith(b"<svg")
+
+
 def test_health_returns_healthy():
     response = client.get("/health")
 

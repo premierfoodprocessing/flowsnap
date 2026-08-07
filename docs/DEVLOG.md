@@ -554,3 +554,24 @@ The processed result contains signed direct-media URLs and may contain sensitive
 ### Current Status
 
 FS-006 remains under investigation. A safe solution must reduce repeated platform extraction without copying platform tokens or cookies into application stores.
+
+---
+
+## 2026-08-07 - Session 16: Backend Health and Favicon Routes
+
+### Completed
+
+- Resolved FS-008 by adding explicit support for `HEAD /`.
+- Preserved the existing JSON response for `GET /`.
+- Resolved FS-009 by serving the existing FlowSnap SVG favicon from `/favicon.ico`.
+- Added API regression coverage for both routes.
+
+### Test Baseline
+
+- Stable backend suite: 26 passed, 17 gated tests skipped.
+- Delivery, format and preparation service subset: 14 passed.
+- Python compilation, direct route checks and Git whitespace validation passed.
+
+### Result
+
+Render and other automated probes can check the backend root without receiving `405 Method Not Allowed`, and browser favicon requests no longer add `404 Not Found` noise to backend logs.
