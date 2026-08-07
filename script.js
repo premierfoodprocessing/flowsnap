@@ -5,8 +5,8 @@ import {
   chooseDefaultFormat,
   describeAudioNotice,
   describeFormat,
+  downloadPreparedFile,
   resolveApiBaseUrl,
-  startBrowserDownload,
 } from './format-utils.mjs';
 const API_BASE_URL = resolveApiBaseUrl(window.location);
 
@@ -327,11 +327,14 @@ prepareButton?.addEventListener(
         );
       }
 
-      if (!startBrowserDownload(document, downloadUrl)) {
-        throw new Error(
-          'FlowSnap could not start the browser download.',
-        );
-      }
+      prepareStatus.textContent =
+        'Downloading your selected format…';
+
+      await downloadPreparedFile(
+        document,
+        downloadUrl,
+        data.filename,
+      );
 
       prepareStatus.textContent =
         `${data.filename || 'Your file'} is ready. ` +

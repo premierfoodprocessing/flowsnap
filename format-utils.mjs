@@ -182,6 +182,7 @@ export function buildDownloadUrl(
 export function startBrowserDownload(
   documentObject,
   downloadUrl,
+  filename = '',
 ) {
   if (!documentObject?.body || !downloadUrl) {
     return false;
@@ -189,7 +190,7 @@ export function startBrowserDownload(
 
   const link = documentObject.createElement('a');
   link.href = downloadUrl;
-  link.download = '';
+  link.download = String(filename ?? '').trim();
   link.hidden = true;
 
   documentObject.body.append(link);
@@ -197,6 +198,43 @@ export function startBrowserDownload(
   link.remove();
 
   return true;
+}
+
+
+export async function downloadPreparedFile(
+  documentObject,
+  downloadUrl,
+  filename,
+  fetchFunction = globalThis.fetch,
+  urlObject = globalThis.URL,
+) {
+  const response = await fetchFunction(downloadUrl);
+
+  if (!response.ok) {
+    let apiMessage = '';
+
+    try {
+      const data = await response.json();
+      apiMessage = data.detail?.message || data.detail?.[0]?.msg || '';
+    } catch {
+      // The backend may return a non-JSON proxy or server error.
+    }
+
+    throw new Error(
+      apiMessage || 'FlowSnap could not download this media.',
+    );
+  }
+
+  const fileBlob = await response.blob();
+  const objectUrl = urlObject.createObjectURL(fileBlob);
+
+  try {
+    if (!startBrowserDownload(documentObject, objectUrl, filename)) {
+      throw new Error('FlowSnap could not start the browser download.');
+    }
+  } finally {
+    urlObject.revokeObjectURL(objectUrl);
+  }
 }
 
 

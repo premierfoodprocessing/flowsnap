@@ -7,6 +7,7 @@ import {
   chooseDefaultFormat,
   describeAudioNotice,
   describeFormat,
+  downloadPreparedFile,
   formatFileSize,
   resolveApiBaseUrl,
   startBrowserDownload,
@@ -301,6 +302,85 @@ test('startBrowserDownload rejects an unavailable document', () => {
       'http://127.0.0.1:8000/api/media/download/job-123',
     ),
     false,
+  );
+});
+
+
+test('downloadPreparedFile downloads a successful response', async () => {
+  const events = [];
+  const fileBlob = { type: 'video/mp4' };
+  const link = {
+    click() {
+      events.push('click');
+    },
+    remove() {
+      events.push('remove');
+    },
+  };
+  const documentObject = {
+    createElement() {
+      return link;
+    },
+    body: {
+      append() {
+        events.push('append');
+      },
+    },
+  };
+  const fetchFunction = async () => ({
+    ok: true,
+    async blob() {
+      return fileBlob;
+    },
+  });
+  const urlObject = {
+    createObjectURL(blob) {
+      assert.equal(blob, fileBlob);
+      return 'blob:flowsnap-file';
+    },
+    revokeObjectURL(url) {
+      events.push(`revoke:${url}`);
+    },
+  };
+
+  await downloadPreparedFile(
+    documentObject,
+    'http://127.0.0.1:8000/api/media/download/job-123',
+    'video.mp4',
+    fetchFunction,
+    urlObject,
+  );
+
+  assert.equal(link.href, 'blob:flowsnap-file');
+  assert.equal(link.download, 'video.mp4');
+  assert.deepEqual(
+    events,
+    ['append', 'click', 'remove', 'revoke:blob:flowsnap-file'],
+  );
+});
+
+
+test('downloadPreparedFile reports a structured backend error', async () => {
+  const fetchFunction = async () => ({
+    ok: false,
+    async json() {
+      return {
+        detail: {
+          code: 'download_failed',
+          message: 'FlowSnap could not download this media.',
+        },
+      };
+    },
+  });
+
+  await assert.rejects(
+    downloadPreparedFile(
+      {},
+      'http://127.0.0.1:8000/api/media/download/job-123',
+      'video.mp4',
+      fetchFunction,
+    ),
+    /FlowSnap could not download this media\./,
   );
 });
 

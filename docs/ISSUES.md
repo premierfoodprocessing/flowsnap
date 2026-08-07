@@ -26,7 +26,7 @@ This file is the lightweight issue tracker for FlowSnap. It records confirmed bu
 | FS-002 | YouTube works locally but fails or is refused through Render                | Open          | High     |
 | FS-003 | TikTok formats labelled “Video + audio” can produce silent video-only files | Confirmed     | High     |
 | FS-004 | Duplicate-looking TikTok format choices are displayed                       | Open          | Medium   |
-| FS-005 | A failed download can navigate away and display raw backend JSON            | Open          | Medium   |
+| FS-005 | A failed download can navigate away and display raw backend JSON            | Resolved      | Medium   |
 | FS-006 | Analysis and download repeat media extraction                               | Investigating | High     |
 | FS-007 | Different TikTok video IDs appeared during one testing sequence             | Investigating | Medium   |
 | FS-008 | Render health probe receives `405 Method Not Allowed` for `HEAD /`          | Open          | Low      |
@@ -172,7 +172,7 @@ Remove true duplicates and expose meaningful differences between formats that ar
 
 ## FS-005 — Failed download displays raw backend JSON
 
-* **Status:** Open
+* **Status:** Resolved
 * **Severity:** Medium
 * **Environment:** Local frontend and backend
 
@@ -191,6 +191,10 @@ The user leaves the FlowSnap interface and sees an unfriendly raw API response.
 ### Required fix
 
 Keep the user on the FlowSnap page and display the error in the existing message area.
+
+### Resolution
+
+The frontend now requests the prepared file itself and starts the browser save only after a successful response. Structured delivery failures remain on the FlowSnap page and appear in the existing preparation-status area.
 
 ---
 
@@ -382,5 +386,4 @@ When a new issue is discovered:
 
 ## Last Updated
 
-2026-08-04 — Initial issue register created from local and production testing.
-
+2026-08-07 — FS-005 resolved with frontend-managed delivery and in-page errors.

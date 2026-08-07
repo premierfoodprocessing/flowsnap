@@ -498,3 +498,19 @@ FlowSnap now communicates both temporary YouTube access restrictions and audio-a
 Next milestone:
 
 Deploy the environment-aware backend and interface updates, configure the required production-safe yt-dlp settings on Render and verify the complete production workflow.
+
+---
+
+## 2026-08-07 - Session 13: In-Page Download Error Handling
+
+### Completed
+
+- Resolved FS-005.
+- Replaced direct browser navigation to the delivery endpoint with a frontend-managed file request.
+- Kept users on the FlowSnap page when delivery fails.
+- Displayed structured backend delivery errors in the existing preparation-status area.
+- Added frontend regression tests for successful file delivery and failed delivery responses.
+
+### Result
+
+A failed prepared download no longer replaces FlowSnap with raw backend JSON. Successful responses still start a normal browser file save.
