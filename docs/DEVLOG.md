@@ -575,3 +575,22 @@ FS-006 remains under investigation. A safe solution must reduce repeated platfor
 ### Result
 
 Render and other automated probes can check the backend root without receiving `405 Method Not Allowed`, and browser favicon requests no longer add `404 Not Found` noise to backend logs.
+
+---
+
+## 2026-08-07 - Session 17: Actionable Monetisation Roadmap
+
+### Completed
+
+- Expanded the monetisation strategy into an implementation roadmap.
+- Defined commercial and premium-feature safety boundaries.
+- Prioritised voluntary support, sponsorship, advertising, affiliate and premium channels.
+- Specified responsible placement and privacy-preserving measurement rules.
+- Added reliability, compliance, operations and user-experience readiness gates.
+- Added milestones M0 through M4 with deliverables and exit criteria.
+- Added provider evaluation, operating-cost and launch-pause frameworks.
+- Created the MON-001 through MON-008 implementation backlog.
+
+### Current Status
+
+FlowSnap is at monetisation milestone M0. The next enabling task is privacy-safe request and job tracing through FS-007/MON-001.
