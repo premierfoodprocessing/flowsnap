@@ -45,12 +45,14 @@ def test_download_media_uses_selected_format_and_directory(
         },
         output_dir=tmp_path,
         youtube_dl_factory=FakeYoutubeDL,
+        max_file_size_bytes=25 * 1024 * 1024,
     )
 
     assert result == Path(tmp_path / "download.mp4")
     assert captured["url"] == "https://example.com/video"
     assert captured["download"] is True
     assert captured["options"]["format"] == "18"
+    assert captured["options"]["max_filesize"] == 25 * 1024 * 1024
     assert captured["options"]["paths"] == {
         "home": str(tmp_path),
         "temp": str(tmp_path),

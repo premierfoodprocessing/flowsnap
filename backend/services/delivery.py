@@ -17,6 +17,7 @@ def download_media(
     job: dict,
     output_dir: Path,
     youtube_dl_factory: Callable = YoutubeDL,
+    max_file_size_bytes: int | None = None,
 ) -> Path:
     source_url = job.get("source_url")
     format_id = job.get("format_id")
@@ -50,6 +51,9 @@ def download_media(
             "default": "download.%(ext)s",
         },
     }
+
+    if max_file_size_bytes is not None:
+        options["max_filesize"] = max_file_size_bytes
 
     try:
         with youtube_dl_factory(options) as ydl:

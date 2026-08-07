@@ -1,9 +1,10 @@
 
 import shutil
 import tempfile
+import threading
 from pathlib import Path
 
-from fastapi import FastAPI, HTTPException, Response
+from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.responses import FileResponse
 from pydantic import BaseModel, HttpUrl
 from fastapi.middleware.cors import CORSMiddleware
@@ -21,9 +22,25 @@ from services.extractor import (
     get_formats,
     get_metadata,
 )
+from services.hosting_limits import (
+    SlidingWindowRateLimiter,
+    load_hosting_limits,
+)
 
 analysis_store = AnalysisStore()
 download_job_store = DownloadJobStore()
+hosting_limits = load_hosting_limits()
+download_slots = threading.BoundedSemaphore(
+    hosting_limits.max_concurrent_downloads
+)
+api_rate_limiter = SlidingWindowRateLimiter(
+    hosting_limits.api_requests_per_window,
+    hosting_limits.rate_window_seconds,
+)
+expensive_rate_limiter = SlidingWindowRateLimiter(
+    hosting_limits.expensive_requests_per_window,
+    hosting_limits.rate_window_seconds,
+)
 favicon_path = (
     Path(__file__).resolve().parent.parent
     / "assets"
@@ -56,6 +73,33 @@ class MediaRequest(BaseModel):
 class PrepareDownloadRequest(BaseModel):
     analysis_id: str
     format_id: str
+
+
+def enforce_rate_limits(
+    request: Request,
+    *,
+    expensive: bool = False,
+) -> None:
+    client_key = request.client.host if request.client else "unknown"
+
+    allowed = api_rate_limiter.allow(client_key)
+    if allowed and expensive:
+        allowed = expensive_rate_limiter.allow(client_key)
+
+    if not allowed:
+        raise HTTPException(
+            status_code=429,
+            detail={
+                "code": "rate_limited",
+                "message": (
+                    "FlowSnap is receiving too many requests. "
+                    "Please wait a minute and try again."
+                ),
+            },
+            headers={
+                "Retry-After": str(hosting_limits.rate_window_seconds)
+            },
+        )
 
 
 def prepare_download(
@@ -101,7 +145,8 @@ def health() -> dict[str, str]:
 
 
 @app.post("/api/media/info")
-def media_info(request: MediaRequest) -> dict:
+def media_info(request: MediaRequest, http_request: Request) -> dict:
+    enforce_rate_limits(http_request, expensive=True)
     try:
         return get_metadata(str(request.url))
 
@@ -123,7 +168,8 @@ def media_info(request: MediaRequest) -> dict:
         ) from exc
 
 @app.post("/api/media/formats")
-def media_formats(request: MediaRequest) -> dict:
+def media_formats(request: MediaRequest, http_request: Request) -> dict:
+    enforce_rate_limits(http_request, expensive=True)
     try:
         analysis = get_formats(str(request.url))
         analysis_id = analysis_store.save(analysis)
@@ -152,7 +198,9 @@ def media_formats(request: MediaRequest) -> dict:
 @app.post("/api/media/prepare")
 def media_prepare(
     request: PrepareDownloadRequest,
+    http_request: Request,
 ) -> dict:
+    enforce_rate_limits(http_request)
     try:
         return prepare_download(
             request.analysis_id,
@@ -178,10 +226,26 @@ def media_prepare(
         ) from exc
 
 @app.get("/api/media/download/{job_id}")
-def media_download(job_id: str):
+def media_download(job_id: str, request: Request):
+    enforce_rate_limits(request, expensive=True)
+
+    if not download_slots.acquire(blocking=False):
+        raise HTTPException(
+            status_code=503,
+            detail={
+                "code": "download_capacity_reached",
+                "message": (
+                    "FlowSnap is already processing another download. "
+                    "Please try again shortly."
+                ),
+            },
+            headers={"Retry-After": "10"},
+        )
+
     job = download_job_store.consume(job_id)
 
     if job is None:
+        download_slots.release()
         raise HTTPException(
             status_code=410,
             detail={
@@ -199,7 +263,23 @@ def media_download(job_id: str):
         output_path = download_media(
             job=job,
             output_dir=output_dir,
+            max_file_size_bytes=hosting_limits.max_file_size_bytes,
         )
+
+        if output_path.stat().st_size > hosting_limits.max_file_size_bytes:
+            raise HTTPException(
+                status_code=413,
+                detail={
+                    "code": "file_too_large",
+                    "message": (
+                        "This file is larger than FlowSnap's current "
+                        "download limit. Please choose a smaller format."
+                    ),
+                },
+            )
+    except HTTPException:
+        shutil.rmtree(output_dir, ignore_errors=True)
+        raise
     except DownloadDeliveryError as exc:
         shutil.rmtree(output_dir, ignore_errors=True)
         raise HTTPException(
@@ -218,6 +298,8 @@ def media_download(job_id: str):
                 "message": "An unexpected error occurred.",
             },
         ) from exc
+    finally:
+        download_slots.release()
 
     return FileResponse(
         path=output_path,

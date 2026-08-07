@@ -28,6 +28,7 @@ The project accepts authorised public media URLs, extracts metadata, presents sa
 - Browser file delivery with same-backend URL validation
 - Public FastAPI backend on Render
 - Automatic local/production API selection
+- Configurable file-size, concurrency and request-rate safeguards
 
 ## Development controls
 
@@ -99,6 +100,21 @@ Current test baseline after the deployment connection:
 - `GET /api/media/download/{job_id}`
 - Interactive documentation: `http://127.0.0.1:8000/docs`
 - Public API: `https://flowsnap-api.onrender.com`
+
+## Hosting safeguards
+
+The backend uses conservative defaults suitable for limited beta traffic:
+
+- Maximum completed file size: 100 MB
+- Concurrent media builds: 1
+- Total API requests per client: 60 per 60 seconds
+- Expensive extraction or delivery requests per client: 12 per 60 seconds
+
+The defaults can be adjusted with `FLOWSNAP_MAX_FILE_SIZE_MB`,
+`FLOWSNAP_MAX_CONCURRENT_DOWNLOADS`, `FLOWSNAP_API_RATE_LIMIT`,
+`FLOWSNAP_EXPENSIVE_RATE_LIMIT` and `FLOWSNAP_RATE_WINDOW_SECONDS`.
+These in-memory controls apply per backend instance and supplement, rather than
+replace, provider-level rate limiting and cost alerts.
 
 ## Project structure
 

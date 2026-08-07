@@ -695,3 +695,20 @@ SEO milestone S0 is in progress. The next task is SEO-004: publish the current v
 ### Current Status
 
 SEO milestone S0 is complete. The next milestone is S1, beginning with SEO-005: choose the long-term production domain and canonical URL convention.
+
+---
+
+## 2026-08-07 - Session 23: Hosting Safety and Cost Planning
+
+### Completed
+
+- Added configurable maximum output-size, concurrent-download and request-rate safeguards.
+- Set conservative beta defaults of 100 MB per output, one active media build, 60 API requests per client per minute and 12 expensive requests per client per minute.
+- Preserved one-time jobs and temporary-file cleanup for rejected or failed delivery work.
+- Added structured `429`, `503` and `413` responses for rate, capacity and size limits.
+- Documented dated infrastructure estimates without purchasing, provisioning or migrating services.
+- Recorded Render and GitHub Pages as the current deployment, with Koyeb and Cloudflare R2 retained only as future candidates.
+
+### Current Status
+
+The safeguards are implemented locally and require automated verification before deployment. Infrastructure selection remains deferred until measured beta traffic and launch requirements are available.

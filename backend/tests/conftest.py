@@ -1,6 +1,19 @@
 import pytest
 
 
+@pytest.fixture(autouse=True)
+def reset_application_rate_limits():
+    try:
+        import app as app_module
+    except ImportError:
+        yield
+        return
+
+    app_module.api_rate_limiter.reset()
+    app_module.expensive_rate_limiter.reset()
+    yield
+
+
 def pytest_addoption(parser):
     parser.addoption(
         "--run-live",
