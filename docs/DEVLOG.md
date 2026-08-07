@@ -632,3 +632,27 @@ FlowSnap is at SEO milestone S0. The next task is SEO-001: replace outdated publ
 ### Current Status
 
 SEO milestone S0 is in progress. The next task is SEO-002: update Privacy and Terms for the live backend processing workflow.
+
+---
+
+## 2026-08-07 - Session 20: Live Processing Policies
+
+### Completed
+
+- Completed SEO-002.
+- Replaced static-demonstration Privacy and Terms content.
+- Documented submitted-link and extracted-metadata processing.
+- Documented the 10-minute analysis and 5-minute prepared-job limits.
+- Documented one-time jobs, temporary files and cleanup behavior.
+- Identified GitHub Pages, Render and source platforms in the data flow.
+- Clarified that accounts, application analytics, advertising and FlowSnap tracking cookies are not currently active.
+- Updated authorised-use, prohibited-use, platform-availability and non-affiliation terms.
+- Added regression coverage for current processing and retention statements.
+
+### Review Boundary
+
+A monitored contact and takedown channel remains required under SEO-003. Qualified legal review remains a prerequisite before commercial features are activated.
+
+### Current Status
+
+SEO milestone S0 is in progress. The next task is SEO-003: add Contact and Copyright/Takedown pages using an approved monitored contact address.

@@ -390,7 +390,7 @@ Exit criteria:
 | ID      | Task                                                           | Depends on          | Status  |
 | ------- | -------------------------------------------------------------- | ------------------- | ------- |
 | SEO-001 | Correct outdated homepage and FAQ claims                       | Current production  | Complete |
-| SEO-002 | Update Privacy and Terms for live processing                   | Data-flow review    | Planned |
+| SEO-002 | Update Privacy and Terms for live processing                   | Data-flow review    | Complete |
 | SEO-003 | Add Contact and Copyright/Takedown pages                       | Approved contact    | Planned |
 | SEO-004 | Publish an accurate supported-platform matrix                  | Live verification   | Planned |
 | SEO-005 | Select the long-term domain and canonical convention           | Hosting decision    | Planned |
@@ -420,4 +420,4 @@ The first revenue placement should not activate until the monetisation readiness
 
 SEO is now specified but not implemented.
 
-FlowSnap is at S0. SEO-001 is complete. The next task is SEO-002: update Privacy and Terms for the live processing workflow.
+FlowSnap is at S0. SEO-001 and SEO-002 are complete. The next task is SEO-003: publish a monitored Contact page and Copyright/Takedown process.
