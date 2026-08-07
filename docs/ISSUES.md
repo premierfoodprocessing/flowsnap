@@ -92,6 +92,10 @@ YouTube may be challenging or blocking Render’s cloud-server IP address. Authe
 
 Reproduce the failure while monitoring Render logs and record the complete yt-dlp error.
 
+### Current decision
+
+Local YouTube analysis and delivery were verified successfully on 2026-08-07. Render still returned the structured `platform_blocked` response. Further YouTube investigation is intentionally deferred until the other open issues have been addressed.
+
 ---
 
 ## FS-003 — TikTok “Video + audio” option can produce a silent file
@@ -139,6 +143,10 @@ FlowSnap may be trusting incomplete or misleading yt-dlp/TikTok metadata when cl
 * Never preselect a confirmed video-only stream as a combined download.
 * Merge separate video and audio streams with FFmpeg where appropriate.
 * Test the final downloaded file for expected stream composition.
+
+### Next action
+
+Reproduce the silent-file result with the affected TikTok link and format. Capture the current raw yt-dlp format metadata and compare it with the completed file's `ffprobe` streams before changing classification or delivery selection.
 
 ---
 
@@ -195,6 +203,10 @@ Keep the user on the FlowSnap page and display the error in the existing message
 ### Resolution
 
 The frontend now requests the prepared file itself and starts the browser save only after a successful response. Structured delivery failures remain on the FlowSnap page and appear in the existing preparation-status area.
+
+### Verification
+
+Automated coverage verifies both successful delivery and structured delivery errors. Successful TikTok delivery was also verified through the local and production frontends on 2026-08-07.
 
 ---
 
@@ -386,4 +398,4 @@ When a new issue is discovered:
 
 ## Last Updated
 
-2026-08-07 — FS-005 resolved with frontend-managed delivery and in-page errors.
+2026-08-07 — Updated FS-002, FS-003 and FS-005 after live platform verification.

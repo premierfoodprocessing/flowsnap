@@ -514,3 +514,25 @@ Deploy the environment-aware backend and interface updates, configure the requir
 ### Result
 
 A failed prepared download no longer replaces FlowSnap with raw backend JSON. Successful responses still start a normal browser file save.
+
+---
+
+## 2026-08-07 - Session 14: Production Platform Verification
+
+### Verified
+
+- Pushed and deployed the FS-005 frontend correction.
+- Confirmed successful TikTok delivery locally and in production.
+- Confirmed Instagram video-only selections receive audio and produce playable files locally and in production.
+- Confirmed Facebook video-only selections receive audio and produce playable files locally and in production.
+- Confirmed YouTube works locally but remains blocked from the Render backend with FlowSnap's structured platform message.
+
+### Decisions
+
+- FS-005 is production-verified and complete.
+- FS-002 remains open, but further YouTube investigation is deferred until the other issues have been addressed.
+- FS-003 requires reproduction with the affected TikTok link and format before changing format classification or delivery behavior.
+
+### Result
+
+TikTok, Instagram and Facebook completed successful production downloads. Instagram and Facebook also verified FlowSnap's audio-aware merge path. YouTube remains the only currently verified platform blocked in production.
