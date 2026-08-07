@@ -594,3 +594,23 @@ Render and other automated probes can check the backend root without receiving `
 ### Current Status
 
 FlowSnap is at monetisation milestone M0. The next enabling task is privacy-safe request and job tracing through FS-007/MON-001.
+
+---
+
+## 2026-08-07 - Session 18: Actionable SEO Roadmap
+
+### Completed
+
+- Audited the current static site for search readiness.
+- Identified outdated homepage, FAQ, Privacy and Terms claims as the first trust issue.
+- Defined search-safety boundaries based on current Google Search guidance.
+- Specified legitimate search intents, topic clusters and platform-page gates.
+- Proposed a crawlable information architecture and technical SEO requirements.
+- Added content-quality, authority, performance and measurement standards.
+- Added milestones S0 through S4 with deliverables and exit criteria.
+- Created the SEO-001 through SEO-012 implementation backlog.
+- Connected SEO milestones to FlowSnap's monetisation readiness plan.
+
+### Current Status
+
+FlowSnap is at SEO milestone S0. The next task is SEO-001: replace outdated public claims so the site accurately describes the live processing and download workflow.
