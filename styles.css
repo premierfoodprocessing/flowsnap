@@ -46,6 +46,7 @@ body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSy
   margin: 0 0 10px;
   font-size: clamp(1.2rem, 3vw, 1.65rem);
   line-height: 1.25;
+  overflow-wrap: anywhere;
 }
 
 .result-meta {
@@ -215,4 +216,43 @@ body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSy
   color: var(--muted);
   font-size: 0.9rem;
   font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 600px) {
+  .media-result {
+    gap: 18px;
+    padding: 16px 16px 22px;
+    align-items: stretch;
+  }
+
+  .result-thumbnail {
+    height: auto;
+    aspect-ratio: 16 / 9;
+  }
+
+  .result-details {
+    min-width: 0;
+  }
+
+  .format-option {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .format-description,
+  .prepare-status {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
+
+  .prepare-actions {
+    margin: 20px 0 18px;
+  }
+
+  .prepare-button {
+    min-height: 48px;
+    padding-inline: 16px;
+  }
 }

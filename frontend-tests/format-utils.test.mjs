@@ -72,7 +72,7 @@ test('describeFormat presents combined video and audio', () => {
 });
 
 
-test('describeFormat identifies video-only formats', () => {
+test('describeFormat explains audio-aware video streams', () => {
   const format = {
     format_id: '137',
     extension: 'mp4',
@@ -85,7 +85,10 @@ test('describeFormat identifies video-only formats', () => {
 
   assert.equal(
     describeFormat(format),
-    '1080p · MP4 · 8 MB · Video only',
+    (
+      '1080p · MP4 · 8 MB · Video stream · '
+      + 'Audio added when available'
+    ),
   );
 });
 
@@ -385,15 +388,16 @@ test('downloadPreparedFile reports a structured backend error', async () => {
 });
 
 
-test('describeAudioNotice identifies video-only formats', () => {
+test('describeAudioNotice explains video-only source streams', () => {
   assert.equal(
     describeAudioNotice({
       has_video: true,
       has_audio: false,
     }),
     (
-      'This format contains video only. '
-      + 'FlowSnap will add audio during preparation.'
+      'The source provides this as a video-only stream. '
+      + 'FlowSnap will combine it with separate audio during '
+      + 'preparation when audio is available.'
     ),
   );
 });

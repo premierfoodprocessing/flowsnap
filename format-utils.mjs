@@ -59,7 +59,7 @@ export function describeFormat(format) {
 
   const audioDescription = format.has_audio
     ? 'Video + audio'
-    : 'Video only';
+    : 'Video stream · Audio added when available';
 
   return [
     quality,
@@ -244,8 +244,9 @@ export function describeAudioNotice(format) {
     && format?.has_audio === false
   ) {
     return (
-      'This format contains video only. '
-      + 'FlowSnap will add audio during preparation.'
+      'The source provides this as a video-only stream. '
+      + 'FlowSnap will combine it with separate audio during '
+      + 'preparation when audio is available.'
     );
   }
 

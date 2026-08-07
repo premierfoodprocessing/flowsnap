@@ -147,7 +147,7 @@ Status: **In progress**
 Deliverables:
 
 - Complete request/job tracing without logging URLs or credentials (FS-007). **Complete.**
-- Improve mobile filename and download controls (FS-011).
+- Improve mobile filename and download controls (FS-011). **Complete.**
 - Define aggregate event names and retention rules.
 - Define rate-limit and cost thresholds from observed usage.
 - Keep FS-002 deferred and clearly documented.
@@ -285,7 +285,7 @@ Pause or disable monetisation when:
 | MON-002 | Define aggregate analytics events and prohibited fields     | MON-001          | Planned |
 | MON-003 | Define rate limits, file limits and monthly cost thresholds | Usage observation| Planned |
 | MON-004 | Publish policy, contact and takedown pages                  | Content review   | Planned |
-| MON-005 | Improve mobile download controls                            | FS-011           | Planned |
+| MON-005 | Improve mobile download controls                            | FS-011           | Complete |
 | MON-006 | Build a disabled provider-neutral placement component       | MON-004          | Planned |
 | MON-007 | Evaluate providers using the documented rubric              | MON-002–006      | Planned |
 | MON-008 | Run one-placement controlled launch                         | All readiness gates | Planned |

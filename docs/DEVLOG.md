@@ -729,3 +729,21 @@ The safeguards are implemented locally and require automated verification before
 ### Current Status
 
 FS-007 is resolved. Monetisation milestone M0 remains in progress; the next enabling task is MON-002: define aggregate analytics events and prohibited fields.
+
+---
+
+## 2026-08-07 - Session 25: Mobile Download Controls
+
+### Completed
+
+- Completed FS-011 and MON-005.
+- Allowed long media titles, filenames and preparation status messages to wrap safely on narrow screens.
+- Stacked mobile format descriptions and selection status to prevent horizontal crowding.
+- Changed mobile previews to a responsive 16:9 ratio.
+- Added spacing around the preparation area and preserved a full-width 48-pixel minimum touch target.
+- Added frontend regression coverage for the critical responsive rules.
+- Clarified that Facebook and similar selections can begin as video-only source streams while the completed file receives separate audio when available.
+
+### Current Status
+
+FS-011 is resolved. Monetisation milestone M0 remains in progress; MON-002 is the next enabling task.

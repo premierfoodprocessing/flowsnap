@@ -26,6 +26,10 @@ const supportedPlatformsHtml = await readFile(
   new URL('../supported-platforms.html', import.meta.url),
   'utf8',
 );
+const stylesCss = await readFile(
+  new URL('../styles.css', import.meta.url),
+  'utf8',
+);
 
 
 test('homepage describes the live download workflow', () => {
@@ -153,4 +157,20 @@ test('platform page discloses current limitations', () => {
 
 test('homepage links to current platform status', () => {
   assert.match(indexHtml, /href="supported-platforms\.html"/);
+});
+
+
+test('mobile download controls allow long filenames to wrap', () => {
+  assert.match(
+    stylesCss,
+    /\.prepare-status\s*\{[^}]*overflow-wrap:\s*anywhere/s,
+  );
+  assert.match(
+    stylesCss,
+    /@media \(max-width: 600px\)[\s\S]*\.result-details\s*\{[^}]*min-width:\s*0/s,
+  );
+  assert.match(
+    stylesCss,
+    /@media \(max-width: 600px\)[\s\S]*\.prepare-button\s*\{[^}]*min-height:\s*48px/s,
+  );
 });

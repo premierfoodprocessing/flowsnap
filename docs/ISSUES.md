@@ -32,7 +32,7 @@ This file is the lightweight issue tracker for FlowSnap. It records confirmed bu
 | FS-008 | Render health probe receives `405 Method Not Allowed` for `HEAD /`          | Resolved      | Low      |
 | FS-009 | Backend returns `404 Not Found` for `/favicon.ico`                          | Resolved      | Low      |
 | FS-010 | Hibernation left duplicate local backend processes running                  | Monitoring    | Low      |
-| FS-011 | Mobile filename and download controls are cramped                           | Open          | Low      |
+| FS-011 | Mobile filename and download controls are cramped                           | Resolved      | Low      |
 | FS-012 | Browser may save downloads to an unexpected directory                       | External      | Low      |
 
 ---
@@ -345,7 +345,7 @@ The scripts successfully restored a clean development environment.
 
 ## FS-011 — Mobile download controls are cramped
 
-* **Status:** Open
+* **Status:** Resolved
 * **Severity:** Low
 * **Environment:** Mobile browser
 
@@ -353,9 +353,9 @@ The scripts successfully restored a clean development environment.
 
 The filename area and **Prepare download** button appear cramped near the bottom of the mobile layout.
 
-### Required fix
+### Resolution
 
-Review responsive spacing, filename wrapping, button width, and bottom padding on narrow screens.
+Updated the narrow-screen result layout so long titles, filenames and status messages wrap within the card. Format rows stack cleanly, the preview uses a responsive 16:9 ratio, the result details can shrink without overflow, and the full-width preparation button retains a 48-pixel minimum touch target with additional surrounding and bottom spacing.
 
 ---
 
