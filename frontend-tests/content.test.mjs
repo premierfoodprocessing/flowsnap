@@ -14,6 +14,14 @@ const termsHtml = await readFile(
   new URL('../terms.html', import.meta.url),
   'utf8',
 );
+const contactHtml = await readFile(
+  new URL('../contact.html', import.meta.url),
+  'utf8',
+);
+const copyrightHtml = await readFile(
+  new URL('../copyright.html', import.meta.url),
+  'utf8',
+);
 
 
 test('homepage describes the live download workflow', () => {
@@ -71,4 +79,34 @@ test('terms page describes the live authorised workflow', () => {
   assert.match(termsHtml, /digital rights management/);
   assert.doesNotMatch(termsHtml, /front-end demonstration/i);
   assert.doesNotMatch(termsHtml, /future backend services/i);
+});
+
+
+test('public pages use the approved monitored contact', () => {
+  for (const page of [
+    indexHtml,
+    privacyHtml,
+    termsHtml,
+    contactHtml,
+    copyrightHtml,
+  ]) {
+    assert.match(page, /flowsnap\.support@gmail\.com|contact\.html/);
+  }
+
+  assert.doesNotMatch(privacyHtml, /contact channel.+planned/i);
+  assert.doesNotMatch(termsHtml, /contact.+planned under SEO-003/i);
+});
+
+
+test('contact page warns against sharing credentials', () => {
+  assert.match(contactHtml, /Do not email passwords/);
+  assert.match(contactHtml, /never ask for your source-platform password/);
+});
+
+
+test('copyright page provides a takedown process', () => {
+  assert.match(copyrightHtml, /Copyright and Takedown Requests/);
+  assert.match(copyrightHtml, /Information to include/);
+  assert.match(copyrightHtml, /submitted in good faith/);
+  assert.match(copyrightHtml, /does not control or permanently host/);
 });

@@ -656,3 +656,22 @@ A monitored contact and takedown channel remains required under SEO-003. Qualifi
 ### Current Status
 
 SEO milestone S0 is in progress. The next task is SEO-003: add Contact and Copyright/Takedown pages using an approved monitored contact address.
+
+---
+
+## 2026-08-07 - Session 21: Public Contact and Takedown Process
+
+### Completed
+
+- Completed SEO-003.
+- Published `flowsnap.support@gmail.com` as the approved monitored contact.
+- Added a public Contact page for support, privacy, accessibility, security and responsible-use questions.
+- Added a Copyright and Takedown Requests page with clear information requirements.
+- Added warnings against sending passwords, cookies, API keys or unauthorised private links.
+- Linked Contact and Copyright pages from the homepage, Privacy and Terms.
+- Removed the remaining planned-contact wording.
+- Added regression coverage for contact consistency and takedown guidance.
+
+### Current Status
+
+SEO milestone S0 is in progress. The next task is SEO-004: publish the current verified platform-support matrix.
