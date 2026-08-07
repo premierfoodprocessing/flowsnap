@@ -232,6 +232,10 @@ The format and preparation requests succeeded, but the final download request fa
 
 Determine whether prepared jobs can securely retain the selected direct-media information long enough to avoid an unnecessary second extraction.
 
+### Security finding
+
+Reusing yt-dlp's complete processed analysis would retain signed direct-media URLs and may retain sensitive request headers. That design was rejected because FlowSnap must not copy or persist platform tokens or cookies. A safer design must avoid both repeated platform-page extraction and credential retention.
+
 ---
 
 ## FS-007 — Different TikTok IDs appeared during testing

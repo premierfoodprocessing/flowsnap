@@ -536,3 +536,21 @@ A failed prepared download no longer replaces FlowSnap with raw backend JSON. Su
 ### Result
 
 TikTok, Instagram and Facebook completed successful production downloads. Instagram and Facebook also verified FlowSnap's audio-aware merge path. YouTube remains the only currently verified platform blocked in production.
+
+---
+
+## 2026-08-07 - Session 15: Delivery Reuse Investigation
+
+### Investigated
+
+- Traced the repeated extraction to the delivery service's second `extract_info()` call.
+- Confirmed yt-dlp can process an already-resolved analysis without revisiting the platform page.
+- Evaluated retaining that processed analysis in FlowSnap's short-lived stores.
+
+### Security Finding
+
+The processed result contains signed direct-media URLs and may contain sensitive request headers. Retaining it would conflict with FlowSnap's credential-safety requirements. The reuse implementation was therefore rejected before release.
+
+### Current Status
+
+FS-006 remains under investigation. A safe solution must reduce repeated platform extraction without copying platform tokens or cookies into application stores.
