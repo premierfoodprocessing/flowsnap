@@ -614,3 +614,21 @@ FlowSnap is at monetisation milestone M0. The next enabling task is privacy-safe
 ### Current Status
 
 FlowSnap is at SEO milestone S0. The next task is SEO-001: replace outdated public claims so the site accurately describes the live processing and download workflow.
+
+---
+
+## 2026-08-07 - Session 19: Accurate Public Product Copy
+
+### Completed
+
+- Completed SEO-001.
+- Updated the homepage title and description for the live authorised workflow.
+- Replaced static-demonstration and future-backend statements.
+- Updated How It Works to describe analysis, format selection and one-time delivery.
+- Replaced outdated FAQ entries with current platform, audio and responsible-use guidance.
+- Preserved clear platform limitations and authorised-use boundaries.
+- Added regression tests preventing obsolete demonstration claims from returning.
+
+### Current Status
+
+SEO milestone S0 is in progress. The next task is SEO-002: update Privacy and Terms for the live backend processing workflow.

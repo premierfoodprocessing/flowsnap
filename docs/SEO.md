@@ -305,7 +305,7 @@ SEO changes should normally be evaluated over weeks or months, not hours.
 
 ### S0 — Truth and Trust
 
-Status: **Next**
+Status: **In progress**
 
 Deliverables:
 
@@ -389,7 +389,7 @@ Exit criteria:
 
 | ID      | Task                                                           | Depends on          | Status  |
 | ------- | -------------------------------------------------------------- | ------------------- | ------- |
-| SEO-001 | Correct outdated homepage and FAQ claims                       | Current production  | Planned |
+| SEO-001 | Correct outdated homepage and FAQ claims                       | Current production  | Complete |
 | SEO-002 | Update Privacy and Terms for live processing                   | Data-flow review    | Planned |
 | SEO-003 | Add Contact and Copyright/Takedown pages                       | Approved contact    | Planned |
 | SEO-004 | Publish an accurate supported-platform matrix                  | Live verification   | Planned |
@@ -420,4 +420,4 @@ The first revenue placement should not activate until the monetisation readiness
 
 SEO is now specified but not implemented.
 
-FlowSnap is at S0. The next task is SEO-001: correct outdated homepage and FAQ statements so public content accurately describes the live service.
+FlowSnap is at S0. SEO-001 is complete. The next task is SEO-002: update Privacy and Terms for the live processing workflow.
