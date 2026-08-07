@@ -712,3 +712,20 @@ SEO milestone S0 is complete. The next milestone is S1, beginning with SEO-005: 
 ### Current Status
 
 The safeguards are implemented locally and require automated verification before deployment. Infrastructure selection remains deferred until measured beta traffic and launch requirements are available.
+
+---
+
+## 2026-08-07 - Session 24: Privacy-Safe Workflow Tracing
+
+### Completed
+
+- Completed FS-007 and MON-001.
+- Added operational events for format analysis, download preparation and delivery.
+- Carried an opaque internal workflow marker from analysis into the one-time download job without exposing it through the API.
+- Logged only event names, outcomes, structured error codes and short hashes of random request, workflow, analysis and job identifiers.
+- Explicitly excluded URLs, titles, filenames, raw identifiers, client addresses, cookies and credentials from workflow logs.
+- Added regression coverage for stable safe references, prohibited values and internal trace propagation.
+
+### Current Status
+
+FS-007 is resolved. Monetisation milestone M0 remains in progress; the next enabling task is MON-002: define aggregate analytics events and prohibited fields.

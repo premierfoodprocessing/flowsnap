@@ -29,6 +29,7 @@ The project accepts authorised public media URLs, extracts metadata, presents sa
 - Public FastAPI backend on Render
 - Automatic local/production API selection
 - Configurable file-size, concurrency and request-rate safeguards
+- Privacy-safe workflow tracing with opaque hashed references
 
 ## Development controls
 
@@ -115,6 +116,11 @@ The defaults can be adjusted with `FLOWSNAP_MAX_FILE_SIZE_MB`,
 `FLOWSNAP_EXPENSIVE_RATE_LIMIT` and `FLOWSNAP_RATE_WINDOW_SECONDS`.
 These in-memory controls apply per backend instance and supplement, rather than
 replace, provider-level rate limiting and cost alerts.
+
+Workflow logs correlate format analysis, download preparation and delivery by
+using short hashes of random internal identifiers. They do not record submitted
+URLs, media titles, filenames, raw identifiers, client addresses, cookies or
+credentials. These operational logs are not application analytics.
 
 ## Project structure
 

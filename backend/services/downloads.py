@@ -56,12 +56,17 @@ def prepare_download(
         "filename": f"{title}.{extension}",
     }
 
+    trace_id = analysis.get("_workflow_trace_id")
+    if trace_id:
+        job["_workflow_trace_id"] = trace_id
+        job["_analysis_id"] = analysis_id
+
     if job_store is None:
         job_id = id_factory()
     else:
         job_id = job_store.save(job)
 
-    return {
+    result = {
         "status": "ready",
         "job_id": job_id,
         "title": title,
@@ -70,3 +75,8 @@ def prepare_download(
         "filename": job["filename"],
         "download_url": f"/api/media/download/{job_id}",
     }
+
+    if trace_id:
+        result["_workflow_trace_id"] = trace_id
+
+    return result

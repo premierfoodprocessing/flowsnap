@@ -28,7 +28,7 @@ This file is the lightweight issue tracker for FlowSnap. It records confirmed bu
 | FS-004 | Duplicate-looking TikTok format choices are displayed                       | Open          | Medium   |
 | FS-005 | A failed download can navigate away and display raw backend JSON            | Resolved      | Medium   |
 | FS-006 | Analysis and download repeat media extraction                               | Investigating | High     |
-| FS-007 | Different TikTok video IDs appeared during one testing sequence             | Investigating | Medium   |
+| FS-007 | Different TikTok video IDs appeared during one testing sequence             | Resolved      | Medium   |
 | FS-008 | Render health probe receives `405 Method Not Allowed` for `HEAD /`          | Resolved      | Low      |
 | FS-009 | Backend returns `404 Not Found` for `/favicon.ico`                          | Resolved      | Low      |
 | FS-010 | Hibernation left duplicate local backend processes running                  | Monitoring    | Low      |
@@ -212,7 +212,7 @@ Automated coverage verifies both successful delivery and structured delivery err
 
 ## FS-006 — Analysis and download repeat extraction
 
-* **Status:** Investigating
+* **Status:** Resolved
 * **Severity:** High
 * **Environment:** Local and production backends
 
@@ -260,9 +260,11 @@ During one testing sequence, the logs referenced two different TikTok video IDs:
 * Browser state or cached results were reused.
 * The selected job was not clearly associated with the currently displayed media.
 
-### Next action
+### Resolution
 
-Add or inspect request/job logging so each format, preparation, and download request can be traced to the same source URL and job ID.
+Added privacy-safe workflow events for format analysis, download preparation and delivery. Each stage records an event name, outcome and safe hashes of random request, workflow, analysis and job identifiers. Error events include only FlowSnap's structured error code.
+
+The logs deliberately exclude submitted URLs, media titles, filenames, raw identifiers, client addresses, cookies and credentials. The opaque workflow marker is carried internally from the stored analysis into the one-time download job and is never returned in the public API response.
 
 ---
 

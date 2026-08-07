@@ -26,6 +26,10 @@ from services.hosting_limits import (
     SlidingWindowRateLimiter,
     load_hosting_limits,
 )
+from services.workflow_tracing import (
+    log_workflow_event,
+    new_trace_id,
+)
 
 analysis_store = AnalysisStore()
 download_job_store = DownloadJobStore()
@@ -170,15 +174,40 @@ def media_info(request: MediaRequest, http_request: Request) -> dict:
 @app.post("/api/media/formats")
 def media_formats(request: MediaRequest, http_request: Request) -> dict:
     enforce_rate_limits(http_request, expensive=True)
+    request_id = new_trace_id()
+    trace_id = new_trace_id()
+    log_workflow_event(
+        "formats.started",
+        request_id=request_id,
+        trace_id=trace_id,
+    )
     try:
         analysis = get_formats(str(request.url))
-        analysis_id = analysis_store.save(analysis)
+        stored_analysis = {
+            **analysis,
+            "_workflow_trace_id": trace_id,
+        }
+        analysis_id = analysis_store.save(stored_analysis)
+        log_workflow_event(
+            "formats.completed",
+            request_id=request_id,
+            trace_id=trace_id,
+            analysis_id=analysis_id,
+            outcome="success",
+        )
 
         return {
             "analysis_id": analysis_id,
             **analysis,
         }
     except MediaExtractionError as exc:
+        log_workflow_event(
+            "formats.completed",
+            request_id=request_id,
+            trace_id=trace_id,
+            outcome="error",
+            error_code=exc.code,
+        )
         raise HTTPException(
             status_code=422,
             detail={
@@ -187,6 +216,13 @@ def media_formats(request: MediaRequest, http_request: Request) -> dict:
             },
         ) from exc
     except Exception as exc:
+        log_workflow_event(
+            "formats.completed",
+            request_id=request_id,
+            trace_id=trace_id,
+            outcome="error",
+            error_code="internal_error",
+        )
         raise HTTPException(
             status_code=500,
             detail={
@@ -201,13 +237,36 @@ def media_prepare(
     http_request: Request,
 ) -> dict:
     enforce_rate_limits(http_request)
+    request_id = new_trace_id()
+    log_workflow_event(
+        "prepare.started",
+        request_id=request_id,
+        analysis_id=request.analysis_id,
+    )
     try:
-        return prepare_download(
+        result = prepare_download(
             request.analysis_id,
             request.format_id,
         )
+        trace_id = result.pop("_workflow_trace_id", None)
+        log_workflow_event(
+            "prepare.completed",
+            request_id=request_id,
+            trace_id=trace_id,
+            analysis_id=request.analysis_id,
+            job_id=result.get("job_id"),
+            outcome="success",
+        )
+        return result
 
     except DownloadPreparationError as exc:
+        log_workflow_event(
+            "prepare.completed",
+            request_id=request_id,
+            analysis_id=request.analysis_id,
+            outcome="error",
+            error_code=exc.code,
+        )
         raise HTTPException(
             status_code=422,
             detail={
@@ -217,6 +276,13 @@ def media_prepare(
         ) from exc
 
     except Exception as exc:
+        log_workflow_event(
+            "prepare.completed",
+            request_id=request_id,
+            analysis_id=request.analysis_id,
+            outcome="error",
+            error_code="internal_error",
+        )
         raise HTTPException(
             status_code=500,
             detail={
@@ -228,8 +294,21 @@ def media_prepare(
 @app.get("/api/media/download/{job_id}")
 def media_download(job_id: str, request: Request):
     enforce_rate_limits(request, expensive=True)
+    request_id = new_trace_id()
+    log_workflow_event(
+        "download.started",
+        request_id=request_id,
+        job_id=job_id,
+    )
 
     if not download_slots.acquire(blocking=False):
+        log_workflow_event(
+            "download.completed",
+            request_id=request_id,
+            job_id=job_id,
+            outcome="error",
+            error_code="download_capacity_reached",
+        )
         raise HTTPException(
             status_code=503,
             detail={
@@ -246,6 +325,13 @@ def media_download(job_id: str, request: Request):
 
     if job is None:
         download_slots.release()
+        log_workflow_event(
+            "download.completed",
+            request_id=request_id,
+            job_id=job_id,
+            outcome="error",
+            error_code="download_expired",
+        )
         raise HTTPException(
             status_code=410,
             detail={
@@ -258,6 +344,8 @@ def media_download(job_id: str, request: Request):
         )
 
     output_dir = create_download_directory()
+    trace_id = job.get("_workflow_trace_id")
+    analysis_id = job.get("_analysis_id")
 
     try:
         output_path = download_media(
@@ -277,11 +365,37 @@ def media_download(job_id: str, request: Request):
                     ),
                 },
             )
+        log_workflow_event(
+            "download.completed",
+            request_id=request_id,
+            trace_id=trace_id,
+            analysis_id=analysis_id,
+            job_id=job_id,
+            outcome="success",
+        )
     except HTTPException:
         shutil.rmtree(output_dir, ignore_errors=True)
+        log_workflow_event(
+            "download.completed",
+            request_id=request_id,
+            trace_id=trace_id,
+            analysis_id=analysis_id,
+            job_id=job_id,
+            outcome="error",
+            error_code="file_too_large",
+        )
         raise
     except DownloadDeliveryError as exc:
         shutil.rmtree(output_dir, ignore_errors=True)
+        log_workflow_event(
+            "download.completed",
+            request_id=request_id,
+            trace_id=trace_id,
+            analysis_id=analysis_id,
+            job_id=job_id,
+            outcome="error",
+            error_code=exc.code,
+        )
         raise HTTPException(
             status_code=422,
             detail={
@@ -291,6 +405,15 @@ def media_download(job_id: str, request: Request):
         ) from exc
     except Exception as exc:
         shutil.rmtree(output_dir, ignore_errors=True)
+        log_workflow_event(
+            "download.completed",
+            request_id=request_id,
+            trace_id=trace_id,
+            analysis_id=analysis_id,
+            job_id=job_id,
+            outcome="error",
+            error_code="internal_error",
+        )
         raise HTTPException(
             status_code=500,
             detail={

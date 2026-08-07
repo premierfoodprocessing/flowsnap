@@ -65,6 +65,44 @@ def test_prepare_download_rejects_expired_analysis():
     )
 
 
+def test_prepare_download_carries_internal_workflow_trace_to_job():
+    from services.downloads import prepare_download
+
+    class FakeAnalysisStore:
+        def get(self, analysis_id):
+            return {
+                "title": "Test Video",
+                "webpage_url": "https://example.com/video",
+                "_workflow_trace_id": "workflow-test-123",
+                "formats": [
+                    {
+                        "format_id": "18",
+                        "extension": "mp4",
+                        "has_audio": True,
+                    }
+                ],
+            }
+
+    class FakeJobStore:
+        def save(self, job):
+            self.saved_job = job
+            return "job-test-123"
+
+    job_store = FakeJobStore()
+    result = prepare_download(
+        store=FakeAnalysisStore(),
+        job_store=job_store,
+        analysis_id="analysis-test-123",
+        format_id="18",
+    )
+
+    assert job_store.saved_job["_workflow_trace_id"] == (
+        "workflow-test-123"
+    )
+    assert job_store.saved_job["_analysis_id"] == "analysis-test-123"
+    assert result["_workflow_trace_id"] == "workflow-test-123"
+
+
 def test_prepare_download_rejects_unknown_format():
     from services.downloads import (
         DownloadPreparationError,

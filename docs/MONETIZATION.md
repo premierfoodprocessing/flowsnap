@@ -146,7 +146,7 @@ Status: **In progress**
 
 Deliverables:
 
-- Complete request/job tracing without logging URLs or credentials (FS-007).
+- Complete request/job tracing without logging URLs or credentials (FS-007). **Complete.**
 - Improve mobile filename and download controls (FS-011).
 - Define aggregate event names and retention rules.
 - Define rate-limit and cost thresholds from observed usage.
@@ -281,7 +281,7 @@ Pause or disable monetisation when:
 
 | ID      | Task                                                        | Depends on       | Status  |
 | ------- | ----------------------------------------------------------- | ---------------- | ------- |
-| MON-001 | Add privacy-safe request and job tracing                    | FS-007           | Planned |
+| MON-001 | Add privacy-safe request and job tracing                    | FS-007           | Complete |
 | MON-002 | Define aggregate analytics events and prohibited fields     | MON-001          | Planned |
 | MON-003 | Define rate limits, file limits and monthly cost thresholds | Usage observation| Planned |
 | MON-004 | Publish policy, contact and takedown pages                  | Content review   | Planned |
@@ -294,4 +294,4 @@ Pause or disable monetisation when:
 
 Monetisation is specified but not enabled.
 
-FlowSnap is currently at M0. The next monetisation-enabling task is FS-007/MON-001: add privacy-safe request and job tracing.
+FlowSnap is currently at M0. FS-007/MON-001 is complete. The next monetisation-enabling task is MON-002: define aggregate analytics events and prohibited fields.

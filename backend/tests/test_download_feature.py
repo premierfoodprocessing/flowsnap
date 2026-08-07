@@ -48,7 +48,12 @@ def test_download_formats_endpoint_stores_analysis(monkeypatch):
     )
 
     assert response.status_code == 200
-    assert saved_analyses == [analysis]
+    assert len(saved_analyses) == 1
+    assert saved_analyses[0] == {
+        **analysis,
+        "_workflow_trace_id": saved_analyses[0]["_workflow_trace_id"],
+    }
+    assert len(saved_analyses[0]["_workflow_trace_id"]) == 32
     assert response.json() == {
         "analysis_id": "analysis-test-123",
         **analysis,
