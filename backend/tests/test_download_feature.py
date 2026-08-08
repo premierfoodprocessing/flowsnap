@@ -1,9 +1,8 @@
-from fastapi.testclient import TestClient
-
 import app as app_module
+from test_support import create_test_client
 
 
-client = TestClient(app_module.app)
+client = create_test_client(app_module.app)
 
 
 def test_download_formats_endpoint_stores_analysis(monkeypatch):

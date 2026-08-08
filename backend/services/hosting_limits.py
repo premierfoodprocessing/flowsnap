@@ -22,8 +22,24 @@ def _positive_int(name: str, default: int) -> int:
     return value
 
 
+def _boolean(name: str, default: bool) -> bool:
+    raw_value = os.getenv(name)
+
+    if raw_value is None:
+        return default
+
+    normalized = raw_value.strip().lower()
+    if normalized in {"true", "1", "yes", "on"}:
+        return True
+    if normalized in {"false", "0", "no", "off"}:
+        return False
+
+    raise ValueError(f"{name} must be true or false")
+
+
 @dataclass(frozen=True)
 class HostingLimits:
+    delivery_enabled: bool
     max_file_size_bytes: int
     max_concurrent_downloads: int
     api_requests_per_window: int
@@ -33,6 +49,7 @@ class HostingLimits:
 
 def load_hosting_limits() -> HostingLimits:
     return HostingLimits(
+        delivery_enabled=_boolean("FLOWSNAP_DELIVERY_ENABLED", True),
         max_file_size_bytes=(
             _positive_int("FLOWSNAP_MAX_FILE_SIZE_MB", 100)
             * 1024

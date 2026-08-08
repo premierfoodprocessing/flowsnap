@@ -89,7 +89,8 @@ node --test frontend-tests/*.test.mjs
 Current test baseline after the deployment connection:
 
 - Frontend suite: 21 passed
-- Backend download-enabled suite: 35 passed, 1 live test skipped
+- Stable backend suite: 35 passed, 20 gated tests skipped
+- Backend download-enabled suite: 53 passed, 2 live tests skipped
 
 ## API endpoints
 
@@ -116,6 +117,10 @@ The defaults can be adjusted with `FLOWSNAP_MAX_FILE_SIZE_MB`,
 `FLOWSNAP_EXPENSIVE_RATE_LIMIT` and `FLOWSNAP_RATE_WINDOW_SECONDS`.
 These in-memory controls apply per backend instance and supplement, rather than
 replace, provider-level rate limiting and cost alerts.
+
+Set `FLOWSNAP_DELIVERY_ENABLED=false` and restart the backend to pause new
+preparation and delivery work while keeping health and analysis available. See
+`docs/OPERATIONS.md` for the observation worksheet and pause procedure.
 
 Workflow logs correlate format analysis, download preparation and delivery by
 using short hashes of random internal identifiers. They do not record submitted

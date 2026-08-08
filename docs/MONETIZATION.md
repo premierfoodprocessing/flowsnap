@@ -81,7 +81,103 @@ Do not collect:
 - Browser cookies or persistent cross-site identifiers created by FlowSnap.
 - Raw IP addresses in application analytics.
 
-Retention periods, consent requirements and deletion procedures must be documented before analytics is enabled.
+### Aggregate Event Specification
+
+Analytics is not currently enabled. Any future implementation must use this
+provider-neutral allowlist and reject fields that are not explicitly approved.
+
+| Event name | When counted | Allowed dimensions |
+| --- | --- | --- |
+| `page_viewed` | A public FlowSnap page is loaded | `page_category` |
+| `analysis_started` | The user submits a link for format analysis | None |
+| `analysis_completed` | Format analysis succeeds or fails | `platform`, `outcome`, `error_code` |
+| `preparation_completed` | Download preparation succeeds or fails | `platform`, `outcome`, `error_code` |
+| `delivery_completed` | File delivery succeeds or fails | `platform`, `outcome`, `error_code` |
+| `placement_viewed` | A future approved revenue placement becomes viewable | `placement_name` |
+| `placement_clicked` | A user deliberately activates a future approved placement | `placement_name` |
+
+Allowed dimension values are constrained as follows:
+
+- `page_category`: a fixed internal category such as `home`, `privacy`,
+  `terms`, `contact`, `copyright` or `platform_status`; never a full URL,
+  path containing user input or referrer.
+- `platform`: only `youtube`, `tiktok`, `instagram`, `facebook`, `generic`
+  or `unknown`; never a channel, creator or media identifier.
+- `outcome`: only `success` or `error`.
+- `error_code`: an approved FlowSnap error category such as
+  `platform_blocked`, `unsupported_url`, `download_failed`,
+  `file_too_large`, `rate_limit_exceeded` or `internal_error`; never an
+  exception message or platform response body.
+- `placement_name`: a fixed FlowSnap placement key approved during M2; never
+  third-party click parameters or a destination URL.
+
+Events must become daily aggregate counts. They must not contain a user,
+session, request, workflow, analysis or download-job identifier. A complete
+workflow conversion rate may be calculated only from separate daily event
+totals, not by linking an individual's steps.
+
+### Prohibited Analytics Fields
+
+The following must never enter application analytics, event payloads,
+analytics URLs or provider metadata:
+
+- Submitted, resolved, download or referrer URLs and URL query strings.
+- Media titles, creator names, thumbnails, filenames, captions, format IDs or
+  media and channel identifiers.
+- Analysis IDs, job IDs, operational request references, workflow references
+  or hashes derived from them.
+- Raw or hashed IP addresses, precise location, advertising IDs, account IDs,
+  email addresses or other contact details.
+- Cookies, local-storage identifiers, device fingerprints or persistent
+  browser and cross-site identifiers created by FlowSnap.
+- User-agent strings, precise device attributes or other combinations intended
+  to distinguish a person or device.
+- Browser cookies, authorization headers, API keys, platform tokens, signed
+  media URLs, request headers, exception text or response bodies.
+- Download histories, per-user counters or any record linking a person to a
+  platform, media item or workflow.
+
+The analytics schema must use an explicit allowlist. Unknown event names,
+fields and dimension values must be dropped rather than stored.
+
+### Purpose, Retention and Deletion
+
+The permitted purpose is to measure aggregate reliability, capacity, operating
+cost, public-page use and future placement performance. Analytics must not be
+used to profile users, reconstruct individual journeys, target advertising or
+sell or share activity histories.
+
+- Convert accepted events to daily aggregate counts within 24 hours.
+- Delete event-level records immediately after aggregation, with a hard maximum
+  retention of seven days for recovery from processing failures.
+- Retain daily aggregate counts for no more than 13 months, then delete them
+  automatically.
+- Exclude event-level data from backups where practical. If temporary backups
+  are unavoidable, expire them within the same seven-day maximum.
+- Provide a documented manual purge procedure before collection is enabled and
+  verify provider-side deletion behavior during MON-007.
+- Because the design contains no user or persistent device identifier,
+  individual histories cannot be retrieved. Privacy requests must still be
+  handled through the published contact channel and aggregate data must be
+  removed when legally or operationally required.
+
+### Implementation and Consent Gate
+
+MON-002 defines the data boundary but does not authorise collection. Before
+analytics is enabled, FlowSnap must:
+
+1. Select or build a first-party, privacy-preserving implementation that can
+   enforce this allowlist and retention schedule.
+2. Review the selected technology's cookies, network logs, international data
+   transfers and consent requirements for FlowSnap's audience.
+3. Update the Privacy page with the actual provider, fields, purpose, retention,
+   deletion process and consent controls before deployment.
+4. Add automated tests proving prohibited fields cannot be emitted.
+5. Keep analytics disabled by default until that review is complete.
+
+Existing workflow tracing remains separate operational logging. Its short
+hashed references may be used to diagnose a specific backend failure, but must
+never be copied into analytics or used to build user or media histories.
 
 ## Operating and Abuse Controls
 
@@ -98,6 +194,84 @@ Required controls:
 - A documented emergency switch to disable delivery while leaving status information available.
 
 Rate limiting should begin at the hosting or reverse-proxy layer when practical. Adding a production dependency requires a separate technical review and approval.
+
+### Beta Limit and Cost Policy
+
+MON-003 establishes a conservative starting policy. FlowSnap does not yet have
+a representative production-usage dataset, so these limits are provisional
+safety defaults rather than claims derived from observed demand.
+
+| Control | Beta value | Reason |
+| --- | --- | --- |
+| Maximum completed file | 100 MB | Caps temporary storage, processing time and transfer exposure per job. |
+| Concurrent media builds | 1 per backend instance | Prevents multiple FFmpeg or yt-dlp builds from exhausting a small instance. |
+| Total API requests | 60 per client per 60 seconds | Allows normal browsing and retries while limiting request bursts. |
+| Expensive requests | 12 per client per 60 seconds | Separately limits format extraction and file delivery work. |
+
+The application already enforces these values through configurable environment
+variables. Its in-memory request limits apply per backend instance and are a
+last line of defence, not a substitute for provider or reverse-proxy controls.
+Increasing concurrency, file size or expensive-request capacity requires a
+review of measured processing time, memory, storage, transfer and failure rate.
+
+### Monthly Budget and Response Thresholds
+
+Before paid infrastructure or commercial traffic is enabled, record one
+approved monthly infrastructure budget covering backend compute, bandwidth,
+storage, monitoring and analytics. Do not embed a currency amount in application
+code; keep it in the private operating worksheet and review it monthly.
+
+| Forecast or accrued monthly cost | Required response |
+| --- | --- |
+| Below 50% of budget | Continue normal monitoring. |
+| 50% | Review traffic, successful-delivery cost and unusual error volume. |
+| 75% | Freeze limit increases and investigate the main compute or transfer driver. |
+| 90% | Disable any revenue experiment and prepare to reduce expensive capacity or pause delivery. |
+| 100% or provider hard limit | Disable new download preparation and delivery while keeping public status and support information available. |
+
+Any unexpected day that consumes more than 10% of the monthly budget also
+triggers review, even when the month-to-date total is below 50%. Provider-native
+budget alerts should be configured where available. A manual weekly check is
+required until automated alerts are verified.
+
+The emergency action must preserve clear structured errors and should disable
+expensive work through a documented configuration or deployment control. It
+must not silently fail, delete user data or weaken authorised-use checks.
+
+### Observation and Review Worksheet
+
+Use at least 30 consecutive days of representative beta traffic before calling
+the limits demand-based. Record daily totals only; do not add user or media
+identifiers to measurement.
+
+Record:
+
+- Total and expensive request counts.
+- Analyses, preparations and deliveries by success or approved error category.
+- Concurrent-build rejections, rate-limit responses and oversized-file
+  rejections.
+- Aggregate completed output bytes and provider-reported outbound transfer.
+- Median and 95th-percentile analysis and delivery duration when measurable
+  without media identifiers.
+- Backend compute, bandwidth, storage and monitoring cost.
+- Peak memory, temporary storage and CPU use from provider-level metrics.
+
+Review weekly during beta and monthly after traffic stabilises. Calculate:
+
+- `delivery success rate = successful deliveries / delivery attempts`
+- `capacity rejection rate = capacity rejections / delivery attempts`
+- `rate-limit rate = rate-limit responses / total API requests`
+- `average output MB = completed output MB / successful deliveries`
+- `cost per successful delivery = total monthly operating cost / successful deliveries`
+
+A limit may be raised only when the previous 30 days remain within budget, the
+90th-percentile cost forecast stays below 75% of budget, service health is
+acceptable and the change is documented. Lower a limit or pause delivery when
+cost reaches the response thresholds, resource saturation causes instability,
+or abuse and failure rates materially increase.
+
+This review uses aggregate operational totals. It must follow the MON-002 data
+boundary and must not create download histories or analytics identifiers.
 
 ## Readiness Gates
 
@@ -282,9 +456,9 @@ Pause or disable monetisation when:
 | ID      | Task                                                        | Depends on       | Status  |
 | ------- | ----------------------------------------------------------- | ---------------- | ------- |
 | MON-001 | Add privacy-safe request and job tracing                    | FS-007           | Complete |
-| MON-002 | Define aggregate analytics events and prohibited fields     | MON-001          | Planned |
-| MON-003 | Define rate limits, file limits and monthly cost thresholds | Usage observation| Planned |
-| MON-004 | Publish policy, contact and takedown pages                  | Content review   | Planned |
+| MON-002 | Define aggregate analytics events and prohibited fields     | MON-001          | Complete |
+| MON-003 | Define rate limits, file limits and monthly cost thresholds | Usage observation| In progress |
+| MON-004 | Publish policy, contact and takedown pages                  | Content review   | Complete |
 | MON-005 | Improve mobile download controls                            | FS-011           | Complete |
 | MON-006 | Build a disabled provider-neutral placement component       | MON-004          | Planned |
 | MON-007 | Evaluate providers using the documented rubric              | MON-002–006      | Planned |
@@ -294,4 +468,8 @@ Pause or disable monetisation when:
 
 Monetisation is specified but not enabled.
 
-FlowSnap is currently at M0. FS-007/MON-001 is complete. The next monetisation-enabling task is MON-002: define aggregate analytics events and prohibited fields.
+FlowSnap is currently at M0. The MON-003 policy is defined, but the task remains
+in progress until the 30-day observation window is complete and production
+budget alerts are configured. MON-001, MON-002, MON-004 and MON-005 are
+complete. MON-006 may be developed in parallel but cannot advance FlowSnap past
+M0 until the MON-003 evidence is recorded.

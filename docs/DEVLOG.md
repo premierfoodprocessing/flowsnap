@@ -747,3 +747,101 @@ FS-007 is resolved. Monetisation milestone M0 remains in progress; the next enab
 ### Current Status
 
 FS-011 is resolved. Monetisation milestone M0 remains in progress; MON-002 is the next enabling task.
+
+---
+
+## 2026-08-08 - Session 26: Aggregate Analytics Data Boundary
+
+### Completed
+
+- Completed MON-002 without enabling analytics or adding third-party scripts.
+- Defined provider-neutral aggregate event names for page use, analysis,
+  preparation, delivery and future revenue placements.
+- Limited analytics dimensions to fixed page categories, supported-platform
+  names, broad outcomes, approved error codes and approved placement keys.
+- Prohibited URLs, media details, workflow identifiers, IP addresses, contact
+  details, cookies, fingerprints, credentials and individual histories.
+- Required explicit event and field allowlists that drop unknown data.
+- Defined a 24-hour aggregation target, a seven-day hard ceiling for temporary
+  event-level records and a 13-month maximum for daily aggregate counts.
+- Documented deletion, implementation, policy-update, consent-review and test
+  gates that must pass before analytics can be enabled.
+- Kept aggregate analytics separate from privacy-safe operational tracing.
+- Reconciled MON-004's backlog status with the policy, contact and takedown
+  pages completed in Sessions 20 and 21.
+
+### Current Status
+
+Analytics remains disabled. Monetisation milestone M0 remains in progress; the
+next enabling task is MON-003: define rate limits, file limits and monthly cost
+thresholds from observed usage.
+
+---
+
+## 2026-08-08 - Session 27: Beta Limits and Cost Thresholds
+
+### Completed
+
+- Defined the MON-003 policy without changing the existing runtime limits.
+- Confirmed the provisional beta defaults of a 100 MB output, one concurrent
+  build, 60 total requests and 12 expensive requests per client per minute.
+- Documented why application rate limits remain per-instance safeguards rather
+  than replacements for provider-level controls.
+- Added monthly budget responses at 50%, 75%, 90% and 100%, plus review for an
+  unexpected day consuming more than 10% of the monthly budget.
+- Defined a 30-day aggregate observation window and the reliability, resource,
+  transfer and cost measures required before limits can be called demand-based.
+- Added rules for raising, lowering or pausing capacity.
+- Documented all existing hosting-limit variables in `backend/.env.example`.
+
+### Current Status
+
+The MON-003 policy is defined, but MON-003 remains in progress until a
+representative 30-day observation window is complete and production budget
+alerts are configured. MON-006 may be developed in parallel, but FlowSnap
+cannot advance past M0 until the MON-003 evidence is recorded.
+
+---
+
+## 2026-08-08 - Session 28: Observation Runbook and Delivery Pause
+
+### Completed
+
+- Added a privacy-safe 30-day operations worksheet using aggregate daily
+  reliability, capacity, transfer and cost totals only.
+- Added weekly review instructions tied to the MON-003 budget thresholds.
+- Added `FLOWSNAP_DELIVERY_ENABLED` as an emergency application control.
+- Kept delivery enabled by default.
+- Made the disabled state reject both download preparation and file delivery
+  with a structured `503 delivery_paused` response and `Retry-After` header.
+- Kept health, public status and media analysis available during a pause.
+- Documented production pause, verification and resume procedures without
+  changing the current Render configuration.
+- Added regression coverage for configuration parsing and both paused routes.
+
+### Verification
+
+- Stable backend suite: 35 passed, 20 gated tests skipped.
+- Download-enabled backend suite: 53 passed, 2 live tests skipped.
+- Focused hosting, preparation and delivery suite: 17 passed.
+- Frontend automated tests: passed.
+- Frontend module and launcher syntax checks: passed.
+- Git whitespace check: passed after the final changes.
+
+### Test Environment Finding
+
+The default asyncio event loop in the current command environment could not
+wake work scheduled from another thread. This caused AnyIO's blocking portal
+and Starlette TestClient to stall, including for a minimal application unrelated
+to FlowSnap. The already-installed uvloop implementation completed the same
+cross-thread TestClient request successfully.
+
+FlowSnap now creates its test clients through one helper configured with
+uvloop. No dependency version was changed. Both stable and download-enabled
+backend suites complete normally with this test configuration.
+
+### Current Status
+
+The local observation package and emergency delivery control are ready for
+review. Render settings were not changed, and the 30-day observation period has
+not started.

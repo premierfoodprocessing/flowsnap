@@ -1,11 +1,12 @@
-import pytest
 from dataclasses import replace
-from fastapi.testclient import TestClient
+
+import pytest
 
 import app as app_module
+from test_support import create_test_client
 
 
-client = TestClient(app_module.app)
+client = create_test_client(app_module.app)
 
 
 @pytest.mark.download
@@ -221,3 +222,18 @@ def test_download_route_rejects_oversized_output_and_cleans(
     assert response.status_code == 413
     assert response.json()["detail"]["code"] == "file_too_large"
     assert not output_dir.exists()
+
+
+@pytest.mark.download
+def test_download_route_returns_structured_pause_response(monkeypatch):
+    monkeypatch.setattr(
+        app_module,
+        "hosting_limits",
+        replace(app_module.hosting_limits, delivery_enabled=False),
+    )
+
+    response = client.get("/api/media/download/test-job")
+
+    assert response.status_code == 503
+    assert response.headers["retry-after"] == "3600"
+    assert response.json()["detail"]["code"] == "delivery_paused"

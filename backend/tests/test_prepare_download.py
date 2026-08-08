@@ -1,10 +1,40 @@
+from dataclasses import replace
+
 import pytest
-from fastapi.testclient import TestClient
 
 import app as app_module
+from test_support import create_test_client
 
 
-client = TestClient(app_module.app)
+client = create_test_client(app_module.app)
+
+
+def test_prepare_download_returns_structured_pause_response(monkeypatch):
+    monkeypatch.setattr(
+        app_module,
+        "hosting_limits",
+        replace(app_module.hosting_limits, delivery_enabled=False),
+    )
+
+    response = client.post(
+        "/api/media/prepare",
+        json={
+            "analysis_id": "analysis-test-123",
+            "format_id": "18",
+        },
+    )
+
+    assert response.status_code == 503
+    assert response.headers["retry-after"] == "3600"
+    assert response.json() == {
+        "detail": {
+            "code": "delivery_paused",
+            "message": (
+                "FlowSnap downloads are temporarily paused. "
+                "Please try again later."
+            ),
+        }
+    }
 
 
 def test_prepare_download_returns_a_download_job(

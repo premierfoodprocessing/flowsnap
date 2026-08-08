@@ -106,6 +106,21 @@ def enforce_rate_limits(
         )
 
 
+def enforce_delivery_enabled() -> None:
+    if not hosting_limits.delivery_enabled:
+        raise HTTPException(
+            status_code=503,
+            detail={
+                "code": "delivery_paused",
+                "message": (
+                    "FlowSnap downloads are temporarily paused. "
+                    "Please try again later."
+                ),
+            },
+            headers={"Retry-After": "3600"},
+        )
+
+
 def prepare_download(
     analysis_id: str,
     format_id: str,
@@ -237,6 +252,7 @@ def media_prepare(
     http_request: Request,
 ) -> dict:
     enforce_rate_limits(http_request)
+    enforce_delivery_enabled()
     request_id = new_trace_id()
     log_workflow_event(
         "prepare.started",
@@ -294,6 +310,7 @@ def media_prepare(
 @app.get("/api/media/download/{job_id}")
 def media_download(job_id: str, request: Request):
     enforce_rate_limits(request, expensive=True)
+    enforce_delivery_enabled()
     request_id = new_trace_id()
     log_workflow_event(
         "download.started",
