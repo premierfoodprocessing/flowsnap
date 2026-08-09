@@ -1,7 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import { getActiveSponsorship } from '../sponsorship.js';
+import {
+  getActiveSponsorship,
+  getLocalSponsorshipPreview,
+} from '../sponsorship.js';
 
 
 function buildConfig(overrides = {}) {
@@ -134,6 +137,34 @@ test('sponsorship rejects missing content and invalid schedules', () => {
   ]) {
     assert.equal(
       getActiveSponsorship(buildConfig(overrides), ACTIVE_DATE),
+      null,
+    );
+  }
+});
+
+
+test('local sponsorship preview requires localhost and query flag', () => {
+  const preview = getLocalSponsorshipPreview({
+    hostname: '127.0.0.1',
+    search: '?sponsor-preview=1',
+  });
+
+  assert.equal(preview.isPreview, true);
+  assert.equal(preview.label, 'Sponsored');
+  assert.equal(preview.imageSrc, '');
+
+  for (const locationObject of [
+    {
+      hostname: 'premierfoodprocessing.github.io',
+      search: '?sponsor-preview=1',
+    },
+    {
+      hostname: 'localhost',
+      search: '',
+    },
+  ]) {
+    assert.equal(
+      getLocalSponsorshipPreview(locationObject),
       null,
     );
   }

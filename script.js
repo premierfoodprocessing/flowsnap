@@ -9,7 +9,10 @@ import {
   resolveApiBaseUrl,
 } from './format-utils.mjs?v=2';
 import { revenueConfig } from './revenue-config.js';
-import { getActiveSponsorship } from './sponsorship.js';
+import {
+  getActiveSponsorship,
+  getLocalSponsorshipPreview,
+} from './sponsorship.js?v=2';
 const API_BASE_URL = resolveApiBaseUrl(window.location);
 
 const menuButton = document.querySelector('.menu-toggle');
@@ -37,8 +40,9 @@ const resultRevenuePlacement = document.getElementById(
 );
 
 if (resultRevenuePlacement) {
-  const activeSponsorship = getActiveSponsorship(
-    revenueConfig,
+  const activeSponsorship = (
+    getActiveSponsorship(revenueConfig)
+    || getLocalSponsorshipPreview(window.location)
   );
 
   if (activeSponsorship) {
@@ -57,12 +61,22 @@ if (resultRevenuePlacement) {
     const image = resultRevenuePlacement.querySelector(
       '.revenue-placement-image',
     );
+    const disclosure = resultRevenuePlacement.querySelector(
+      '.revenue-placement-disclosure',
+    );
 
     label.textContent = activeSponsorship.label;
     headline.textContent = activeSponsorship.headline;
     description.textContent = activeSponsorship.description;
     link.textContent = activeSponsorship.linkLabel;
     link.href = activeSponsorship.destinationUrl;
+
+    if (activeSponsorship.isPreview) {
+      resultRevenuePlacement.dataset.preview = 'true';
+      disclosure.textContent = (
+        'Local sponsorship preview only. No advertisement is active.'
+      );
+    }
 
     if (activeSponsorship.imageSrc) {
       image.src = activeSponsorship.imageSrc;
@@ -182,6 +196,15 @@ function renderFormats(formats) {
 menuButton?.addEventListener('click', () => {
   const open = nav.classList.toggle('open');
   menuButton.setAttribute('aria-expanded', String(open));
+});
+
+
+document.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape' && nav?.classList.contains('open')) {
+    nav.classList.remove('open');
+    menuButton?.setAttribute('aria-expanded', 'false');
+    menuButton?.focus();
+  }
 });
 
 

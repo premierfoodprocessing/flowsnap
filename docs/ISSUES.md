@@ -22,24 +22,25 @@ This file is the lightweight issue tracker for FlowSnap. It records confirmed bu
 
 | ID     | Issue                                                                       | Status        | Severity |
 | ------ | --------------------------------------------------------------------------- | ------------- | -------- |
-| FS-001 | TikTok extraction sometimes fails on the local backend                      | Open          | High     |
-| FS-002 | YouTube works locally but fails or is refused through Render                | Open          | High     |
-| FS-003 | TikTok formats labelled “Video + audio” can produce silent video-only files | Confirmed     | High     |
+| FS-001 | TikTok extraction sometimes fails on the local backend                      | Monitoring    | High     |
+| FS-002 | YouTube extraction is currently refused locally and through Render          | Open          | High     |
+| FS-003 | TikTok formats labelled “Video + audio” can produce silent video-only files | Monitoring    | High     |
 | FS-004 | Duplicate-looking TikTok format choices are displayed                       | Open          | Medium   |
-| FS-005 | A failed download can navigate away and display raw backend JSON            | Resolved      | Medium   |
+| FS-005 | A failed download can navigate away and display raw backend JSON            | Fixed         | Medium   |
 | FS-006 | Analysis and download repeat media extraction                               | Investigating | High     |
-| FS-007 | Different TikTok video IDs appeared during one testing sequence             | Resolved      | Medium   |
-| FS-008 | Render health probe receives `405 Method Not Allowed` for `HEAD /`          | Resolved      | Low      |
-| FS-009 | Backend returns `404 Not Found` for `/favicon.ico`                          | Resolved      | Low      |
+| FS-007 | Different TikTok video IDs appeared during one testing sequence             | Fixed         | Medium   |
+| FS-008 | Render health probe receives `405 Method Not Allowed` for `HEAD /`          | Fixed         | Low      |
+| FS-009 | Backend returns `404 Not Found` for `/favicon.ico`                          | Fixed         | Low      |
 | FS-010 | Hibernation left duplicate local backend processes running                  | Monitoring    | Low      |
-| FS-011 | Mobile filename and download controls are cramped                           | Resolved      | Low      |
+| FS-011 | Mobile filename and download controls are cramped                           | Fixed         | Low      |
 | FS-012 | Browser may save downloads to an unexpected directory                       | External      | Low      |
+| FS-013 | Higher-resolution Facebook AV1 output can appear nearly static              | Fixed         | High     |
 
 ---
 
 ## FS-001 — TikTok extraction sometimes fails locally
 
-* **Status:** Resolved
+* **Status:** Monitoring
 * **Severity:** High
 * **Environment:** Ubuntu local backend
 * **Platform:** TikTok
@@ -73,16 +74,17 @@ Capture and compare yt-dlp metadata and request behaviour locally and on Render.
 
 ---
 
-## FS-002 — YouTube fails or is refused through Render
+## FS-002 — YouTube extraction is currently refused
 
 * **Status:** Open
 * **Severity:** High
-* **Environment:** Render production backend
+* **Environment:** Local and Render production backends
 * **Platform:** YouTube
 
 ### Description
 
-YouTube links work through the local Ubuntu backend but fail when processed by the deployed Render backend.
+YouTube previously worked through the local Ubuntu backend while failing on
+Render. The latest 2026-08-09 check was refused locally and in production.
 
 ### Suspected cause
 
@@ -94,13 +96,16 @@ Reproduce the failure while monitoring Render logs and record the complete yt-dl
 
 ### Current decision
 
-Local YouTube analysis and delivery were verified successfully on 2026-08-07. Render still returned the structured `platform_blocked` response. Further YouTube investigation is intentionally deferred until the other open issues have been addressed.
+Local YouTube analysis and delivery were verified successfully on 2026-08-07.
+The latest check failed in both environments, with FlowSnap retaining its
+structured `platform_blocked` response. Further YouTube investigation is
+intentionally deferred until the other open issues have been addressed.
 
 ---
 
 ## FS-003 — TikTok “Video + audio” option can produce a silent file
 
-* **Status:** Confirmed
+* **Status:** Monitoring
 * **Severity:** High
 * **Environment:** Public site, Render backend, Chromium on Ubuntu
 * **Platform:** TikTok
@@ -148,6 +153,11 @@ FlowSnap may be trusting incomplete or misleading yt-dlp/TikTok metadata when cl
 
 Reproduce the silent-file result with the affected TikTok link and format. Capture the current raw yt-dlp format metadata and compare it with the completed file's `ffprobe` streams before changing classification or delivery selection.
 
+The 2026-08-09 recommended-quality verification produced synchronized video
+and audio and did not reproduce the historical silent-file result. Continue
+monitoring rather than treating the issue as resolved without the original
+affected format.
+
 ---
 
 ## FS-004 — Duplicate-looking TikTok formats
@@ -180,7 +190,7 @@ Remove true duplicates and expose meaningful differences between formats that ar
 
 ## FS-005 — Failed download displays raw backend JSON
 
-* **Status:** Resolved
+* **Status:** Fixed
 * **Severity:** Medium
 * **Environment:** Local frontend and backend
 
@@ -212,7 +222,7 @@ Automated coverage verifies both successful delivery and structured delivery err
 
 ## FS-006 — Analysis and download repeat extraction
 
-* **Status:** Resolved
+* **Status:** Investigating
 * **Severity:** High
 * **Environment:** Local and production backends
 
@@ -240,7 +250,7 @@ Reusing yt-dlp's complete processed analysis would retain signed direct-media UR
 
 ## FS-007 — Different TikTok IDs appeared during testing
 
-* **Status:** Investigating
+* **Status:** Fixed
 * **Severity:** Medium
 * **Environment:** Local backend
 
@@ -270,7 +280,7 @@ The logs deliberately exclude submitted URLs, media titles, filenames, raw ident
 
 ## FS-008 — Render `HEAD /` returns 405
 
-* **Status:** Open
+* **Status:** Fixed
 * **Severity:** Low
 * **Environment:** Render production backend
 
@@ -297,7 +307,7 @@ The backend now accepts `HEAD /` and returns `200 OK` without changing the exist
 
 ## FS-009 — Missing backend favicon
 
-* **Status:** Resolved
+* **Status:** Fixed
 * **Severity:** Low
 * **Environment:** Backend
 
@@ -345,7 +355,7 @@ The scripts successfully restored a clean development environment.
 
 ## FS-011 — Mobile download controls are cramped
 
-* **Status:** Resolved
+* **Status:** Fixed
 * **Severity:** Low
 * **Environment:** Mobile browser
 
@@ -385,6 +395,39 @@ Review Chromium’s download-location setting and “Ask where to save each file
 
 ---
 
+## FS-013 — Higher-resolution Facebook AV1 output can appear nearly static
+
+* **Status:** Fixed
+* **Severity:** High
+* **Environment:** Local and production workflow; affected playback device
+* **Platform:** Facebook
+
+### Description
+
+The automatically selected 1080-by-1920 Facebook download played clear audio
+while its video appeared as slowly changing still images.
+
+### Diagnosis
+
+The completed file contained 418 AV1 video frames at 30 frames per second and
+AAC audio. FFmpeg detected no frozen interval. The affected player or device
+could not decode the high-resolution AV1 stream smoothly.
+
+### Resolution
+
+FlowSnap now recommends the best compatible option at or below 720p when one is
+available. Higher resolutions remain manually selectable. Portrait quality
+labels use the shorter dimension, and versioned frontend modules prevent the
+earlier selection policy from remaining cached.
+
+### Verification
+
+The exact reported Facebook Reel resolved to Facebook `hd` at 720p through the
+local API. Subsequent manual checks confirmed good-quality synchronized video
+and audio for Facebook, Instagram and TikTok.
+
+---
+
 ## Verified Working Behaviour
 
 The following behaviour has been verified successfully:
@@ -412,4 +455,5 @@ When a new issue is discovered:
 
 ## Last Updated
 
-2026-08-07 — Resolved FS-008 and FS-009 backend routing noise.
+2026-08-09 — Reconciled issue statuses and recorded the fixed Facebook AV1
+playback issue as FS-013.

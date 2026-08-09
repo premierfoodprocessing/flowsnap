@@ -80,6 +80,24 @@ test('homepage keeps responsible-use boundaries visible', () => {
 });
 
 
+test('homepage provides core keyboard accessibility hooks', () => {
+  assert.match(indexHtml, /class="skip-link" href="#download"/);
+  assert.match(indexHtml, /<label class="visually-hidden" for="video-url">/);
+  assert.match(stylesCss, /:focus-visible\s*\{/);
+  assert.match(scriptJs, /event\.key === 'Escape'/);
+});
+
+
+test('homepage keeps the disabled sponsorship lightweight', () => {
+  assert.match(
+    indexHtml,
+    /class="revenue-placement-image"[\s\S]*loading="lazy"/,
+  );
+  assert.doesNotMatch(indexHtml, /<script[^>]+src="https?:\/\//i);
+  assert.doesNotMatch(stylesCss, /@import\s+url\(https?:\/\//i);
+});
+
+
 test('privacy page describes live temporary processing', () => {
   assert.match(privacyHtml, /up to 10 minutes/);
   assert.match(privacyHtml, /up to 5 minutes/);

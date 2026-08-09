@@ -54,6 +54,40 @@ review.
 - Cost monitoring: manual Billing and Usage review.
 - Operational notifications: Render default service notifications enabled.
 
+### First Weekly Review — 2026-08-16
+
+Review the seven UTC dates from 2026-08-09 through 2026-08-15. Enter all
+provider usage and cost values only in the private operating copy.
+
+Checklist:
+
+- [ ] Confirm daily aggregate rows exist for all seven dates.
+- [ ] Record total API and expensive requests.
+- [ ] Record analysis, preparation and delivery success/error totals.
+- [ ] Calculate delivery success, rate-limit and capacity-rejection rates.
+- [ ] Calculate average output MB and cost per successful delivery.
+- [ ] Record peak CPU, memory and temporary-storage use reported by Render.
+- [ ] Compare month-to-date cost with the private monthly budget.
+- [ ] Apply and record any 50%, 75%, 90% or 100% threshold response.
+- [ ] Note any day that unexpectedly consumed more than 10% of the budget.
+- [ ] Confirm default service notifications remain enabled.
+- [ ] Record the review result in this runbook without monetary values or
+      provider account details.
+
+Public-safe review result template:
+
+```text
+Review date: 2026-08-16
+Observation dates: 2026-08-09 through 2026-08-15
+Daily rows complete: yes/no
+Reliability within provisional limits: yes/no
+Capacity within provisional limits: yes/no
+Cost threshold reached: none/50%/75%/90%/100%
+Unexpected >10% budget day: yes/no
+Action taken: none/pause/lower limits/investigate/other
+Next review date: 2026-08-23
+```
+
 ## Emergency Delivery Pause
 
 The backend reads `FLOWSNAP_DELIVERY_ENABLED` when it starts. The default is

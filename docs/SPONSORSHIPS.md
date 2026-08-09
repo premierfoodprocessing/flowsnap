@@ -34,6 +34,16 @@ paths outside `assets/sponsors/` are rejected.
 10. Verify the label, copy, image, link, responsive layout and end date in
     production.
 
+## Local Layout Preview
+
+With the local frontend running, open:
+
+`http://127.0.0.1:5500/?sponsor-preview=1`
+
+The preview uses fixed sample copy, no image, no tracker and no real sponsor.
+It works only on localhost addresses and does not change either disabled
+feature flag. The public GitHub Pages site ignores the preview query.
+
 To disable all sponsorships immediately, set `placementsEnabled` to `false` and
 deploy. To disable only the current entry, set its `enabled` value to `false`.
 

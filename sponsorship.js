@@ -110,3 +110,40 @@ export function getActiveSponsorship(
     linkLabel,
   };
 }
+
+
+export function getLocalSponsorshipPreview(locationObject) {
+  const hostname = String(
+    locationObject?.hostname ?? '',
+  ).toLowerCase();
+  const search = String(locationObject?.search ?? '');
+
+  if (
+    !['127.0.0.1', 'localhost', '[::1]'].includes(hostname)
+    || new URLSearchParams(search).get('sponsor-preview') !== '1'
+  ) {
+    return null;
+  }
+
+  const preview = getActiveSponsorship({
+    placementsEnabled: true,
+    sponsorship: {
+      enabled: true,
+      label: 'Sponsored',
+      headline: 'Example partner headline',
+      description: (
+        'Sample sponsorship copy for local layout review only.'
+      ),
+      imageSrc: '',
+      imageAlt: '',
+      destinationUrl: 'https://example.com/',
+      linkLabel: 'Example partner link',
+      startsAt: '',
+      endsAt: '',
+    },
+  });
+
+  return preview
+    ? { ...preview, isPreview: true }
+    : null;
+}

@@ -1031,3 +1031,47 @@ Facebook, Instagram and TikTok are currently verified with the recommended
 quality policy. YouTube remains unavailable in the latest check. MON-003's
 30-day production observation continues, with the first weekly review planned
 for approximately 2026-08-16. SEO and domain selection remain paused.
+
+---
+
+## 2026-08-09 - Session 35: Project Readiness Housekeeping
+
+### Completed
+
+- Reconciled the issue summary with each detailed issue status.
+- Added FS-013 for the fixed Facebook high-resolution AV1 playback problem.
+- Updated FS-002 to reflect the latest local and production YouTube refusal.
+- Kept intermittent TikTok extraction and the historical silent-file result in
+  monitoring rather than overstating them as permanently fixed.
+- Preserved FS-006 as investigating because delivery still reopens the source
+  URL and a safe credential-free alternative remains unresolved.
+- Added a localhost-only sponsorship layout preview using fixed sample copy,
+  no image, no tracker and no real sponsor.
+- Kept both production sponsorship feature flags disabled.
+- Added a skip link, an explicit media-link label, visible keyboard focus,
+  Escape-to-close mobile navigation and reduced-motion handling.
+- Confirmed the core frontend files remain approximately 44 KB and contain no
+  remote scripts, iframes, ad-network code or remote CSS imports.
+- Added lazy image decoding/loading for the optional sponsorship image.
+- Verified the deployed platform-status page returns HTTP 200 and contains the
+  2026-08-09 platform results.
+- Prepared the public-safe checklist and result template for the first MON-003
+  weekly review on 2026-08-16.
+
+### Current Status
+
+The readiness housekeeping is implemented locally. Advertising and analytics
+remain disabled, the public site has no preview path outside localhost, and no
+new external request is active. The next operational checkpoint is the first
+MON-003 weekly review.
+
+### Verification
+
+- Complete frontend test files passed, including the new preview, accessibility
+  and lightweight-loading assertions.
+- Main, sponsorship and revenue configuration module syntax checks passed.
+- Git whitespace check passed.
+- Production platform-status page returned HTTP 200 with the expected date and
+  platform results.
+- Development launcher checks passed; backend and frontend reachability were
+  not run because both local servers were intentionally stopped.
