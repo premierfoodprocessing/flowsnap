@@ -140,11 +140,17 @@ test('platform page reports verified local and production results', () => {
 
   assert.match(
     supportedPlatformsHtml,
-    /<strong>Last verified:<\/strong> August 7, 2026/,
+    /<strong>Last verified:<\/strong> August 9, 2026/,
   );
   assert.match(
     supportedPlatformsHtml,
     /<strong>Production workflow:<\/strong> Currently unavailable\./,
+  );
+  assert.equal(
+    (supportedPlatformsHtml.match(
+      /recommended 720p-or-lower selection/g,
+    ) || []).length,
+    3,
   );
 });
 

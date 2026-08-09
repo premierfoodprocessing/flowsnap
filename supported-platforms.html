@@ -21,28 +21,31 @@
   <main class="legal">
     <div class="container narrow">
       <h1>Supported Platforms and Current Status</h1>
-      <p><strong>Last verified:</strong> August 7, 2026</p>
+      <p><strong>Last verified:</strong> August 9, 2026</p>
       <p>FlowSnap works with authorised public-media links from several platforms. Source platforms can change their formats, access controls and server behavior without notice, so this page reports observed results rather than guaranteed availability.</p>
 
       <h2>TikTok</h2>
       <p><strong>Local workflow:</strong> Verified successful.</p>
       <p><strong>Production workflow:</strong> Verified successful.</p>
-      <p><strong>Known limitations:</strong> TikTok may intermittently refuse extraction or delivery requests. Some format choices can look identical, and a historical test found a format labelled with audio that produced a silent file. Those format-classification issues remain under investigation.</p>
+      <p><strong>Latest result:</strong> The recommended 720p-or-lower selection produced good-quality, synchronized video and audio.</p>
+      <p><strong>Known limitations:</strong> TikTok may intermittently refuse extraction or delivery requests. Some format choices can look identical, and a historical test found a format labelled with audio that produced a silent file. The latest verification did not reproduce the silent-file result.</p>
 
       <h2>Instagram</h2>
       <p><strong>Local workflow:</strong> Verified successful.</p>
       <p><strong>Production workflow:</strong> Verified successful.</p>
-      <p><strong>Known limitations:</strong> Instagram may expose a video-only source format. When a separate audio stream is available, FlowSnap adds it during preparation. The completed local and production test files played with video and audio.</p>
+      <p><strong>Latest result:</strong> The recommended 720p-or-lower selection produced good-quality, synchronized video and audio.</p>
+      <p><strong>Known limitations:</strong> Instagram may expose a video-only source format. When a separate audio stream is available, FlowSnap adds it during preparation.</p>
 
       <h2>Facebook</h2>
       <p><strong>Local workflow:</strong> Verified successful.</p>
       <p><strong>Production workflow:</strong> Verified successful.</p>
-      <p><strong>Known limitations:</strong> Facebook may expose a video-only source format. When a separate audio stream is available, FlowSnap adds it during preparation. The completed local and production test files played with video and audio.</p>
+      <p><strong>Latest result:</strong> The recommended 720p-or-lower selection produced good-quality, synchronized video and audio.</p>
+      <p><strong>Known limitations:</strong> Facebook may expose a video-only source format. When a separate audio stream is available, FlowSnap adds it during preparation. Higher-resolution AV1 files may not play smoothly on every device, so those options are not selected by default.</p>
 
       <h2>YouTube</h2>
-      <p><strong>Local workflow:</strong> Verified successful.</p>
+      <p><strong>Local workflow:</strong> Currently unavailable in the latest check.</p>
       <p><strong>Production workflow:</strong> Currently unavailable.</p>
-      <p><strong>Current limitation:</strong> YouTube is temporarily refusing access from FlowSnap's production download server. FlowSnap reports this as a structured platform error. Further YouTube investigation is intentionally deferred while other work is completed.</p>
+      <p><strong>Current limitation:</strong> YouTube is temporarily refusing access during current FlowSnap extraction checks. FlowSnap reports this as a structured platform error. Further YouTube investigation is intentionally deferred while other work is completed.</p>
 
       <h2>What a verified result means</h2>
       <p>A verified result means a public link completed the analysis, format selection, preparation and download workflow during the stated test. It does not guarantee that every link or future platform response will work.</p>

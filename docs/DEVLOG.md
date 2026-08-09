@@ -1008,3 +1008,26 @@ current preference for later review.
 - Python compilation, frontend module syntax and Git whitespace checks passed.
 - The exact reported Facebook Reel resolved through the running local API with
   Facebook `hd` (720p) as the compatible recommended selection.
+
+---
+
+## 2026-08-09 - Session 34: Recommended-Quality Platform Verification
+
+### Completed
+
+- Recorded Gee's manual post-deployment verification of the recommended
+  720p-or-lower selection.
+- Confirmed Facebook, Instagram and TikTok produced good-quality, synchronized
+  video and audio with the recommendation applied.
+- Confirmed YouTube still refused extraction during the latest check.
+- Updated the public platform-status page and its last-verified date.
+- Retained TikTok's intermittent-access and historical audio-label disclosures.
+- Added Facebook's higher-resolution AV1 playback limitation while keeping
+  those formats available for manual selection.
+
+### Current Status
+
+Facebook, Instagram and TikTok are currently verified with the recommended
+quality policy. YouTube remains unavailable in the latest check. MON-003's
+30-day production observation continues, with the first weekly review planned
+for approximately 2026-08-16. SEO and domain selection remain paused.
