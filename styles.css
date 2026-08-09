@@ -65,6 +65,76 @@ body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSy
 .media-result.no-thumbnail .result-thumbnail {
   display: none;
 }
+
+.revenue-placement[hidden] {
+  display: none;
+}
+
+.revenue-placement {
+  padding: 28px 0;
+  background: #f8fafc;
+  border-block: 1px solid var(--line);
+}
+
+.revenue-placement-inner {
+  min-height: 120px;
+  display: grid;
+  align-content: center;
+  gap: 10px;
+  padding: 20px 24px;
+  color: var(--muted);
+  background: var(--white);
+  border: 1px dashed #cbd5e1;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.revenue-placement-label {
+  margin: 0;
+  color: #475569;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.revenue-placement-image {
+  width: min(100%, 640px);
+  max-height: 180px;
+  margin: 0 auto;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+.revenue-placement-image[hidden] {
+  display: none;
+}
+
+.revenue-placement-headline {
+  margin: 0;
+  color: var(--ink);
+  font-size: 1.05rem;
+  font-weight: 800;
+}
+
+.revenue-placement-description {
+  max-width: 680px;
+  margin: 4px auto 0;
+}
+
+.revenue-placement-link {
+  display: inline-block;
+  margin-top: 8px;
+  color: #334155;
+  font-weight: 800;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.revenue-placement-disclosure {
+  margin: 0;
+  font-size: 0.82rem;
+}
 .result-source {
   display: inline-flex;
   padding: 9px 15px;
@@ -254,5 +324,14 @@ body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSy
   .prepare-button {
     min-height: 48px;
     padding-inline: 16px;
+  }
+
+  .revenue-placement {
+    padding: 20px 0;
+  }
+
+  .revenue-placement-inner {
+    min-height: 100px;
+    padding: 18px;
   }
 }

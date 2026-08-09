@@ -845,3 +845,117 @@ backend suites complete normally with this test configuration.
 The local observation package and emergency delivery control are ready for
 review. Render settings were not changed, and the 30-day observation period has
 not started.
+
+---
+
+## 2026-08-09 - Session 29: Production Delivery-Pause Verification
+
+### Completed
+
+- Deployed commit `4b3b4e8` through Render.
+- Added `FLOWSNAP_DELIVERY_ENABLED` to the production environment.
+- Confirmed the production root and health checks return `200`.
+- Temporarily set delivery to `false` for a controlled emergency-pause test.
+- Verified a harmless preparation request returned structured
+  `503 delivery_paused` without contacting a media platform.
+- Restored delivery to `true` and redeployed immediately.
+- Verified the same fake request returned the normal `422 analysis_expired`
+  response, confirming preparation was available again.
+- Recorded the production verification in the operations runbook.
+
+### Current Status
+
+Production delivery is enabled and healthy. The emergency pause procedure is
+verified end to end. MON-003 remains in progress until notification and budget
+controls are configured and the 30-day observation period is completed.
+
+---
+
+## 2026-08-09 - Session 30: Production Observation Started
+
+### Completed
+
+- Enabled Render's default service notifications.
+- Inspected the workspace Billing and Usage interface.
+- Confirmed the current interface does not expose a cost-control or
+  spending-alert option for this workspace.
+- Retained the MON-003 manual weekly cost review as the active fallback.
+- Kept the approved monthly budget and billing details outside the repository
+  and chat.
+- Started the 30-day production observation window on 2026-08-09, with day 30
+  planned for 2026-09-07.
+
+### Current Status
+
+MON-003 production observation is active. The emergency delivery control and
+service notifications are configured. Weekly manual Billing and Usage reviews
+are required because native spending alerts are not available in the current
+Render interface.
+
+---
+
+## 2026-08-09 - Session 31: Disabled Revenue Placement Component
+
+### Completed
+
+- Completed MON-006 without enabling monetisation.
+- Added one provider-neutral placement after the hero result and responsible-use
+  notice, outside the media result and download controls.
+- Added a hardcoded feature flag that defaults to `false`.
+- Kept the disabled placement fully hidden with no reserved page space.
+- Added a visible `Sponsored` label and separation disclosure for any future
+  enabled state.
+- Used neutral styling that does not resemble FlowSnap action buttons.
+- Reserved stable desktop and mobile layout space only when the placement is
+  enabled.
+- Added no provider scripts, links, tracking calls or third-party requests.
+- Added regression coverage for disabled state, placement separation,
+  disclosure, responsive dimensions and prohibited provider markers.
+
+### Verification
+
+- Frontend automated tests: passed.
+- Frontend module syntax: passed.
+- Git whitespace check: passed.
+
+### Current Status
+
+MON-006 is complete, but the component remains disabled and monetisation is not
+active. MON-003 observation continues through 2026-09-07. MON-007 provider
+evaluation remains dependent on the outstanding MON-003 evidence and other
+readiness gates.
+
+---
+
+## 2026-08-09 - Session 32: Controlled Direct Sponsorship Pipeline
+
+### Completed
+
+- Added a source-controlled direct-sponsorship configuration.
+- Kept both the master placement flag and sponsorship entry disabled by default.
+- Added validation for approved labels, required copy, HTTPS destinations,
+  optional local images and UTC start/end dates.
+- Restricted images to local files under `assets/sponsors/`.
+- Required alternative text whenever a sponsorship image is configured.
+- Rejected remote images, unsafe paths, non-HTTPS links, incomplete content,
+  invalid dates, future entries and expired entries.
+- Rendered sponsor fields with DOM text properties rather than raw HTML.
+- Added `noopener`, `noreferrer` and `sponsored` link relationships.
+- Avoided assigning an image source until a valid active sponsorship exists.
+- Added a complete review, configuration, testing, publishing and emergency-off
+  workflow in `docs/SPONSORSHIPS.md`.
+- Added automated tests for disabled, active, invalid, scheduled and expired
+  sponsorship configurations.
+
+### Verification
+
+- Frontend test files: 3 passed.
+- Main, configuration and sponsorship module syntax checks: passed.
+- Git whitespace check: passed.
+
+### Current Status
+
+The direct-sponsorship pipeline is implemented but remains disabled. No sponsor
+content, provider script, tracking request or remote image is active. Publishing
+the first sponsorship requires separate content approval, tests, commit, push
+and controlled-launch review.

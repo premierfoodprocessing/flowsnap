@@ -34,6 +34,26 @@ histories. Follow the MON-002 allowlist and retention rules.
 - Record the provider alert configuration date and one successful alert test in
   the private operating copy.
 
+### Current Render Control
+
+As checked in the Render workspace on 2026-08-09, the available Billing and
+Usage interface did not expose a cost-control or spending-alert option. Until
+that changes, FlowSnap uses a manual weekly review. Keep the approved monthly
+budget amount and all billing details in the private operating copy, not in the
+repository or chat.
+
+Render's default service notifications were enabled on 2026-08-09 for service
+and deployment events. These notifications do not replace the manual cost
+review.
+
+### Current Observation Window
+
+- Start date: 2026-08-09
+- Planned day 30: 2026-09-07
+- Review frequency: weekly, plus month end or any unexpected usage event.
+- Cost monitoring: manual Billing and Usage review.
+- Operational notifications: Render default service notifications enabled.
+
 ## Emergency Delivery Pause
 
 The backend reads `FLOWSNAP_DELIVERY_ENABLED` when it starts. The default is
@@ -71,3 +91,16 @@ FLOWSNAP_DELIVERY_ENABLED=false uvicorn app:app --reload
 
 Do not place production credentials or provider account details in this file,
 the worksheet or Git history.
+
+## Production Verification Record
+
+- Date: 2026-08-09
+- Deployment commit: `4b3b4e8`
+- Host: Render
+- Paused-state result: preparation returned `503 delivery_paused`.
+- Availability during pause: root and health checks returned `200`.
+- Resumed-state result: the same fake preparation request returned the expected
+  `422 analysis_expired`, confirming preparation was available again.
+- Final configuration: `FLOWSNAP_DELIVERY_ENABLED=true`.
+- Media-platform requests: none; verification used fake analysis and format
+  identifiers.

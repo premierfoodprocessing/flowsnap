@@ -460,7 +460,7 @@ Pause or disable monetisation when:
 | MON-003 | Define rate limits, file limits and monthly cost thresholds | Usage observation| In progress |
 | MON-004 | Publish policy, contact and takedown pages                  | Content review   | Complete |
 | MON-005 | Improve mobile download controls                            | FS-011           | Complete |
-| MON-006 | Build a disabled provider-neutral placement component       | MON-004          | Planned |
+| MON-006 | Build a disabled provider-neutral placement component       | MON-004          | Complete |
 | MON-007 | Evaluate providers using the documented rubric              | MON-002–006      | Planned |
 | MON-008 | Run one-placement controlled launch                         | All readiness gates | Planned |
 
@@ -470,6 +470,7 @@ Monetisation is specified but not enabled.
 
 FlowSnap is currently at M0. The MON-003 policy is defined, but the task remains
 in progress until the 30-day observation window is complete and production
-budget alerts are configured. MON-001, MON-002, MON-004 and MON-005 are
-complete. MON-006 may be developed in parallel but cannot advance FlowSnap past
-M0 until the MON-003 evidence is recorded.
+budget alerts are configured. MON-001, MON-002 and MON-004 through MON-006 are
+complete. The placement component remains disabled and makes no third-party
+requests. MON-007 cannot complete until the MON-003 evidence is recorded and
+all provider dependencies are ready for evaluation.

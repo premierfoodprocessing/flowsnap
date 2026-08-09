@@ -8,6 +8,8 @@ import {
   downloadPreparedFile,
   resolveApiBaseUrl,
 } from './format-utils.mjs';
+import { revenueConfig } from './revenue-config.js';
+import { getActiveSponsorship } from './sponsorship.js';
 const API_BASE_URL = resolveApiBaseUrl(window.location);
 
 const menuButton = document.querySelector('.menu-toggle');
@@ -30,6 +32,47 @@ const formatAudioNotice = document.getElementById('format-audio-notice');
 const prepareActions = document.getElementById('prepare-actions');
 const prepareButton = document.getElementById('prepare-button');
 const prepareStatus = document.getElementById('prepare-status');
+const resultRevenuePlacement = document.getElementById(
+  'result-revenue-placement',
+);
+
+if (resultRevenuePlacement) {
+  const activeSponsorship = getActiveSponsorship(
+    revenueConfig,
+  );
+
+  if (activeSponsorship) {
+    const label = resultRevenuePlacement.querySelector(
+      '.revenue-placement-label',
+    );
+    const headline = resultRevenuePlacement.querySelector(
+      '.revenue-placement-headline',
+    );
+    const description = resultRevenuePlacement.querySelector(
+      '.revenue-placement-description',
+    );
+    const link = resultRevenuePlacement.querySelector(
+      '.revenue-placement-link',
+    );
+    const image = resultRevenuePlacement.querySelector(
+      '.revenue-placement-image',
+    );
+
+    label.textContent = activeSponsorship.label;
+    headline.textContent = activeSponsorship.headline;
+    description.textContent = activeSponsorship.description;
+    link.textContent = activeSponsorship.linkLabel;
+    link.href = activeSponsorship.destinationUrl;
+
+    if (activeSponsorship.imageSrc) {
+      image.src = activeSponsorship.imageSrc;
+      image.alt = activeSponsorship.imageAlt;
+      image.hidden = false;
+    }
+
+    resultRevenuePlacement.hidden = false;
+  }
+}
 
 let currentAnalysisId = '';
 

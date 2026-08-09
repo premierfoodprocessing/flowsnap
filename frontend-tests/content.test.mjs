@@ -30,6 +30,14 @@ const stylesCss = await readFile(
   new URL('../styles.css', import.meta.url),
   'utf8',
 );
+const scriptJs = await readFile(
+  new URL('../script.js', import.meta.url),
+  'utf8',
+);
+const revenueConfigJs = await readFile(
+  new URL('../revenue-config.js', import.meta.url),
+  'utf8',
+);
 
 
 test('homepage describes the live download workflow', () => {
@@ -172,5 +180,68 @@ test('mobile download controls allow long filenames to wrap', () => {
   assert.match(
     stylesCss,
     /@media \(max-width: 600px\)[\s\S]*\.prepare-button\s*\{[^}]*min-height:\s*48px/s,
+  );
+});
+
+
+test('revenue placement is disabled and separate from download controls', () => {
+  const resultCardStart = indexHtml.indexOf(
+    '<section class="media-result"',
+  );
+  const resultCardEnd = indexHtml.indexOf(
+    '</section>',
+    resultCardStart,
+  );
+  const placementStart = indexHtml.indexOf(
+    'id="result-revenue-placement"',
+  );
+
+  assert.match(
+    indexHtml,
+    /<aside[\s\S]*id="result-revenue-placement"[\s\S]*hidden/,
+  );
+  assert.match(indexHtml, /Sponsored content/);
+  assert.match(
+    indexHtml,
+    /separate from FlowSnap's media and download controls/,
+  );
+  assert.ok(resultCardStart >= 0);
+  assert.ok(resultCardEnd > resultCardStart);
+  assert.ok(placementStart > resultCardEnd);
+  assert.match(
+    revenueConfigJs,
+    /placementsEnabled:\s*false/,
+  );
+});
+
+
+test('revenue placement reserves responsive space only when visible', () => {
+  assert.match(
+    stylesCss,
+    /\.revenue-placement\[hidden\]\s*\{[^}]*display:\s*none/s,
+  );
+  assert.match(
+    stylesCss,
+    /\.revenue-placement-inner\s*\{[^}]*min-height:\s*120px/s,
+  );
+  assert.match(
+    stylesCss,
+    /@media \(max-width: 600px\)[\s\S]*\.revenue-placement-inner\s*\{[^}]*min-height:\s*100px/s,
+  );
+});
+
+
+test('disabled revenue component has no provider or tracking requests', () => {
+  assert.match(
+    indexHtml,
+    /<img\s+class="revenue-placement-image"(?![^>]*\ssrc=)[^>]*>/s,
+  );
+  assert.doesNotMatch(
+    indexHtml,
+    /doubleclick|googlesyndication|adservice|tracking-pixel/i,
+  );
+  assert.doesNotMatch(
+    scriptJs,
+    /doubleclick|googlesyndication|adservice|tracking-pixel/i,
   );
 });
