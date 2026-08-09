@@ -103,15 +103,32 @@ export function chooseDefaultFormat(formats) {
     return null;
   }
 
-  const formatsWithAudio = videoFormats.filter(
+  const recommendedFormats = videoFormats.filter((format) => {
+    const height = getFormatHeight(format);
+    return height > 0 && height <= 720;
+  });
+
+  const qualityCandidates = recommendedFormats.length > 0
+    ? recommendedFormats
+    : videoFormats;
+
+  const formatsWithAudio = qualityCandidates.filter(
     (format) => format.has_audio,
   );
 
   const candidates = formatsWithAudio.length > 0
     ? formatsWithAudio
-    : videoFormats;
+    : qualityCandidates;
 
-  const selected = candidates.reduce(
+  const compatibleCandidates = candidates.filter(
+    (format) => format.is_compatible === true,
+  );
+
+  const preferredCandidates = compatibleCandidates.length > 0
+    ? compatibleCandidates
+    : candidates;
+
+  const selected = preferredCandidates.reduce(
     (best, current) => (
       getFormatHeight(current) > getFormatHeight(best)
         ? current

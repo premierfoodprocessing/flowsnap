@@ -72,6 +72,7 @@ def test_get_formats_returns_sanitized_video_options(monkeypatch):
                 "filesize": 1_500_000,
                 "has_audio": True,
                 "has_video": True,
+                "is_compatible": True,
             },
             {
                 "format_id": "137",
@@ -81,6 +82,7 @@ def test_get_formats_returns_sanitized_video_options(monkeypatch):
                 "filesize": 8_000_000,
                 "has_audio": False,
                 "has_video": True,
+                "is_compatible": True,
             },
         ],
     }
@@ -143,9 +145,61 @@ def test_get_formats_keeps_direct_media_with_unknown_codecs(
                 "filesize": None,
                 "has_audio": False,
                 "has_video": True,
+                "is_compatible": False,
             }
         ],
     }
+
+
+class FakeFacebookYoutubeDL:
+    def __init__(self, options):
+        self.options = options
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        return False
+
+    def extract_info(self, url, download):
+        return {
+            "title": "Facebook Reel",
+            "extractor": "facebook",
+            "formats": [
+                {
+                    "format_id": "hd",
+                    "ext": "mp4",
+                    "vcodec": None,
+                    "acodec": None,
+                },
+                {
+                    "format_id": "dash-av1",
+                    "ext": "mp4",
+                    "width": 1080,
+                    "height": 1920,
+                    "vcodec": "av01.0.08M.08",
+                    "acodec": "none",
+                },
+            ],
+        }
+
+
+def test_get_formats_marks_facebook_hd_as_compatible(monkeypatch):
+    monkeypatch.setattr(
+        extractor,
+        "YoutubeDL",
+        FakeFacebookYoutubeDL,
+    )
+
+    result = extractor.get_formats(
+        "https://www.facebook.com/reel/example"
+    )
+
+    assert result["formats"][0]["is_compatible"] is True
+    assert result["formats"][0]["quality"] == "720p"
+    assert result["formats"][1]["is_compatible"] is False
+    assert result["formats"][1]["resolution"] == "1080x1920"
+    assert result["formats"][1]["quality"] == "1080p"
 
 class FakeRichMediaYoutubeDL:
     def __init__(self, options):

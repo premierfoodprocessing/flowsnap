@@ -959,3 +959,52 @@ The direct-sponsorship pipeline is implemented but remains disabled. No sponsor
 content, provider script, tracking request or remote image is active. Publishing
 the first sponsorship requires separate content approval, tests, commit, push
 and controlled-launch review.
+
+---
+
+## 2026-08-09 - Session 33: Facebook Playback Compatibility
+
+### Diagnosis
+
+- Reproduced a reported Facebook Reel download through the local FlowSnap
+  delivery path.
+- Confirmed the automatically selected 1080-by-1920 stream contained 418 AV1
+  video frames at 30 frames per second and clear AAC audio.
+- Confirmed FFmpeg detected no frozen intervals in the downloaded stream.
+- Identified AV1 playback performance or decoder compatibility as the reason
+  the video could appear as slowly changing still images while audio remained
+  clear.
+- Verified Facebook's `hd` fallback produced H.264 video at 30 frames per
+  second with the same 418-frame content.
+
+### Changed
+
+- Added a sanitized compatibility signal to extracted video formats.
+- Marked H.264 streams and Facebook's direct `sd`/`hd` fallbacks as compatible.
+- Changed automatic selection to prefer compatible formats while keeping AV1
+  formats available for manual selection.
+- Capped the recommended automatic choice at 720p when a known 720p-or-lower
+  option is available; higher resolutions remain manually selectable.
+- Marked the automatic choice as `Recommended` in the format list.
+- Versioned the frontend module URLs so browsers load the new selection policy
+  instead of retaining the earlier highest-resolution behavior.
+- Corrected portrait quality labels to use the shorter image dimension, so
+  1080-by-1920 is presented as 1080p rather than 1920p.
+- Added backend and frontend regression coverage for Facebook compatibility,
+  portrait labels and compatible default selection.
+
+### Current Status
+
+The compatibility change is implemented and verified locally. SEO and
+domain-name selection remain paused; FlowSnapDL.com or a close variation is the
+current preference for later review.
+
+### Verification
+
+- Focused format-extraction backend tests: 5 passed.
+- Stable backend suite: 36 passed, 20 gated tests skipped.
+- Download-enabled backend suite: 54 passed, 2 live tests skipped.
+- Frontend automated tests: 51 passed.
+- Python compilation, frontend module syntax and Git whitespace checks passed.
+- The exact reported Facebook Reel resolved through the running local API with
+  Facebook `hd` (720p) as the compatible recommended selection.

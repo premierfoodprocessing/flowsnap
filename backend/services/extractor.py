@@ -138,6 +138,7 @@ def get_formats(url: str) -> dict:
         ) from exc
 
     formats = []
+    extractor_name = str(info.get("extractor") or "").lower()
 
     for item in info.get("formats") or []:
         has_video = item.get("vcodec") != "none"
@@ -157,10 +158,27 @@ def get_formats(url: str) -> dict:
         else:
             resolution = item.get("resolution") or "unknown"
 
-        quality = (
-            f"{height}p"
-            if height
-            else item.get("format_note") or "unknown"
+        if width and height:
+            quality = f"{min(width, height)}p"
+        elif (
+            extractor_name == "facebook"
+            and str(item.get("format_id")) == "hd"
+        ):
+            quality = "720p"
+        else:
+            quality = (
+                f"{height}p"
+                if height
+                else item.get("format_note") or "unknown"
+            )
+
+        video_codec = str(item.get("vcodec") or "").lower()
+        is_compatible = (
+            video_codec.startswith(("avc", "h264"))
+            or (
+                extractor_name == "facebook"
+                and str(item.get("format_id")) in {"sd", "hd"}
+            )
         )
 
         formats.append(
@@ -175,6 +193,7 @@ def get_formats(url: str) -> dict:
                 ),
                 "has_audio": has_audio,
                 "has_video": has_video,
+                "is_compatible": is_compatible,
             }
         )
     return {

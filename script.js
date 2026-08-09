@@ -7,7 +7,7 @@ import {
   describeFormat,
   downloadPreparedFile,
   resolveApiBaseUrl,
-} from './format-utils.mjs';
+} from './format-utils.mjs?v=2';
 import { revenueConfig } from './revenue-config.js';
 import { getActiveSponsorship } from './sponsorship.js';
 const API_BASE_URL = resolveApiBaseUrl(window.location);
@@ -132,9 +132,16 @@ function renderFormats(formats) {
         '.format-status',
       );
 
+      const recommended =
+        button.dataset.formatId === String(defaultFormatId);
+
       status.textContent = selected
-        ? 'Selected'
-        : 'Select';
+        ? recommended
+          ? 'Recommended · Selected'
+          : 'Selected'
+        : recommended
+          ? 'Recommended'
+          : 'Select';
     }
   }
 

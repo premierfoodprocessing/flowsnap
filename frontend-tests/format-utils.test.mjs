@@ -142,7 +142,7 @@ test('chooseDefaultFormat prefers the best format with audio', () => {
 });
 
 
-test('chooseDefaultFormat falls back to the best video-only format', () => {
+test('chooseDefaultFormat recommends 720p over a higher resolution', () => {
   const formats = [
     {
       format_id: '136',
@@ -162,7 +162,53 @@ test('chooseDefaultFormat falls back to the best video-only format', () => {
 
   assert.equal(
     chooseDefaultFormat(formats),
-    '137',
+    '136',
+  );
+});
+
+
+test('chooseDefaultFormat prefers compatible video over higher AV1', () => {
+  const formats = [
+    {
+      format_id: 'hd',
+      quality: '720p',
+      resolution: '720x1280',
+      has_audio: false,
+      has_video: true,
+      is_compatible: true,
+    },
+    {
+      format_id: 'av1-full-hd',
+      quality: '1080p',
+      resolution: '1080x1920',
+      has_audio: false,
+      has_video: true,
+      is_compatible: false,
+    },
+  ];
+
+  assert.equal(
+    chooseDefaultFormat(formats),
+    'hd',
+  );
+});
+
+
+test('chooseDefaultFormat uses higher quality when no 720p exists', () => {
+  const formats = [
+    {
+      format_id: '1080-only',
+      quality: '1080p',
+      resolution: '1920x1080',
+      has_audio: true,
+      has_video: true,
+      is_compatible: true,
+    },
+  ];
+
+  assert.equal(
+    chooseDefaultFormat(formats),
+    '1080-only',
   );
 });
 
