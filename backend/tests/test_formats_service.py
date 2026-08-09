@@ -31,6 +31,7 @@ class FakeYoutubeDL:
                     "vcodec": "h264",
                     "acodec": "aac",
                     "filesize": 1_500_000,
+                    "tbr": 850.4,
                 },
                 {
                     "format_id": "137",
@@ -73,6 +74,8 @@ def test_get_formats_returns_sanitized_video_options(monkeypatch):
                 "has_audio": True,
                 "has_video": True,
                 "is_compatible": True,
+                "video_codec": "H.264",
+                "bitrate_kbps": 850,
             },
             {
                 "format_id": "137",
@@ -83,6 +86,8 @@ def test_get_formats_returns_sanitized_video_options(monkeypatch):
                 "has_audio": False,
                 "has_video": True,
                 "is_compatible": True,
+                "video_codec": "H.264",
+                "bitrate_kbps": None,
             },
         ],
     }
@@ -146,6 +151,8 @@ def test_get_formats_keeps_direct_media_with_unknown_codecs(
                 "has_audio": False,
                 "has_video": True,
                 "is_compatible": False,
+                "video_codec": "Unknown",
+                "bitrate_kbps": None,
             }
         ],
     }
@@ -197,9 +204,69 @@ def test_get_formats_marks_facebook_hd_as_compatible(monkeypatch):
 
     assert result["formats"][0]["is_compatible"] is True
     assert result["formats"][0]["quality"] == "720p"
+    assert result["formats"][0]["video_codec"] == "Unknown"
     assert result["formats"][1]["is_compatible"] is False
+    assert result["formats"][1]["video_codec"] == "AV1"
     assert result["formats"][1]["resolution"] == "1080x1920"
     assert result["formats"][1]["quality"] == "1080p"
+
+
+class FakeDuplicateFormatsYoutubeDL:
+    def __init__(self, options):
+        self.options = options
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        return False
+
+    def extract_info(self, url, download):
+        base_format = {
+            "ext": "mp4",
+            "width": 720,
+            "height": 1280,
+            "vcodec": "h264",
+            "acodec": "aac",
+            "filesize": 4_000_000,
+            "tbr": 1_200,
+            "protocol": "https",
+        }
+        return {
+            "title": "Duplicate formats",
+            "formats": [
+                {**base_format, "format_id": "first"},
+                {**base_format, "format_id": "duplicate"},
+                {
+                    **base_format,
+                    "format_id": "different-bitrate",
+                    "tbr": 1_600,
+                },
+            ],
+        }
+
+
+def test_get_formats_removes_only_identical_technical_duplicates(
+    monkeypatch,
+):
+    monkeypatch.setattr(
+        extractor,
+        "YoutubeDL",
+        FakeDuplicateFormatsYoutubeDL,
+    )
+
+    result = extractor.get_formats(
+        "https://example.com/duplicates"
+    )
+
+    assert [
+        media_format["format_id"]
+        for media_format in result["formats"]
+    ] == ["first", "different-bitrate"]
+    assert [
+        media_format["bitrate_kbps"]
+        for media_format in result["formats"]
+    ] == [1_200, 1_600]
 
 class FakeRichMediaYoutubeDL:
     def __init__(self, options):

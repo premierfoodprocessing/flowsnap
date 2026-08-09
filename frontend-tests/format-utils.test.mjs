@@ -93,6 +93,26 @@ test('describeFormat explains audio-aware video streams', () => {
 });
 
 
+test('describeFormat distinguishes codec and bitrate variants', () => {
+  const format = {
+    format_id: 'tik-h265',
+    extension: 'mp4',
+    resolution: '720x1280',
+    quality: '720p',
+    filesize: 8_000_000,
+    has_audio: true,
+    has_video: true,
+    video_codec: 'H.265',
+    bitrate_kbps: 1_550,
+  };
+
+  assert.equal(
+    describeFormat(format),
+    '720p · MP4 · 8 MB · H.265 · 1.6 Mbps · Video + audio',
+  );
+});
+
+
 test('describeFormat handles direct media with unknown details', () => {
   const format = {
     format_id: 'mp4',
@@ -209,6 +229,31 @@ test('chooseDefaultFormat uses higher quality when no 720p exists', () => {
   assert.equal(
     chooseDefaultFormat(formats),
     '1080-only',
+  );
+});
+
+
+test('chooseDefaultFormat uses bitrate to break resolution ties', () => {
+  const formats = [
+    {
+      format_id: 'lower-bitrate',
+      quality: '720p',
+      has_audio: true,
+      has_video: true,
+      bitrate_kbps: 800,
+    },
+    {
+      format_id: 'higher-bitrate',
+      quality: '720p',
+      has_audio: true,
+      has_video: true,
+      bitrate_kbps: 1_600,
+    },
+  ];
+
+  assert.equal(
+    chooseDefaultFormat(formats),
+    'higher-bitrate',
   );
 });
 

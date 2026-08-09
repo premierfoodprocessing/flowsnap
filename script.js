@@ -7,7 +7,7 @@ import {
   describeFormat,
   downloadPreparedFile,
   resolveApiBaseUrl,
-} from './format-utils.mjs?v=2';
+} from './format-utils.mjs?v=3';
 import { revenueConfig } from './revenue-config.js';
 import {
   getActiveSponsorship,

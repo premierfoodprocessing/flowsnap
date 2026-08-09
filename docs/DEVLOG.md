@@ -1075,3 +1075,39 @@ MON-003 weekly review.
   platform results.
 - Development launcher checks passed; backend and frontend reachability were
   not run because both local servers were intentionally stopped.
+
+---
+
+## 2026-08-09 - Session 36: TikTok Format Distinctions
+
+### Completed
+
+- Added sanitized video-codec and bitrate metadata to format responses.
+- Added codec and bitrate details to format labels when known.
+- Removed only exact technical duplicates while preserving distinct variants.
+- Added bitrate as the tie-breaker between otherwise equal recommended formats.
+- Added cache-version updates so browsers load the revised format presentation.
+- Added backend and frontend regression coverage for duplicate removal,
+  technical distinctions and bitrate selection.
+- Verified FS-004 with a live public TikTok link and marked the issue fixed.
+- Reassessed FS-006 and confirmed that current alternatives would retain signed
+  media details, expose delivery information or download media prematurely.
+- Left FS-006 investigating under the existing privacy, cost and storage
+  boundaries.
+
+### Current Status
+
+The achievable FS-004 implementation and live verification are complete.
+FS-006 has no currently acceptable implementation and is documented for future
+architectural review. YouTube, SEO and monetisation work remain paused or gated
+as previously recorded.
+
+### Verification
+
+- Focused format-extraction backend tests: 6 passed.
+- Download-enabled backend suite: 55 passed, 2 live tests skipped.
+- Complete frontend test files passed.
+- Python compilation, frontend module syntax and Git whitespace checks passed.
+- A live public TikTok test returned five technically distinct choices.
+- The recommended 720p H.264 download contained 30-fps video and AAC audio with
+  approximately 0.04 seconds difference between stream durations.

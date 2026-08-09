@@ -61,10 +61,24 @@ export function describeFormat(format) {
     ? 'Video + audio'
     : 'Video stream · Audio added when available';
 
+  const technicalDetails = [];
+
+  if (format.video_codec && format.video_codec !== 'Unknown') {
+    technicalDetails.push(format.video_codec);
+  }
+
+  if (Number.isFinite(format.bitrate_kbps) && format.bitrate_kbps > 0) {
+    const bitrateMbps = format.bitrate_kbps / 1_000;
+    technicalDetails.push(
+      `${bitrateMbps.toFixed(1).replace(/\.0$/, '')} Mbps`,
+    );
+  }
+
   return [
     quality,
     extension,
     formatFileSize(format.filesize),
+    ...technicalDetails,
     audioDescription,
   ].join(' · ');
 }
@@ -87,6 +101,13 @@ function getFormatHeight(format) {
   }
 
   return 0;
+}
+
+
+function getFormatBitrate(format) {
+  return Number.isFinite(format?.bitrate_kbps)
+    ? format.bitrate_kbps
+    : 0;
 }
 
 
@@ -129,11 +150,20 @@ export function chooseDefaultFormat(formats) {
     : candidates;
 
   const selected = preferredCandidates.reduce(
-    (best, current) => (
-      getFormatHeight(current) > getFormatHeight(best)
+    (best, current) => {
+      const currentHeight = getFormatHeight(current);
+      const bestHeight = getFormatHeight(best);
+
+      if (currentHeight !== bestHeight) {
+        return currentHeight > bestHeight
+          ? current
+          : best;
+      }
+
+      return getFormatBitrate(current) > getFormatBitrate(best)
         ? current
-        : best
-    ),
+        : best;
+    },
   );
 
   return selected.format_id ?? null;

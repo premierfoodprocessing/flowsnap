@@ -25,7 +25,7 @@ This file is the lightweight issue tracker for FlowSnap. It records confirmed bu
 | FS-001 | TikTok extraction sometimes fails on the local backend                      | Monitoring    | High     |
 | FS-002 | YouTube extraction is currently refused locally and through Render          | Open          | High     |
 | FS-003 | TikTok formats labelled “Video + audio” can produce silent video-only files | Monitoring    | High     |
-| FS-004 | Duplicate-looking TikTok format choices are displayed                       | Open          | Medium   |
+| FS-004 | Duplicate-looking TikTok format choices are displayed                       | Fixed         | Medium   |
 | FS-005 | A failed download can navigate away and display raw backend JSON            | Fixed         | Medium   |
 | FS-006 | Analysis and download repeat media extraction                               | Investigating | High     |
 | FS-007 | Different TikTok video IDs appeared during one testing sequence             | Fixed         | Medium   |
@@ -162,7 +162,7 @@ affected format.
 
 ## FS-004 — Duplicate-looking TikTok formats
 
-* **Status:** Open
+* **Status:** Fixed
 * **Severity:** Medium
 * **Environment:** Mobile and laptop public site
 * **Platform:** TikTok
@@ -185,6 +185,25 @@ TikTok provides different internal format IDs that share the same visible resolu
 ### Required fix
 
 Remove true duplicates and expose meaningful differences between formats that are technically distinct.
+
+### Implemented resolution
+
+FlowSnap now exposes sanitized video-codec and bitrate details, uses bitrate to
+choose between otherwise equal recommended formats, and removes only entries
+whose extension, resolution, quality, size, audio state, codec, bitrate and
+delivery protocol are identical. Distinct technical variants remain available
+with visible codec and bitrate differences.
+
+Automated backend and frontend coverage verifies exact duplicate removal,
+variant preservation, technical labels and bitrate tie-breaking.
+
+### Verification
+
+A live public TikTok test returned five distinct choices with visible H.264 or
+H.265 and bitrate differences. The recommended 720p H.264 option downloaded as
+a 720-by-1280, 30-frame-per-second file with AAC audio. Audio and video durations
+differed by approximately 0.04 seconds, confirming expected synchronization.
+No media URL, title or platform identifier is retained in this register.
 
 ---
 
@@ -245,6 +264,23 @@ Determine whether prepared jobs can securely retain the selected direct-media in
 ### Security finding
 
 Reusing yt-dlp's complete processed analysis would retain signed direct-media URLs and may retain sensitive request headers. That design was rejected because FlowSnap must not copy or persist platform tokens or cookies. A safer design must avoid both repeated platform-page extraction and credential retention.
+
+### 2026-08-09 assessment
+
+The current delivery path still gives yt-dlp the source URL and selected format
+ID, so yt-dlp reopens the platform during delivery. The available alternatives
+remain unsuitable:
+
+* Keeping the processed extraction result would retain signed media URLs and
+  potentially sensitive headers in the analysis store.
+* Downloading during analysis would fetch and temporarily store media before a
+  user chooses a format, increasing transfer, compute and storage use.
+* Sending direct media details to the browser would expose signed delivery
+  information and weaken the one-time server-controlled workflow.
+
+FS-006 therefore remains investigating. Do not implement it unless a design can
+avoid credentials, signed URL persistence, unnecessary media storage and a
+material increase in hosting cost.
 
 ---
 

@@ -13,6 +13,30 @@ class MediaExtractionError(Exception):
         super().__init__(message)
 
 
+def describe_video_codec(value) -> str:
+    codec = str(value or "").lower()
+
+    if codec.startswith(("avc", "h264")):
+        return "H.264"
+    if codec.startswith(("hev", "hvc", "h265")):
+        return "H.265"
+    if codec.startswith("av01"):
+        return "AV1"
+    if codec.startswith(("vp09", "vp9")):
+        return "VP9"
+
+    return "Unknown"
+
+
+def get_bitrate_kbps(item: dict) -> int | None:
+    bitrate = item.get("tbr") or item.get("vbr")
+
+    if not isinstance(bitrate, (int, float)) or bitrate <= 0:
+        return None
+
+    return round(bitrate)
+
+
 def get_metadata(url: str) -> dict:
     options = build_ytdlp_options() | {
         "quiet": True,
@@ -138,6 +162,7 @@ def get_formats(url: str) -> dict:
         ) from exc
 
     formats = []
+    seen_format_fingerprints = set()
     extractor_name = str(info.get("extractor") or "").lower()
 
     for item in info.get("formats") or []:
@@ -181,21 +206,37 @@ def get_formats(url: str) -> dict:
             )
         )
 
-        formats.append(
-            {
-                "format_id": str(item.get("format_id")),
-                "extension": item.get("ext"),
-                "resolution": resolution,
-                "quality": quality,
-                "filesize": (
-                    item.get("filesize")
-                    or item.get("filesize_approx")
-                ),
-                "has_audio": has_audio,
-                "has_video": has_video,
-                "is_compatible": is_compatible,
-            }
+        media_format = {
+            "format_id": str(item.get("format_id")),
+            "extension": item.get("ext"),
+            "resolution": resolution,
+            "quality": quality,
+            "filesize": (
+                item.get("filesize")
+                or item.get("filesize_approx")
+            ),
+            "has_audio": has_audio,
+            "has_video": has_video,
+            "is_compatible": is_compatible,
+            "video_codec": describe_video_codec(video_codec),
+            "bitrate_kbps": get_bitrate_kbps(item),
+        }
+        fingerprint = (
+            media_format["extension"],
+            media_format["resolution"],
+            media_format["quality"],
+            media_format["filesize"],
+            media_format["has_audio"],
+            media_format["video_codec"],
+            media_format["bitrate_kbps"],
+            item.get("protocol"),
         )
+
+        if fingerprint in seen_format_fingerprints:
+            continue
+
+        seen_format_fingerprints.add(fingerprint)
+        formats.append(media_format)
     return {
         "title": info.get("title") or "Untitled media",
         "uploader": info.get("uploader"),
