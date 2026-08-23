@@ -26,6 +26,17 @@ Do not enter URLs, titles, creators, filenames, IP addresses, request or
 workflow references, analysis IDs, job IDs, cookies, credentials or individual
 histories. Follow the MON-002 allowlist and retention rules.
 
+### Pulling Peak CPU/Memory/Disk/Bandwidth Automatically
+
+`./scripts/render-usage-report.sh` calls Render's metrics API directly and
+prints a day-by-day CPU, memory, disk and bandwidth/request summary for the
+FlowSnap backend service, ready to paste into the worksheet above (in the
+private operating copy, not here). It requires a Render API key in
+`RENDER_API_KEY` or a gitignored `scripts/.render.env` file - see
+`./scripts/render-usage-report.sh --help`. Render's API does not expose
+billing or cost figures, so the cost columns and the private budget
+comparison still have to come from the Billing and Usage dashboard.
+
 ## Budget Review
 
 - Review manually every week until provider alerts are configured and tested.
@@ -61,17 +72,17 @@ provider usage and cost values only in the private operating copy.
 
 Checklist:
 
-- [ ] Confirm daily aggregate rows exist for all seven dates.
-- [ ] Record total API and expensive requests.
-- [ ] Record analysis, preparation and delivery success/error totals.
-- [ ] Calculate delivery success, rate-limit and capacity-rejection rates.
-- [ ] Calculate average output MB and cost per successful delivery.
+- [x] Confirm daily aggregate rows exist for all seven dates.
+- [x] Record total API and expensive requests.
+- [x] Record analysis, preparation and delivery success/error totals.
+- [x] Calculate delivery success, rate-limit and capacity-rejection rates.
+- [x] Calculate average output MB and cost per successful delivery.
 - [ ] Record peak CPU, memory and temporary-storage use reported by Render.
-- [ ] Compare month-to-date cost with the private monthly budget.
-- [ ] Apply and record any 50%, 75%, 90% or 100% threshold response.
-- [ ] Note any day that unexpectedly consumed more than 10% of the budget.
+- [x] Compare month-to-date cost with the private monthly budget.
+- [x] Apply and record any 50%, 75%, 90% or 100% threshold response.
+- [x] Note any day that unexpectedly consumed more than 10% of the budget.
 - [ ] Confirm default service notifications remain enabled.
-- [ ] Record the review result in this runbook without monetary values or
+- [x] Record the review result in this runbook without monetary values or
       provider account details.
 
 Public-safe review result template:
@@ -87,6 +98,49 @@ Unexpected >10% budget day: yes/no
 Action taken: none/pause/lower limits/investigate/other
 Next review date: 2026-08-23
 ```
+
+### First Weekly Review — Result (completed 2026-08-19, three days late)
+
+```text
+Review date: 2026-08-16 (recorded 2026-08-19)
+Observation dates: 2026-08-09 through 2026-08-15
+Daily rows complete: yes (owner-confirmed qualitative basis, not a raw dashboard export)
+Reliability within provisional limits: yes
+Capacity within provisional limits: yes
+Cost threshold reached: none
+Unexpected >10% budget day: no
+Action taken: none
+Next review date: 2026-08-23
+```
+
+Basis and limitation: this review relied on the owner's confirmation that
+production cost was near $0 for the window, consistent with FlowSnap not yet
+being publicly promoted (monetisation milestone M0, sponsorship disabled).
+Render's peak CPU/memory/storage graphs and confirmation that default service
+notifications remain enabled were not independently pulled this cycle; do a
+full dashboard-sourced review once real public traffic exists, and no later
+than the 2026-09-07 thirty-day checkpoint.
+
+### Second Weekly Review — Result (2026-08-23)
+
+```text
+Review date: 2026-08-23
+Observation dates: 2026-08-16 through 2026-08-22
+Daily rows complete: yes (private operating copy)
+Reliability within provisional limits: yes
+Capacity within provisional limits: yes
+Cost threshold reached: none
+Unexpected >10% budget day: no
+Action taken: none; continue weekly monitoring
+Next review date: 2026-08-30
+```
+
+Basis and limitation: the weekly review used a successful Render metrics API
+report for reliability and capacity, plus a manual Billing and Usage review
+for the cost outcome. Monetary figures and provider account details remain in
+the gitignored private operating copy. Default service-notification status was
+not independently reconfirmed in this review and remains a check for the next
+weekly review.
 
 ## Emergency Delivery Pause
 

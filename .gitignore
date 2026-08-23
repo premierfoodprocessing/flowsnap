@@ -33,3 +33,9 @@ backend/.venv/
 htmlcov/
 
 backend/.env
+
+# Private operations data (budget, billing, worksheet rows) - never commit
+docs/operating-private.md
+
+# Render API key for scripts/render-usage-report.sh - never commit
+scripts/.render.env

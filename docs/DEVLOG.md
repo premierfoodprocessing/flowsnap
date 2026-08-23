@@ -1111,3 +1111,133 @@ as previously recorded.
 - A live public TikTok test returned five technically distinct choices.
 - The recommended 720p H.264 download contained 30-fps video and AAC audio with
   approximately 0.04 seconds difference between stream durations.
+
+---
+
+## 2026-08-19 - Session 37: First MON-003 Weekly Review
+
+### Completed
+
+- Created a gitignored private operating copy (`docs/operating-private.md`)
+  to hold budget figures and worksheet rows, kept out of the repository and
+  chat per the MON-003 data boundary.
+- Recorded the first weekly review (originally due 2026-08-16, completed
+  2026-08-19) in `docs/OPERATIONS.md` using the public-safe result template:
+  no cost threshold reached, no unexpected-usage day, no action taken.
+- The review's basis was the owner's qualitative confirmation of near-$0
+  production cost, consistent with FlowSnap not yet being publicly promoted.
+  Render's peak CPU/memory/storage graphs and the default-notifications
+  confirmation were not independently pulled this cycle.
+
+### Current Status
+
+MON-003 observation continues. This review closes the 2026-08-16 checkpoint
+late but on a sound qualitative basis; a full dashboard-sourced review is
+still owed before or at the 2026-09-07 thirty-day checkpoint, once browser
+access or exported figures are available. Next scheduled review: 2026-08-23.
+
+### Verification
+
+- No code changes; documentation and private-copy scaffolding only.
+
+---
+
+## 2026-08-19 - Session 38: Render Usage Report Script
+
+### Completed
+
+- Confirmed via Render's public API documentation what the REST API exposes:
+  CPU, memory, disk and bandwidth usage, HTTP request counts/latency,
+  connection and instance counts, and resource limits, all via Bearer-token
+  auth. Confirmed billing, invoice and cost data are not exposed by the API,
+  so cost still requires the Billing and Usage dashboard.
+- Added `scripts/render-usage-report.sh`, which resolves the FlowSnap service
+  by name (or a supplied service id), pulls CPU/memory/disk/bandwidth/HTTP
+  metrics for a date window (default: trailing 7 days) and prints a
+  day-by-day summary for pasting into the private worksheet.
+- Read the API key from `RENDER_API_KEY` or a new gitignored
+  `scripts/.render.env`, keeping the credential out of the repository and
+  out of chat.
+- Added both `docs/operating-private.md` and `scripts/.render.env` to
+  `.gitignore`.
+- Pointed `docs/OPERATIONS.md` and the README project-structure listing at
+  the new script.
+- Verified script syntax (`bash -n`) and both failure paths (missing key,
+  invalid key) locally; could not verify a real data pull since no Render
+  API key was available in this session.
+
+### Current Status
+
+Reliability/capacity figures (CPU, memory, disk, bandwidth, requests) for
+future weekly reviews can now be pulled without Claude in Chrome or a manual
+dashboard visit, once a Render API key is generated and placed in
+`scripts/.render.env`. Cost/budget figures remain manual by design, since
+Render's API does not expose them. The script has not yet been run against
+real Render data.
+
+### Verification
+
+- `bash -n scripts/render-usage-report.sh` passed.
+- Ran with no `RENDER_API_KEY` set: exited 1 with the expected setup message.
+- Ran with an invalid `RENDER_API_KEY`: exited 1 with a 401-appropriate
+  message after the service-lookup call failed.
+
+---
+
+## 2026-08-23 - Session 39: Second MON-003 Weekly Review
+
+### Completed
+
+- Generated and stored a Render API key locally in the gitignored
+  `scripts/.render.env` file.
+- Successfully ran `render-usage-report.sh` against the live FlowSnap Render
+  service for the 2026-08-16 through 2026-08-22 UTC review window.
+- Recorded the detailed metrics and the manual Billing and Usage outcome in
+  the private operating copy, keeping monetary figures and provider account
+  details out of the repository and chat.
+- Recorded a public-safe review result in `docs/OPERATIONS.md`: reliability
+  and capacity remained within provisional limits, no cost threshold was
+  reached, and no action was required.
+
+### Current Status
+
+MON-003 observation continues through 2026-09-07. The next weekly review is
+scheduled for 2026-08-30. Default Render service-notification status should be
+reconfirmed during that review; the final 30-day checkpoint still requires a
+full evidence-based go/no-go decision.
+
+### Verification
+
+- Live Render usage report completed successfully for the weekly window.
+- Manual Billing and Usage review completed without a threshold response.
+
+---
+
+## 2026-08-23 - Session 40: Transparent Processing-Service Warm-Up
+
+### Completed
+
+- Added a one-time, credential-free `/health` request when the FlowSnap page
+  opens, so the Render backend can start before a visitor submits a media URL.
+- Added a visible service state beneath the form: connecting, starting, ready
+  or unavailable.
+- Kept submitted URLs private until the visitor explicitly submits the form;
+  the warm-up request contains no media URL and starts no extraction work.
+- Made the form wait for the service readiness check before analysing a link,
+  with a clear retry message when the service cannot be reached.
+- Added honest delayed-operation messages for format analysis and file
+  preparation, so a longer platform response does not look like a stalled or
+  hidden action.
+- Versioned the frontend module URL to ensure browsers receive the updated
+  interface.
+- Added frontend regression coverage for the readiness element, health check,
+  credential-free request and progress messages.
+- Added the product requirements, testing record and current TODO documents;
+  updated the roadmap and issue register without recording private usage or
+  billing data.
+
+### Verification
+
+- `node --check script.js` passed.
+- Complete frontend test suite passed.
+- Git whitespace check passed.

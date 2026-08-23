@@ -51,3 +51,13 @@ Reassess providers and prices immediately before public promotion or
 monetisation. Do not select infrastructure from headline compute price alone;
 bandwidth, request charges, platform access, cold starts and operational effort
 are part of the total cost.
+
+## Current Product Priorities
+
+| Priority | Status | Next action |
+| --- | --- | --- |
+| Transparent backend readiness | Complete | Verify the published cold-start experience before wider promotion. |
+| MON-003 operational observation | In progress | Weekly review on 2026-08-30; final go/no-go review on 2026-09-07. |
+| Platform reliability | Monitoring | Continue tracking TikTok behaviour; retain YouTube's unavailable disclosure. |
+| Wider public promotion | Gated | Wait for MON-003 evidence and the published-site warm-up review. |
+| X/Twitter support | Deferred | Reassess only after the current launch gates are complete. |

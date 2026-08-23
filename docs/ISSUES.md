@@ -35,6 +35,7 @@ This file is the lightweight issue tracker for FlowSnap. It records confirmed bu
 | FS-011 | Mobile filename and download controls are cramped                           | Fixed         | Low      |
 | FS-012 | Browser may save downloads to an unexpected directory                       | External      | Low      |
 | FS-013 | Higher-resolution Facebook AV1 output can appear nearly static              | Fixed         | High     |
+| FS-014 | Render cold start lacked visible service readiness feedback                 | Fixed         | Medium   |
 
 ---
 
@@ -464,6 +465,34 @@ and audio for Facebook, Instagram and TikTok.
 
 ---
 
+## FS-014 — Render cold start lacked visible service-readiness feedback
+
+* **Status:** Fixed
+* **Severity:** Medium
+* **Environment:** Published GitHub Pages frontend with Render backend
+
+### Description
+
+After an idle period, Render can take time to start the backend. Previously,
+the page did not contact the backend until a visitor submitted a media URL and
+did not clearly explain the wait. This could make a normal cold start appear
+unresponsive or suspicious.
+
+### Resolution
+
+The homepage now makes one credential-free health request on load and visibly
+reports connecting, starting, ready or unavailable. It does not send a media
+URL or start extraction during this warm-up. Submitted links wait for service
+readiness, and delayed analysis/preparation messages explain slower work.
+
+### Verification
+
+Frontend regression coverage verifies the health request, credential-free
+behaviour, accessible status element and all readiness/progress messages.
+A published-site cold-start check remains scheduled before wider promotion.
+
+---
+
 ## Verified Working Behaviour
 
 The following behaviour has been verified successfully:
@@ -491,5 +520,4 @@ When a new issue is discovered:
 
 ## Last Updated
 
-2026-08-09 — Reconciled issue statuses and recorded the fixed Facebook AV1
-playback issue as FS-013.
+2026-08-23 — Recorded FS-014 for the resolved Render cold-start feedback gap.

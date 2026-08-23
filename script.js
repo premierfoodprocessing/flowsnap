@@ -19,6 +19,7 @@ const menuButton = document.querySelector('.menu-toggle');
 const nav = document.querySelector('.main-nav');
 const input = document.getElementById('video-url');
 const message = document.getElementById('form-message');
+const backendStatus = document.getElementById('backend-status');
 const form = document.getElementById('download-form');
 const submitButton = form?.querySelector('button[type="submit"]');
 
@@ -89,6 +90,81 @@ if (resultRevenuePlacement) {
 }
 
 let currentAnalysisId = '';
+let backendReady = false;
+let backendWarmupPromise = null;
+
+const BACKEND_STARTING_DELAY_MS = 2500;
+const BACKEND_WARMUP_TIMEOUT_MS = 70000;
+const SLOW_OPERATION_DELAY_MS = 7000;
+
+function setBackendStatus(state, text) {
+  if (!backendStatus) {
+    return;
+  }
+
+  backendStatus.dataset.state = state;
+  backendStatus.textContent = text;
+}
+
+function scheduleSlowMessage(target, text) {
+  return window.setTimeout(() => {
+    target.textContent = text;
+  }, SLOW_OPERATION_DELAY_MS);
+}
+
+function warmBackend() {
+  if (backendReady) {
+    return Promise.resolve(true);
+  }
+
+  if (backendWarmupPromise) {
+    return backendWarmupPromise;
+  }
+
+  backendWarmupPromise = (async () => {
+    const controller = new AbortController();
+    const startingTimer = window.setTimeout(() => {
+      setBackendStatus(
+        'starting',
+        'Starting the processing service. No link has been sent yet; this can take up to a minute.',
+      );
+    }, BACKEND_STARTING_DELAY_MS);
+    const timeoutTimer = window.setTimeout(() => {
+      controller.abort();
+    }, BACKEND_WARMUP_TIMEOUT_MS);
+
+    setBackendStatus('checking', 'Connecting to FlowSnap…');
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/health`, {
+        method: 'GET',
+        credentials: 'omit',
+        cache: 'no-store',
+        signal: controller.signal,
+      });
+
+      if (!response.ok) {
+        throw new Error('Health check failed');
+      }
+
+      backendReady = true;
+      setBackendStatus('ready', 'Processing service ready.');
+      return true;
+    } catch {
+      setBackendStatus(
+        'unavailable',
+        'Processing service is unavailable. Try again shortly.',
+      );
+      return false;
+    } finally {
+      window.clearTimeout(startingTimer);
+      window.clearTimeout(timeoutTimer);
+      backendWarmupPromise = null;
+    }
+  })();
+
+  return backendWarmupPromise;
+}
 
 function formatDuration(totalSeconds) {
   if (!Number.isFinite(totalSeconds)) {
@@ -255,13 +331,29 @@ form?.addEventListener('submit', async (event) => {
     return;
   }
 
-  message.textContent = 'FlowSnap is checking the link…';
+  message.textContent = 'Waiting for the processing service…';
 
   if (submitButton) {
     submitButton.disabled = true;
   }
 
+  let slowMessageTimer;
+
   try {
+    const serviceAvailable = await warmBackend();
+
+    if (!serviceAvailable) {
+      message.textContent =
+        'FlowSnap could not start the processing service. Try again shortly.';
+      return;
+    }
+
+    message.textContent = 'Finding available formats…';
+    slowMessageTimer = scheduleSlowMessage(
+      message,
+      'Still finding formats. Some platforms take a little longer.',
+    );
+
     const response = await fetch(
       `${API_BASE_URL}/api/media/formats`,
       {
@@ -342,6 +434,10 @@ form?.addEventListener('submit', async (event) => {
         'FlowSnap could not process this link.';
     }
   } finally {
+    if (slowMessageTimer) {
+      window.clearTimeout(slowMessageTimer);
+    }
+
     if (submitButton) {
       submitButton.disabled = false;
     }
@@ -365,6 +461,10 @@ prepareButton?.addEventListener(
     prepareButton.disabled = true;
     prepareStatus.textContent =
       'Preparing your selected format…';
+    const slowPreparationTimer = scheduleSlowMessage(
+      prepareStatus,
+      'Still preparing your file. This can take longer for some platforms.',
+    );
 
     try {
       const response = await fetch(
@@ -422,6 +522,7 @@ prepareButton?.addEventListener(
           'FlowSnap could not prepare this format.';
       }
     } finally {
+      window.clearTimeout(slowPreparationTimer);
       prepareButton.disabled = false;
     }
   },
@@ -429,3 +530,5 @@ prepareButton?.addEventListener(
 
 document.getElementById('year').textContent =
   new Date().getFullYear();
+
+void warmBackend();

@@ -28,6 +28,7 @@ The project accepts authorised public media URLs, extracts metadata, presents sa
 - Browser file delivery with same-backend URL validation
 - Public FastAPI backend on Render
 - Automatic local/production API selection
+- Visible processing-service warm-up and readiness status
 - Configurable file-size, concurrency and request-rate safeguards
 - Privacy-safe workflow tracing with opaque hashed references
 
@@ -139,12 +140,18 @@ FlowSnap/
 │   ├── requirements.txt
 │   └── requirements-dev.txt
 ├── docs/
-│   └── DEVLOG.md
+│   ├── DEVLOG.md
+│   ├── ISSUES.md
+│   ├── OPERATIONS.md
+│   ├── PRD.md
+│   ├── TESTING.md
+│   └── TODO.md
 ├── frontend-tests/
 ├── scripts/
 │   ├── start-dev.sh
 │   ├── check-dev.sh
-│   └── stop-dev.sh
+│   ├── stop-dev.sh
+│   └── render-usage-report.sh
 ├── format-utils.mjs
 ├── index.html
 ├── script.js
@@ -154,7 +161,8 @@ FlowSnap/
 ## Current limitations
 
 - TikTok may return changing JavaScript challenges or temporary HTTP 403 responses.
-- Render's free service may sleep after inactivity, making the first request slower.
+- Render's free service may sleep after inactivity; FlowSnap visibly warms the
+  service on page load, but a cold start can still take up to a minute.
 - Downloads depend on each source platform permitting server-side access.
 - Download jobs and media analyses are held in application memory and are cleared when the backend restarts.
 - Render's filesystem is temporary; FlowSnap intentionally removes completed download files after delivery.

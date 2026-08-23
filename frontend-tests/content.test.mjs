@@ -88,6 +88,28 @@ test('homepage provides core keyboard accessibility hooks', () => {
 });
 
 
+test('homepage visibly warms the processing service before link analysis', () => {
+  assert.match(
+    indexHtml,
+    /id="backend-status" role="status" aria-live="polite"/,
+  );
+  assert.match(scriptJs, /\$\{API_BASE_URL\}\/health/);
+  assert.match(scriptJs, /credentials:\s*'omit'/);
+  assert.match(scriptJs, /Processing service ready\./);
+  assert.match(scriptJs, /No link has been sent yet/);
+  assert.match(scriptJs, /Waiting for the processing service/);
+  assert.match(
+    scriptJs,
+    /Still finding formats\. Some platforms take a little longer\./,
+  );
+  assert.match(
+    scriptJs,
+    /Still preparing your file\. This can take longer for some platforms\./,
+  );
+  assert.match(stylesCss, /\.backend-status\[data-state="ready"\]/);
+});
+
+
 test('homepage keeps the disabled sponsorship lightweight', () => {
   assert.match(
     indexHtml,

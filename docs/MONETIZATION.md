@@ -309,6 +309,8 @@ YouTube production support is not a launch requirement while FS-002 is explicitl
 - Revenue content cannot be mistaken for a FlowSnap action.
 - Keyboard and screen-reader flows remain usable.
 - Mobile layout remains uncluttered.
+- Cold starts and longer processing steps have visible, truthful status
+  feedback before any revenue content is considered.
 - Performance is measured before and after activation.
 - Download completion is not delayed to force an impression or click.
 
@@ -457,7 +459,7 @@ Pause or disable monetisation when:
 | ------- | ----------------------------------------------------------- | ---------------- | ------- |
 | MON-001 | Add privacy-safe request and job tracing                    | FS-007           | Complete |
 | MON-002 | Define aggregate analytics events and prohibited fields     | MON-001          | Complete |
-| MON-003 | Define rate limits, file limits and monthly cost thresholds | Usage observation| In progress |
+| MON-003 | Define rate limits, file limits and monthly cost thresholds | Usage observation| In progress — next review 2026-08-30 |
 | MON-004 | Publish policy, contact and takedown pages                  | Content review   | Complete |
 | MON-005 | Improve mobile download controls                            | FS-011           | Complete |
 | MON-006 | Build a disabled provider-neutral placement component       | MON-004          | Complete |
@@ -468,9 +470,15 @@ Pause or disable monetisation when:
 
 Monetisation is specified but not enabled.
 
-FlowSnap is currently at M0. The MON-003 policy is defined, but the task remains
-in progress until the 30-day observation window is complete and production
-budget alerts are configured. MON-001, MON-002 and MON-004 through MON-006 are
-complete. The placement component remains disabled and makes no third-party
-requests. MON-007 cannot complete until the MON-003 evidence is recorded and
-all provider dependencies are ready for evaluation.
+FlowSnap is currently at M0. MON-001, MON-002 and MON-004 through MON-006 are
+complete, including the disabled provider-neutral placement and direct-
+sponsorship configuration. Neither can make third-party requests while their
+feature flags remain off.
+
+MON-003 remains in progress through the 2026-09-07 observation checkpoint. The
+second weekly review completed without a threshold response; the next review
+is 2026-08-30. Render does not currently expose a native spending-alert control
+for this workspace, so the documented manual Billing and Usage review is the
+active safeguard. MON-007 provider evaluation cannot begin until the MON-003
+evidence and the remaining trust, compliance and operating-readiness checks are
+complete.
