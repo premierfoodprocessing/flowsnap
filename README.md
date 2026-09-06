@@ -57,7 +57,7 @@ From the project root:
 
 The start script opens dedicated terminal windows for:
 
-- FastAPI on `http://127.0.0.1:8000`
+- FastAPI on `http://127.0.0.1:8001`
 - Frontend on `http://127.0.0.1:5500`
 
 It then opens FlowSnap in the default browser and avoids starting duplicate servers.
@@ -101,7 +101,7 @@ Current test baseline after the deployment connection:
 - `POST /api/media/formats`
 - `POST /api/media/prepare`
 - `GET /api/media/download/{job_id}`
-- Interactive documentation: `http://127.0.0.1:8000/docs`
+- Interactive documentation: `http://127.0.0.1:8001/docs`
 - Public API: `https://flowsnap-api.onrender.com`
 
 ## Hosting safeguards

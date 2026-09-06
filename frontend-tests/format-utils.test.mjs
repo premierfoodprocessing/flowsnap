@@ -17,7 +17,7 @@ test('resolveApiBaseUrl uses the local backend during development', () => {
   for (const hostname of ['127.0.0.1', 'localhost', '[::1]']) {
     assert.equal(
       resolveApiBaseUrl({ hostname }),
-      'http://127.0.0.1:8000',
+      'http://127.0.0.1:8001',
     );
   }
 });

@@ -151,7 +151,14 @@ test('local sponsorship preview requires localhost and query flag', () => {
 
   assert.equal(preview.isPreview, true);
   assert.equal(preview.label, 'Sponsored');
-  assert.equal(preview.imageSrc, '');
+  assert.equal(preview.headline, 'Premier Food Processing');
+  assert.match(preview.description, /plantain crisps/);
+  assert.equal(preview.linkLabel, 'Preview link only');
+  assert.equal(
+    preview.imageSrc,
+    'assets/sponsors/preview/premier-food-processing-preview.png',
+  );
+  assert.match(preview.imageAlt, /Local preview/);
 
   for (const locationObject of [
     {

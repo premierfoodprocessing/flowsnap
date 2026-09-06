@@ -40,9 +40,14 @@ With the local frontend running, open:
 
 `http://127.0.0.1:5500/?sponsor-preview=1`
 
-The preview uses fixed sample copy, no image, no tracker and no real sponsor.
-It works only on localhost addresses and does not change either disabled
-feature flag. The public GitHub Pages site ignores the preview query.
+The preview uses fixed sample artwork with its approved-for-review wording
+embedded in the artwork, no tracker and no active sponsorship agreement or real
+destination. Its separate sponsor fields are hidden only in this local visual
+preview; they remain required for any future production placement. Preview
+artwork belongs in the gitignored
+`assets/sponsors/preview/` directory. The preview works only on localhost
+addresses and does not change either disabled feature flag. The public GitHub
+Pages site ignores the preview query.
 
 To disable all sponsorships immediately, set `placementsEnabled` to `false` and
 deploy. To disable only the current entry, set its `enabled` value to `false`.

@@ -2,6 +2,27 @@
 
 ---
 
+## 2026-09-06 - TikTok extractor and delivery compatibility update
+
+### Completed
+
+- Updated yt-dlp from 2026.7.4 to 2026.8.19.
+- Updated curl-cffi from 0.15.0 to 0.16.0.
+- Applied TikTok Chrome impersonation during the actual download-delivery
+  extraction, matching the existing metadata and format-analysis path.
+- Added a regression test covering TikTok delivery impersonation.
+
+### Verification
+
+- Focused backend tests with download coverage: 15 passed.
+- Full backend suite with download coverage: 56 passed, 2 live tests skipped.
+- Live TikTok format check: four formats returned successfully from a public
+  test URL.
+- A real file download was not run against an unprovided third-party URL; it
+  should be verified with an authorised TikTok URL.
+
+---
+
 ## 2026-07-31 - Session 1: The Beginning
 
 Today FlowSnap became a real software project.
@@ -1071,6 +1092,74 @@ MON-003 weekly review.
   and lightweight-loading assertions.
 - Main, sponsorship and revenue configuration module syntax checks passed.
 - Git whitespace check passed.
+
+## 2026-08-24 - Session 41: Local Sponsorship Placement Preview
+
+### Completed
+
+- Updated the localhost-only sponsorship preview with the supplied Premier
+  Food Processing sample copy for layout review.
+- Kept the preview's image empty, destination non-functional and disclosure
+  explicit that no advertisement is active.
+- Kept both production sponsorship feature flags disabled and left the public
+  GitHub Pages site unable to enable the preview query.
+- Added regression assertions for the local sample headline, description and
+  preview-only link label.
+
+### Verification
+
+- Sponsorship and complete frontend test suites passed.
+- Frontend module syntax and Git whitespace checks passed.
+
+### Follow-up
+
+- Versioned the sponsorship module URL so browser caches load the updated
+  localhost-only preview copy.
+
+### Local Artwork Follow-up
+
+- Added a bright local-only food-product preview graphic under the gitignored
+  sponsorship-preview asset directory.
+- Kept the graphic out of Git, public hosting and production sponsorship.
+- Versioned the sponsorship module again so the localhost preview loads the
+  new local artwork.
+
+---
+
+## 2026-08-24 - Session 42: Local Development and Bug-Register Rules
+
+### Completed
+
+- Added a project rule to start the frontend and backend together for hands-on
+  development, browser review and local workflow testing, after initial
+  repository inspection.
+- Kept report-only, documentation-only and planning-only sessions free from
+  unnecessary local service startup.
+- Added the matching stop-environment rule for when local testing ends.
+- Confirmed `docs/ISSUES.md` as the dedicated permanent register for all
+  confirmed open, monitoring, investigating, external and fixed bugs.
+
+### Next Action
+
+- Start the local FlowSnap environment and inspect the localhost-only
+  sponsorship placement preview.
+
+---
+
+## 2026-08-24 - Session 43: Local Backend Port Isolation
+
+### Changed
+
+- Moved FlowSnap's local FastAPI backend from port 8000 to port 8001 because
+  port 8000 is in use by another local project.
+- Updated the development launcher, checker, stopper, frontend local API
+  routing, routing regression test and current local-development references.
+- Left the other project's port 8000 process untouched.
+
+### Verification
+
+- Run the local launcher and confirm the frontend on port 5500 and FlowSnap
+  health endpoint on port 8001 before browser testing.
 - Production platform-status page returned HTTP 200 with the expected date and
   platform results.
 - Development launcher checks passed; backend and frontend reachability were
@@ -1241,3 +1330,50 @@ full evidence-based go/no-go decision.
 - `node --check script.js` passed.
 - Complete frontend test suite passed.
 - Git whitespace check passed.
+
+---
+
+## 2026-08-24 - Session 44: Full-Width Sponsorship Preview Artwork
+
+### Completed
+
+- Replaced the local Premier Food Processing mock artwork with a bright,
+  complete sponsor banner that embeds the sponsor name and supplied product
+  description directly in the image.
+- Reworked the visible sponsorship area into a distinct purple-and-orange
+  bordered zone with a full-width creative, preventing FlowSnap content from
+  visually overlapping the paid placement.
+- Kept the local preview artwork untracked and unpublished. The local preview
+  hides duplicate HTML sponsor wording; production placements retain their
+  separate sponsorship label, copy, destination and disclosure requirements.
+- Kept both production sponsorship feature flags disabled.
+- Prepared a gitignored short-form sponsorship-agreement template with campaign,
+  payment, privacy, removal, cancellation and approval terms for private review.
+- Recorded private market context, founder-pilot pricing, payment flow and
+  minimum-data click-measurement recommendations for Premier Food Processing.
+
+### Verification
+
+- `node --check script.js` and `node --check sponsorship.js` passed.
+- Complete frontend test suite passed.
+- Git whitespace check passed.
+- Opened the localhost preview for visual review.
+
+---
+
+## 2026-08-30 - Session 45: Public Frontend Wi-Fi Reachability Check
+
+### Finding
+
+- Confirmed the public GitHub Pages frontend and Render backend were live and
+  returned HTTP 200 responses.
+- Recorded a user-reported `ERR_TIMED_OUT` on one Wi-Fi network, while the
+  same frontend loaded on the user's mobile network.
+- Recorded failed IPv6 connectivity to the GitHub Pages host in the development
+  environment as a possible contributing route issue; IPv4 reached the frontend
+  successfully.
+
+### Follow-up
+
+- Added monitored external issue FS-015 and a session-start reminder to retry
+  the affected Wi-Fi network when the project next reopens.

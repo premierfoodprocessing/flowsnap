@@ -56,7 +56,7 @@ echo "==========================="
 
 
 if backend_response="$(
-  curl -fsS http://127.0.0.1:8000/health 2>/dev/null
+  curl -fsS http://127.0.0.1:8001/health 2>/dev/null
 )"; then
   if [[ "$backend_response" == '{"status":"healthy"}' ]]; then
     pass "Backend health endpoint"
@@ -64,7 +64,7 @@ if backend_response="$(
     fail "Backend returned an unexpected health response"
   fi
 else
-  fail "Backend is not reachable on port 8000"
+  fail "Backend is not reachable on port 8001"
 fi
 
 

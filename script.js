@@ -12,7 +12,7 @@ import { revenueConfig } from './revenue-config.js';
 import {
   getActiveSponsorship,
   getLocalSponsorshipPreview,
-} from './sponsorship.js?v=2';
+} from './sponsorship.js?v=5';
 const API_BASE_URL = resolveApiBaseUrl(window.location);
 
 const menuButton = document.querySelector('.menu-toggle');
@@ -74,6 +74,7 @@ if (resultRevenuePlacement) {
 
     if (activeSponsorship.isPreview) {
       resultRevenuePlacement.dataset.preview = 'true';
+      resultRevenuePlacement.dataset.imageOnlyPreview = 'true';
       disclosure.textContent = (
         'Local sponsorship preview only. No advertisement is active.'
       );

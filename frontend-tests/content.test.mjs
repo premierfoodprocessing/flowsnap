@@ -272,6 +272,22 @@ test('revenue placement reserves responsive space only when visible', () => {
   );
   assert.match(
     stylesCss,
+    /\.revenue-placement\s*\{[^}]*border-block:\s*5px solid #f97316/s,
+  );
+  assert.match(
+    stylesCss,
+    /\.revenue-placement-inner\s*\{[^}]*border:\s*4px solid #facc15/s,
+  );
+  assert.match(
+    stylesCss,
+    /\.revenue-placement-image\s*\{[^}]*width:\s*100%[^}]*object-fit:\s*cover/s,
+  );
+  assert.match(
+    stylesCss,
+    /data-image-only-preview="true"\]\s+\.revenue-placement-slot[\s\S]*display:\s*none/s,
+  );
+  assert.match(
+    stylesCss,
     /@media \(max-width: 600px\)[\s\S]*\.revenue-placement-inner\s*\{[^}]*min-height:\s*100px/s,
   );
 });

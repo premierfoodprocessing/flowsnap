@@ -61,7 +61,7 @@ echo
 echo "Stopping FlowSnap development servers"
 echo "====================================="
 
-stop_server "Backend" "8000" "$BACKEND_DIR"
+stop_server "Backend" "8001" "$BACKEND_DIR"
 stop_server "Frontend" "5500" "$PROJECT_DIR"
 
 echo

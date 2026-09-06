@@ -102,6 +102,49 @@ def test_download_media_adds_audio_to_video_only_format(
         "137+bestaudio/137"
     )
 
+
+@pytest.mark.download
+def test_download_media_impersonates_tiktok_as_chrome(
+    tmp_path,
+):
+    from services.delivery import download_media
+
+    captured = {}
+
+    class FakeYoutubeDL:
+        def __init__(self, options):
+            captured["options"] = options
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, exc_type, exc_value, traceback):
+            return False
+
+        def extract_info(self, url, download):
+            output_path = tmp_path / "download.mp4"
+            output_path.write_bytes(b"test media")
+
+            return {
+                "requested_downloads": [
+                    {
+                        "filepath": str(output_path),
+                    }
+                ]
+            }
+
+    download_media(
+        job={
+            "source_url": "https://www.tiktok.com/@creator/video/123",
+            "format_id": "video-format",
+            "has_audio": True,
+        },
+        output_dir=tmp_path,
+        youtube_dl_factory=FakeYoutubeDL,
+    )
+
+    assert str(captured["options"]["impersonate"]) == "chrome"
+
 @pytest.mark.download
 def test_download_media_rejects_path_outside_directory(
     tmp_path,

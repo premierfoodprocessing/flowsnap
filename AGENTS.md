@@ -19,7 +19,7 @@ Initial platforms:
 - Media processing: FFmpeg
 - Frontend: HTML, CSS, and JavaScript
 - Static hosting: GitHub Pages
-- Local backend: http://127.0.0.1:8000
+- Local backend: http://127.0.0.1:8001
 - Local frontend: http://127.0.0.1:5500
 
 ## Important files
@@ -45,6 +45,13 @@ Initial platforms:
 - Do not change CORS origins without explaining why.
 - Do not install dependencies without Gee's approval.
 - Do not commit or push without Gee's approval.
+- For hands-on development, browser review or local workflow testing, start all
+  relevant local engines with `./scripts/start-dev.sh` after the initial
+  repository inspection. Confirm both the frontend and backend are reachable
+  before reporting that the environment is ready. Do not start services for a
+  report-only, documentation-only or planning-only session unless Gee asks.
+- Use `./scripts/stop-dev.sh` when Gee is finished testing or asks to stop the
+  local environment.
 
 ## Known platform behaviour
 
@@ -71,3 +78,20 @@ At the beginning of a new session:
    - Work currently in progress.
    - Work still to be done, in recommended order.
 7. Ask what Gee wants to work on, unless he already provided a task.
+8. Recheck FS-015 on the affected Wi-Fi network and update `docs/ISSUES.md`
+   with the outcome.
+
+## Issue Register
+
+- Maintain `docs/ISSUES.md` as the dedicated permanent bug register.
+- Log every confirmed bug or production limitation, whether open, monitoring,
+  external, investigating or fixed.
+- When a bug is fixed, update its existing entry with the resolution and
+  verification evidence; never delete its history.
+- Add newly discovered confirmed bugs promptly, including environment, impact,
+  reproduction evidence and next action.
+
+## Personal address preferences
+
+- Address the user as Captain.
+- The user calls the assistant Uno, short for Ubuntu Number One.

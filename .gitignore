@@ -39,3 +39,10 @@ docs/operating-private.md
 
 # Render API key for scripts/render-usage-report.sh - never commit
 scripts/.render.env
+
+# Local-only sponsorship preview artwork - never publish or commit
+assets/sponsors/preview/
+
+# Private sponsorship paperwork - never publish or commit
+scripts/sponsorship-agreement-template-private.md
+scripts/premier-sponsorship-pilot-private.md

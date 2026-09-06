@@ -130,14 +130,17 @@ export function getLocalSponsorshipPreview(locationObject) {
     sponsorship: {
       enabled: true,
       label: 'Sponsored',
-      headline: 'Example partner headline',
+      headline: 'Premier Food Processing',
       description: (
-        'Sample sponsorship copy for local layout review only.'
+        'Makers of delicious sweet, pepper and ripe plantain crisps, '
+        + 'Ijebu Garri, fufu, elubo, dried pepper and tomatoes.'
       ),
-      imageSrc: '',
-      imageAlt: '',
+      imageSrc: 'assets/sponsors/preview/premier-food-processing-preview.png',
+      imageAlt: (
+        'Local preview of plantain crisps, food flours, peppers and tomatoes.'
+      ),
       destinationUrl: 'https://example.com/',
-      linkLabel: 'Example partner link',
+      linkLabel: 'Preview link only',
       startsAt: '',
       endsAt: '',
     },

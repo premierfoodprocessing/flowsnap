@@ -5,7 +5,7 @@ set -u
 PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 BACKEND_DIR="$PROJECT_DIR/backend"
 FRONTEND_URL="http://127.0.0.1:5500"
-BACKEND_PORT="8000"
+BACKEND_PORT="8001"
 FRONTEND_PORT="5500"
 
 
@@ -38,9 +38,9 @@ else
     bash -lc '
       cd "$1"
       source .venv/bin/activate
-      uvicorn app:app --reload
+      uvicorn app:app --reload --port "$2"
 
-    ' bash "$BACKEND_DIR"
+    ' bash "$BACKEND_DIR" "$BACKEND_PORT"
 fi
 
 

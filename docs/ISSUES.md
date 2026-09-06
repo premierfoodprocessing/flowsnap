@@ -36,6 +36,7 @@ This file is the lightweight issue tracker for FlowSnap. It records confirmed bu
 | FS-012 | Browser may save downloads to an unexpected directory                       | External      | Low      |
 | FS-013 | Higher-resolution Facebook AV1 output can appear nearly static              | Fixed         | High     |
 | FS-014 | Render cold start lacked visible service readiness feedback                 | Fixed         | Medium   |
+| FS-015 | Some Wi-Fi networks time out while opening the GitHub Pages frontend        | Monitoring    | Medium   |
 
 ---
 
@@ -68,6 +69,16 @@ POST /api/media/formats HTTP/1.1
 ### Notes
 
 The same TikTok link successfully returned formats and downloaded through the public FlowSnap site using the Render backend. The behaviour may depend on TikTok’s response to different network addresses or may be intermittent.
+
+### 2026-09-06 update
+
+FlowSnap's installed yt-dlp was behind the current release, and the delivery
+path did not apply the TikTok Chrome-impersonation setting used during format
+analysis. The dependency pins were updated to yt-dlp 2026.8.19 and curl-cffi
+0.16.0, and delivery now applies the same impersonation setting for TikTok.
+The updated extractor returned four formats from a public TikTok URL during a
+live check. A real file delivery should still be verified with an authorised
+URL supplied for testing.
 
 ### Next action
 
@@ -493,6 +504,76 @@ A published-site cold-start check remains scheduled before wider promotion.
 
 ---
 
+## FS-015 — Some Wi-Fi networks time out while opening the GitHub Pages frontend
+
+* **Status:** Monitoring
+* **Severity:** Medium
+* **Environment:** User Wi-Fi network and Chromium browser
+* **Component:** GitHub Pages frontend
+
+### Description
+
+On 2026-08-30, the public frontend timed out on the user's Wi-Fi connection
+with `ERR_TIMED_OUT`, while the same site loaded successfully on the user's
+mobile network.
+
+### Evidence
+
+Independent checks confirmed that
+`https://premierfoodprocessing.github.io/flowsnap/` returned HTTP 200 over
+IPv4. In the development environment, IPv6 connectivity to the GitHub Pages
+host failed, which is a possible cause when a browser or network prefers a
+broken IPv6 route.
+
+### Impact
+
+Visitors using an affected network may be unable to reach the public frontend,
+even while FlowSnap's GitHub Pages deployment and Render backend are healthy.
+
+### Next action
+
+At the next project reopening, retry the public frontend on the affected Wi-Fi
+network and record whether it now loads. If it does not, verify the network's
+IPv6 route or temporarily disable IPv6 on the affected device as a reversible
+workaround.
+
+### 2026-08-31 recheck
+
+The affected network successfully loaded
+`https://premierfoodprocessing.github.io/flowsnap/` with HTTP 200 in 2.27
+seconds. The Render backend health check also returned HTTP 200 with
+`{"status":"healthy"}` in 4.80 seconds. No recurrence was observed during
+this check; continue monitoring because the underlying network-specific IPv6
+hypothesis was not independently verified.
+
+### 2026-08-31 follow-up
+
+Gee reported that Chromium again displayed `ERR_TIMED_OUT` while opening the
+bare host `premierfoodprocessing.github.io`. A local diagnostic recheck could
+not resolve `premierfoodprocessing.github.io` or `api.github.com`, so this
+environment could not distinguish a current Wi-Fi/DNS outage from a GitHub
+Pages deployment problem. The project-site path remains the correct URL to
+test: `https://premierfoodprocessing.github.io/flowsnap/`.
+
+### 2026-08-31 user-network verification
+
+Gee's affected MacBook resolved the GitHub Pages hostname to the expected
+GitHub Pages IPv4 addresses, and `curl -4` returned `HTTP/2 200` for
+`https://premierfoodprocessing.github.io/flowsnap/`. This confirms that DNS,
+IPv4 routing and the published frontend are currently reachable from the
+reported Wi-Fi. The remaining timeout is therefore likely browser state, a
+proxy/VPN, or use of the bare host instead of the project-site path.
+
+### 2026-09-06 development-environment recheck
+
+The current development environment could not resolve the GitHub Pages host
+or the Render API host, so this check was inconclusive for the affected Wi-Fi
+network. No deployment or source-code change was made. The last direct
+user-network evidence remains the 2026-08-31 `curl -4` result showing
+`HTTP/2 200` from the project-site URL.
+
+---
+
 ## Verified Working Behaviour
 
 The following behaviour has been verified successfully:
@@ -518,6 +599,12 @@ When a new issue is discovered:
 5. Record the resolving commit when an issue is fixed.
 6. Keep historical details instead of deleting resolved issues.
 
+This is FlowSnap's dedicated, permanent bug register. Record every confirmed
+bug and production limitation here, regardless of whether it is open,
+investigating, monitoring, external or fixed. A fixed issue remains in this
+file with its resolution and verification evidence.
+
 ## Last Updated
 
-2026-08-23 — Recorded FS-014 for the resolved Render cold-start feedback gap.
+2026-09-06 — Recorded the TikTok dependency and delivery-path update and its
+successful live format check.

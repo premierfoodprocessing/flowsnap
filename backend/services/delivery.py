@@ -1,8 +1,10 @@
 from pathlib import Path
 from typing import Callable
+from urllib.parse import urlparse
 
 from services.ytdlp_config import build_ytdlp_options
 from yt_dlp import YoutubeDL
+from yt_dlp.networking.impersonate import ImpersonateTarget
 from yt_dlp.utils import DownloadError
 
 
@@ -51,6 +53,11 @@ def download_media(
             "default": "download.%(ext)s",
         },
     }
+
+    hostname = (urlparse(source_url).hostname or "").lower()
+
+    if hostname == "tiktok.com" or hostname.endswith(".tiktok.com"):
+        options["impersonate"] = ImpersonateTarget.from_str("chrome")
 
     if max_file_size_bytes is not None:
         options["max_filesize"] = max_file_size_bytes

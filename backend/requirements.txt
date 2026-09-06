@@ -17,5 +17,5 @@ uvicorn==0.52.0
 uvloop==0.22.1
 watchfiles==1.2.0
 websockets==17.0.1
-yt-dlp==2026.7.4
-curl_cffi==0.15.0
+yt-dlp==2026.8.19
+curl_cffi==0.16.0
