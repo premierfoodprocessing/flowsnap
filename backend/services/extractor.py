@@ -171,6 +171,11 @@ def get_formats(url: str) -> dict:
         has_audio = bool(
             audio_codec and audio_codec != "none"
         )
+        audio_language = item.get("language")
+        if audio_language is not None:
+            audio_language = str(audio_language).strip().lower()
+            if audio_language in ("", "und", "multiple"):
+                audio_language = None
 
         if not has_video:
             continue
@@ -219,6 +224,7 @@ def get_formats(url: str) -> dict:
             "has_video": has_video,
             "is_compatible": is_compatible,
             "video_codec": describe_video_codec(video_codec),
+            "audio_language": audio_language,
             "bitrate_kbps": get_bitrate_kbps(item),
         }
         fingerprint = (
@@ -229,6 +235,7 @@ def get_formats(url: str) -> dict:
             media_format["has_audio"],
             media_format["video_codec"],
             media_format["bitrate_kbps"],
+            media_format["audio_language"],
             item.get("protocol"),
         )
 

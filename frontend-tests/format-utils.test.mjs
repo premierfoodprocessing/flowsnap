@@ -273,6 +273,23 @@ test('buildPreparePayload creates a preparation request', () => {
     {
       analysis_id: 'analysis-test-123',
       format_id: '18',
+      prefer_english_audio: true,
+    },
+  );
+});
+
+
+test('buildPreparePayload passes prefer_english_audio false through', () => {
+  assert.deepEqual(
+    buildPreparePayload(
+      'analysis-test-123',
+      '18',
+      false,
+    ),
+    {
+      analysis_id: 'analysis-test-123',
+      format_id: '18',
+      prefer_english_audio: false,
     },
   );
 });

@@ -32,6 +32,7 @@ def test_prepare_download_builds_job_from_stored_analysis():
         "title": "Test Video",
         "format_id": "18",
         "has_audio": True,
+        "prefer_english_audio": True,
         "filename": "Test Video.mp4",
         "download_url": (
             "/api/media/download/test-job-123"
@@ -178,6 +179,7 @@ def test_prepare_download_saves_retrievable_job():
         "title": "Test Video",
         "format_id": "18",
         "has_audio": True,
+        "prefer_english_audio": True,
         "extension": "mp4",
         "filename": "Test Video.mp4",
     }
@@ -186,3 +188,38 @@ def test_prepare_download_saves_retrievable_job():
     assert result["download_url"] == (
         "/api/media/download/test-job-123"
     )
+
+
+def test_prepare_download_respects_prefer_english_audio_false():
+    from services.downloads import prepare_download
+
+    class FakeAnalysisStore:
+        def get(self, analysis_id):
+            return {
+                "title": "Test Video",
+                "webpage_url": "https://example.com/video",
+                "formats": [
+                    {
+                        "format_id": "18",
+                        "extension": "mp4",
+                        "has_audio": True,
+                    }
+                ],
+            }
+
+    class FakeJobStore:
+        def save(self, job):
+            self.saved_job = job
+            return "test-job-123"
+
+    job_store = FakeJobStore()
+    result = prepare_download(
+        store=FakeAnalysisStore(),
+        job_store=job_store,
+        analysis_id="analysis-test-123",
+        format_id="18",
+        prefer_english_audio=False,
+    )
+
+    assert job_store.saved_job["prefer_english_audio"] is False
+    assert result["prefer_english_audio"] is False

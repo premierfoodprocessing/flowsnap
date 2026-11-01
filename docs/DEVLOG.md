@@ -1377,3 +1377,48 @@ full evidence-based go/no-go decision.
 
 - Added monitored external issue FS-015 and a session-start reminder to retry
   the affected Wi-Fi network when the project next reopens.
+
+---
+
+## 2026-11-01 - Session 46: English Audio Preference
+
+### Completed
+
+- Added `audio_language` tracking to extracted media formats in
+  `backend/services/extractor.py`. Each format now reports the yt-dlp `language`
+  field (normalised to lowercase; `und`, `multiple`, and empty values are
+  treated as unknown). The language is included in the format fingerprint.
+- Added `prefer_english_audio` preference to the download pipeline. Defaults to
+  `true` (English audio preferred when available).
+- `backend/services/downloads.py`: `prepare_download()` accepts
+  `prefer_english_audio`, carries it through the job dictionary and prepare
+  response.
+- `backend/services/delivery.py`: when the preference is enabled, the yt-dlp
+  format selector uses `[language=en]` to prefer English audio, with safe
+  fallbacks to any available audio or the format alone when English is not
+  available.
+- `backend/app.py`: `PrepareDownloadRequest` includes
+  `prefer_english_audio: bool = True`, passed through the preparation endpoint.
+- `index.html`: added a prechecked checkbox,
+  "Download audio in English when available", in the prepare-actions area.
+- `format-utils.mjs`: `buildPreparePayload` accepts `preferEnglishAudio`;
+  `describeFormat` displays `Audio (xx)` when a language is known.
+- `script.js`: reads the checkbox state and passes it into the prepare payload.
+- Frontend module cache versions bumped: `format-utils.mjs?v=4`,
+  `script.js?v=9`.
+
+### Verification
+
+- Backend suite: 41 passed, 25 skipped.
+- Frontend suite: 58 passed.
+- Frontend module syntax, shell script syntax, and git whitespace checks pass.
+
+### Notes
+
+- The yt-dlp `[language=en]` format selector requests English audio when the
+  preference is enabled, but relies on the source platform providing language
+  metadata. If no language metadata is available, or no English audio track
+  exists, the download falls back to the best available audio or the format
+  alone.
+- Unticking the checkbox disables the preference and downloads whatever audio
+  the platform provides.

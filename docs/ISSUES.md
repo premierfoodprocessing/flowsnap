@@ -37,6 +37,7 @@ This file is the lightweight issue tracker for FlowSnap. It records confirmed bu
 | FS-013 | Higher-resolution Facebook AV1 output can appear nearly static              | Fixed         | High     |
 | FS-014 | Render cold start lacked visible service readiness feedback                 | Fixed         | Medium   |
 | FS-015 | Some Wi-Fi networks time out while opening the GitHub Pages frontend        | Monitoring    | Medium   |
+| FS-016 | English audio preference depends on platform language metadata              | Open          | Medium   |
 
 ---
 
@@ -572,6 +573,32 @@ network. No deployment or source-code change was made. The last direct
 user-network evidence remains the 2026-08-31 `curl -4` result showing
 `HTTP/2 200` from the project-site URL.
 
+## FS-016 — English audio preference depends on platform language metadata
+
+* **Status:** Open
+* **Severity:** Medium
+* **Environment:** Local and production backends
+* **Component:** Audio-language preference
+
+### Description
+
+FlowSnap's English audio preference uses the yt-dlp `[language=en]`
+format selector to request an English audio track when downloading. This
+relies on the source platform providing per-format language metadata in
+yt-dlp's extraction results.
+
+### Impact
+
+When a platform does not expose audio language metadata, or when no English
+audio track exists for the media, FlowSnap falls back to the best available
+audio track or the format alone. The downloaded audio may not be English
+even with the preference enabled.
+
+### Next action
+
+Monitor platform language-metadata coverage. No workaround is currently
+available without platform-provided language data.
+
 ---
 
 ## Verified Working Behaviour
@@ -606,5 +633,5 @@ file with its resolution and verification evidence.
 
 ## Last Updated
 
-2026-09-06 — Recorded the TikTok dependency and delivery-path update and its
-successful live format check.
+2026-11-01 — Added FS-016 for the English audio preference dependency on
+platform language metadata.

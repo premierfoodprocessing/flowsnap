@@ -13,6 +13,7 @@ def prepare_download(
     store,
     analysis_id: str,
     format_id: str,
+    prefer_english_audio: bool = True,
     job_store=None,
     id_factory: Callable[[], str] = lambda: uuid4().hex,
 ) -> dict:
@@ -52,6 +53,7 @@ def prepare_download(
         "has_audio": bool(
             selected_format.get("has_audio")
         ),
+        "prefer_english_audio": bool(prefer_english_audio),
         "extension": extension,
         "filename": f"{title}.{extension}",
     }
@@ -72,6 +74,7 @@ def prepare_download(
         "title": title,
         "format_id": str(format_id),
         "has_audio": job["has_audio"],
+        "prefer_english_audio": job["prefer_english_audio"],
         "filename": job["filename"],
         "download_url": f"/api/media/download/{job_id}",
     }

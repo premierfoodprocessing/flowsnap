@@ -30,6 +30,7 @@ class FakeYoutubeDL:
                     "height": 360,
                     "vcodec": "h264",
                     "acodec": "aac",
+                    "language": "en",
                     "filesize": 1_500_000,
                     "tbr": 850.4,
                 },
@@ -75,6 +76,7 @@ def test_get_formats_returns_sanitized_video_options(monkeypatch):
                 "has_video": True,
                 "is_compatible": True,
                 "video_codec": "H.264",
+                "audio_language": "en",
                 "bitrate_kbps": 850,
             },
             {
@@ -87,6 +89,7 @@ def test_get_formats_returns_sanitized_video_options(monkeypatch):
                 "has_video": True,
                 "is_compatible": True,
                 "video_codec": "H.264",
+                "audio_language": None,
                 "bitrate_kbps": None,
             },
         ],
@@ -152,6 +155,7 @@ def test_get_formats_keeps_direct_media_with_unknown_codecs(
                 "has_video": True,
                 "is_compatible": False,
                 "video_codec": "Unknown",
+                "audio_language": None,
                 "bitrate_kbps": None,
             }
         ],
@@ -351,3 +355,100 @@ def test_get_formats_identifies_youtube_bot_challenge(
         "YouTube is temporarily refusing access from "
         "FlowSnap's download server. Please try again later."
     )
+
+
+class FakeMultiLanguageYoutubeDL:
+    def __init__(self, options):
+        self.options = options
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        return False
+
+    def extract_info(self, url, download):
+        return {
+            "title": "Multi-language video",
+            "formats": [
+                {
+                    "format_id": "18-en",
+                    "ext": "mp4",
+                    "width": 640,
+                    "height": 360,
+                    "vcodec": "h264",
+                    "acodec": "aac",
+                    "language": "en",
+                    "filesize": 1_500_000,
+                },
+                {
+                    "format_id": "18-es",
+                    "ext": "mp4",
+                    "width": 640,
+                    "height": 360,
+                    "vcodec": "h264",
+                    "acodec": "aac",
+                    "language": "es",
+                    "filesize": 1_500_000,
+                },
+                {
+                    "format_id": "137-und",
+                    "ext": "mp4",
+                    "width": 1920,
+                    "height": 1080,
+                    "vcodec": "h264",
+                    "acodec": "none",
+                    "language": "und",
+                    "filesize_approx": 8_000_000,
+                },
+                {
+                    "format_id": "140-multiple",
+                    "ext": "m4a",
+                    "vcodec": "none",
+                    "acodec": "aac",
+                    "language": "multiple",
+                    "filesize": 500_000,
+                },
+            ],
+        }
+
+
+def test_get_formats_tracks_audio_language(monkeypatch):
+    monkeypatch.setattr(
+        extractor,
+        "YoutubeDL",
+        FakeMultiLanguageYoutubeDL,
+    )
+
+    result = extractor.get_formats(
+        "https://example.com/multi-language"
+    )
+
+    languages = {
+        f["format_id"]: f["audio_language"]
+        for f in result["formats"]
+    }
+
+    assert languages == {
+        "18-en": "en",
+        "18-es": "es",
+        "137-und": None,
+    }
+
+
+def test_get_formats_excludes_audio_only_from_language_tracking(
+    monkeypatch,
+):
+    monkeypatch.setattr(
+        extractor,
+        "YoutubeDL",
+        FakeMultiLanguageYoutubeDL,
+    )
+
+    result = extractor.get_formats(
+        "https://example.com/multi-language"
+    )
+
+    format_ids = [f["format_id"] for f in result["formats"]]
+
+    assert "140-multiple" not in format_ids

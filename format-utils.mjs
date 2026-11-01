@@ -67,6 +67,16 @@ export function describeFormat(format) {
     technicalDetails.push(format.video_codec);
   }
 
+  if (
+    format.audio_language
+    && format.audio_language !== 'und'
+    && format.audio_language !== 'multiple'
+  ) {
+    technicalDetails.push(
+      `Audio (${format.audio_language})`,
+    );
+  }
+
   if (Number.isFinite(format.bitrate_kbps) && format.bitrate_kbps > 0) {
     const bitrateMbps = format.bitrate_kbps / 1_000;
     technicalDetails.push(
@@ -172,6 +182,7 @@ export function chooseDefaultFormat(formats) {
 export function buildPreparePayload(
   analysisId,
   formatId,
+  preferEnglishAudio = true,
 ) {
   const normalizedAnalysisId =
     String(analysisId ?? '').trim();
@@ -189,6 +200,7 @@ export function buildPreparePayload(
   return {
     analysis_id: normalizedAnalysisId,
     format_id: normalizedFormatId,
+    prefer_english_audio: Boolean(preferEnglishAudio),
   };
 }
 

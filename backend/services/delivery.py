@@ -34,12 +34,25 @@ def download_media(
     output_dir = Path(output_dir).resolve()
     output_dir.mkdir(parents=True, exist_ok=True)
 
+    prefer_english = job.get("prefer_english_audio", True)
+
     if has_audio:
-        format_selector = str(format_id)
+        if prefer_english:
+            format_selector = (
+                f"{format_id}[language=en]/{format_id}"
+            )
+        else:
+            format_selector = str(format_id)
     else:
-        format_selector = (
-            f"{format_id}+bestaudio/{format_id}"
-        )
+        if prefer_english:
+            format_selector = (
+                f"{format_id}+bestaudio[language=en]/"
+                f"{format_id}+bestaudio/{format_id}"
+            )
+        else:
+            format_selector = (
+                f"{format_id}+bestaudio/{format_id}"
+            )
 
     options = build_ytdlp_options() | {
         "quiet": True,

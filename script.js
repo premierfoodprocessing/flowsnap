@@ -7,7 +7,7 @@ import {
   describeFormat,
   downloadPreparedFile,
   resolveApiBaseUrl,
-} from './format-utils.mjs?v=3';
+} from './format-utils.mjs?v=4';
 import { revenueConfig } from './revenue-config.js';
 import {
   getActiveSponsorship,
@@ -33,6 +33,7 @@ const resultSource = document.getElementById('result-source');
 const formatOptions = document.getElementById('format-options');
 const formatList = document.getElementById('format-list');
 const formatAudioNotice = document.getElementById('format-audio-notice');
+const preferEnglishAudio = document.getElementById('prefer-english-audio');
 const prepareActions = document.getElementById('prepare-actions');
 const prepareButton = document.getElementById('prepare-button');
 const prepareStatus = document.getElementById('prepare-status');
@@ -451,6 +452,7 @@ prepareButton?.addEventListener(
     const payload = buildPreparePayload(
       currentAnalysisId,
       formatList.dataset.selectedFormatId,
+      preferEnglishAudio?.checked,
     );
 
     if (!payload) {

@@ -42,6 +42,7 @@ def test_download_media_uses_selected_format_and_directory(
             "source_url": "https://example.com/video",
             "format_id": "18",
             "has_audio": True,
+            "prefer_english_audio": False,
         },
         output_dir=tmp_path,
         youtube_dl_factory=FakeYoutubeDL,
@@ -93,6 +94,7 @@ def test_download_media_adds_audio_to_video_only_format(
             "source_url": "https://example.com/video",
             "format_id": "137",
             "has_audio": False,
+            "prefer_english_audio": False,
         },
         output_dir=tmp_path,
         youtube_dl_factory=FakeYoutubeDL,
@@ -101,6 +103,184 @@ def test_download_media_adds_audio_to_video_only_format(
     assert captured["options"]["format"] == (
         "137+bestaudio/137"
     )
+
+
+@pytest.mark.download
+def test_download_media_prefers_english_audio_with_audio(
+    tmp_path,
+):
+    from services.delivery import download_media
+
+    captured = {}
+
+    class FakeYoutubeDL:
+        def __init__(self, options):
+            captured["options"] = options
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, exc_type, exc_value, traceback):
+            return False
+
+        def extract_info(self, url, download):
+            output_path = tmp_path / "download.mp4"
+            output_path.write_bytes(b"test media")
+
+            return {
+                "requested_downloads": [
+                    {
+                        "filepath": str(output_path),
+                    }
+                ]
+            }
+
+    download_media(
+        job={
+            "source_url": "https://example.com/video",
+            "format_id": "18",
+            "has_audio": True,
+            "prefer_english_audio": True,
+        },
+        output_dir=tmp_path,
+        youtube_dl_factory=FakeYoutubeDL,
+    )
+
+    assert captured["options"]["format"] == "18[language=en]/18"
+
+
+@pytest.mark.download
+def test_download_media_prefers_english_audio_video_only(
+    tmp_path,
+):
+    from services.delivery import download_media
+
+    captured = {}
+
+    class FakeYoutubeDL:
+        def __init__(self, options):
+            captured["options"] = options
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, exc_type, exc_value, traceback):
+            return False
+
+        def extract_info(self, url, download):
+            output_path = tmp_path / "download.mp4"
+            output_path.write_bytes(b"test media")
+
+            return {
+                "requested_downloads": [
+                    {
+                        "filepath": str(output_path),
+                    }
+                ]
+            }
+
+    download_media(
+        job={
+            "source_url": "https://example.com/video",
+            "format_id": "137",
+            "has_audio": False,
+            "prefer_english_audio": True,
+        },
+        output_dir=tmp_path,
+        youtube_dl_factory=FakeYoutubeDL,
+    )
+
+    assert captured["options"]["format"] == (
+        "137+bestaudio[language=en]/"
+        "137+bestaudio/137"
+    )
+
+
+@pytest.mark.download
+def test_download_media_omits_english_preference_when_disabled(
+    tmp_path,
+):
+    from services.delivery import download_media
+
+    captured = {}
+
+    class FakeYoutubeDL:
+        def __init__(self, options):
+            captured["options"] = options
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, exc_type, exc_value, traceback):
+            return False
+
+        def extract_info(self, url, download):
+            output_path = tmp_path / "download.mp4"
+            output_path.write_bytes(b"test media")
+
+            return {
+                "requested_downloads": [
+                    {
+                        "filepath": str(output_path),
+                    }
+                ]
+            }
+
+    download_media(
+        job={
+            "source_url": "https://example.com/video",
+            "format_id": "18",
+            "has_audio": True,
+            "prefer_english_audio": False,
+        },
+        output_dir=tmp_path,
+        youtube_dl_factory=FakeYoutubeDL,
+    )
+
+    assert captured["options"]["format"] == "18"
+
+
+@pytest.mark.download
+def test_download_media_defaults_to_english_preference(
+    tmp_path,
+):
+    from services.delivery import download_media
+
+    captured = {}
+
+    class FakeYoutubeDL:
+        def __init__(self, options):
+            captured["options"] = options
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, exc_type, exc_value, traceback):
+            return False
+
+        def extract_info(self, url, download):
+            output_path = tmp_path / "download.mp4"
+            output_path.write_bytes(b"test media")
+
+            return {
+                "requested_downloads": [
+                    {
+                        "filepath": str(output_path),
+                    }
+                ]
+            }
+
+    download_media(
+        job={
+            "source_url": "https://example.com/video",
+            "format_id": "18",
+            "has_audio": True,
+        },
+        output_dir=tmp_path,
+        youtube_dl_factory=FakeYoutubeDL,
+    )
+
+    assert captured["options"]["format"] == "18[language=en]/18"
 
 
 @pytest.mark.download

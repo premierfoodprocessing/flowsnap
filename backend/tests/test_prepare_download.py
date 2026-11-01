@@ -54,7 +54,7 @@ def test_prepare_download_returns_a_download_job(
     monkeypatch.setattr(
         app_module,
         "prepare_download",
-        lambda analysis_id, format_id: expected,
+        lambda analysis_id, format_id, prefer_english_audio=True: expected,
         raising=False,
     )
 
@@ -95,6 +95,7 @@ def test_prepare_download_returns_structured_errors(
     def raise_preparation_error(
         analysis_id,
         format_id,
+        prefer_english_audio=True,
     ):
         raise DownloadPreparationError(
             code=code,
@@ -175,3 +176,55 @@ def test_prepare_endpoint_stores_download_job(monkeypatch):
     assert job_store.saved_job["source_url"] == (
         "https://example.com/video"
     )
+
+
+def test_prepare_endpoint_carries_prefer_english_audio(monkeypatch):
+    class FakeAnalysisStore:
+        def get(self, analysis_id):
+            assert analysis_id == "analysis-test-123"
+
+            return {
+                "title": "Test Video",
+                "webpage_url": "https://example.com/video",
+                "formats": [
+                    {
+                        "format_id": "18",
+                        "extension": "mp4",
+                    }
+                ],
+            }
+
+    class FakeJobStore:
+        def __init__(self):
+            self.saved_job = None
+
+        def save(self, job):
+            self.saved_job = job
+            return "stored-job-123"
+
+    job_store = FakeJobStore()
+
+    monkeypatch.setattr(
+        app_module,
+        "analysis_store",
+        FakeAnalysisStore(),
+    )
+    monkeypatch.setattr(
+        app_module,
+        "download_job_store",
+        job_store,
+        raising=False,
+    )
+
+    response = client.post(
+        "/api/media/prepare",
+        json={
+            "analysis_id": "analysis-test-123",
+            "format_id": "18",
+            "prefer_english_audio": False,
+        },
+    )
+
+    assert response.status_code == 200
+    assert response.json()["prefer_english_audio"] is False
+    assert job_store.saved_job["prefer_english_audio"] is False

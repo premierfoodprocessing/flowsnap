@@ -77,6 +77,7 @@ class MediaRequest(BaseModel):
 class PrepareDownloadRequest(BaseModel):
     analysis_id: str
     format_id: str
+    prefer_english_audio: bool = True
 
 
 def enforce_rate_limits(
@@ -124,12 +125,14 @@ def enforce_delivery_enabled() -> None:
 def prepare_download(
     analysis_id: str,
     format_id: str,
+    prefer_english_audio: bool = True,
 ) -> dict:
     return build_download_job(
         store=analysis_store,
         job_store=download_job_store,
         analysis_id=analysis_id,
         format_id=format_id,
+        prefer_english_audio=prefer_english_audio,
     )
 
 
@@ -263,6 +266,7 @@ def media_prepare(
         result = prepare_download(
             request.analysis_id,
             request.format_id,
+            prefer_english_audio=request.prefer_english_audio,
         )
         trace_id = result.pop("_workflow_trace_id", None)
         log_workflow_event(
