@@ -535,3 +535,9 @@ document.getElementById('year').textContent =
   new Date().getFullYear();
 
 void warmBackend();
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(() => {});
+  });
+}
