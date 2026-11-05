@@ -33,10 +33,23 @@ export function resolveApiBaseUrl(locationObject) {
     locationObject?.hostname ?? '',
   ).trim().toLowerCase();
 
+  const protocol = String(
+    locationObject?.protocol ?? '',
+  ).trim().toLowerCase();
+
+  const isNativeApp = (
+    protocol === 'capacitor:' ||
+    protocol === 'file:' ||
+    (typeof window !== 'undefined' && window.Capacitor?.isNativePlatform())
+  );
+
   if (
-    hostname === '127.0.0.1' ||
-    hostname === 'localhost' ||
-    hostname === '[::1]'
+    !isNativeApp &&
+    (
+      hostname === '127.0.0.1' ||
+      hostname === 'localhost' ||
+      hostname === '[::1]'
+    )
   ) {
     return 'http://127.0.0.1:8001';
   }

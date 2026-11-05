@@ -32,6 +32,18 @@ test('resolveApiBaseUrl uses Render on GitHub Pages', () => {
   );
 });
 
+test('resolveApiBaseUrl uses Render on native mobile app protocols', () => {
+  for (const protocol of ['capacitor:', 'file:']) {
+    assert.equal(
+      resolveApiBaseUrl({
+        hostname: 'localhost',
+        protocol,
+      }),
+      'https://flowsnap-api.onrender.com',
+    );
+  }
+});
+
 
 test('resolveApiBaseUrl defaults safely to Render', () => {
   assert.equal(
