@@ -58,6 +58,21 @@ def test_github_pages_origin_is_allowed_by_cors():
     )
 
 
+def test_capacitor_origin_is_allowed_by_cors():
+    response = client.options(
+        "/api/media/formats",
+        headers={
+            "Origin": "capacitor://localhost",
+            "Access-Control-Request-Method": "POST",
+        },
+    )
+
+    assert response.status_code == 200
+    assert response.headers["access-control-allow-origin"] == (
+        "capacitor://localhost"
+    )
+
+
 def test_unknown_origin_is_not_allowed_by_cors():
     response = client.options(
         "/api/media/formats",
