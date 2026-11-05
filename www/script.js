@@ -152,10 +152,10 @@ function warmBackend() {
       backendReady = true;
       setBackendStatus('ready', 'Processing service ready.');
       return true;
-    } catch {
+    } catch (err) {
       setBackendStatus(
         'unavailable',
-        'Processing service is unavailable. Try again shortly.',
+        `Service unavailable: ${err?.message || 'Network error'} (${API_BASE_URL})`,
       );
       return false;
     } finally {
