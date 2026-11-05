@@ -40,7 +40,7 @@ export function resolveApiBaseUrl(locationObject) {
   const isNativeApp = (
     protocol === 'capacitor:' ||
     protocol === 'file:' ||
-    (typeof window !== 'undefined' && window.Capacitor?.isNativePlatform())
+    (typeof window !== 'undefined' && window.Capacitor !== undefined)
   );
 
   if (
