@@ -33,7 +33,10 @@ test('resolveApiBaseUrl uses Render on GitHub Pages', () => {
 });
 
 test('resolveApiBaseUrl uses Render on native mobile app protocols', () => {
-  for (const protocol of ['capacitor:', 'file:']) {
+  for (const protocol of ['capacitor:', 'file:', 'http:']) {
+    if (protocol === 'http:') {
+      global.window = { Capacitor: {} };
+    }
     assert.equal(
       resolveApiBaseUrl({
         hostname: 'localhost',
@@ -41,6 +44,9 @@ test('resolveApiBaseUrl uses Render on native mobile app protocols', () => {
       }),
       'https://flowsnap-api.onrender.com',
     );
+    if (protocol === 'http:') {
+      delete global.window;
+    }
   }
 });
 
