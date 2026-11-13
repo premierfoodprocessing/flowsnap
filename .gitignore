@@ -46,3 +46,12 @@ assets/sponsors/preview/
 # Private sponsorship paperwork - never publish or commit
 scripts/sponsorship-agreement-template-private.md
 scripts/premier-sponsorship-pilot-private.md
+
+# Generated build identity artifacts (ephemeral, contain build-time state)
+build-info.js
+www/build-info.js
+android/build-info.properties
+docs/build-records/*.json
+
+# Dependencies (local install; not committed)
+node_modules/

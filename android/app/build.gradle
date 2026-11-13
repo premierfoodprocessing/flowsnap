@@ -1,4 +1,37 @@
+import java.util.Properties
+
 apply plugin: 'com.android.application'
+
+def buildInfo = new Properties()
+def buildInfoFile = rootProject.file('build-info.properties')
+if (buildInfoFile.exists()) {
+    buildInfoFile.withInputStream { stream -> buildInfo.load(stream) }
+}
+
+def flowSnapVersionName = (buildInfo.getProperty('FLOWSNAP_VERSION_NAME')
+        ?: System.getenv('FLOWSNAP_VERSION_NAME')
+        ?: '1.0')
+def flowSnapVersionCode = (buildInfo.getProperty('FLOWSNAP_VERSION_CODE')
+        ?: System.getenv('FLOWSNAP_VERSION_CODE')
+        ?: '1').toInteger()
+def flowSnapBuildDate = (buildInfo.getProperty('FLOWSNAP_BUILD_DATE')
+        ?: System.getenv('FLOWSNAP_BUILD_DATE')
+        ?: '')
+def flowSnapGitSha = (buildInfo.getProperty('FLOWSNAP_GIT_SHA')
+        ?: System.getenv('FLOWSNAP_GIT_SHA')
+        ?: '')
+def flowSnapGitShort = (buildInfo.getProperty('FLOWSNAP_GIT_SHORT')
+        ?: System.getenv('FLOWSNAP_GIT_SHORT')
+        ?: '')
+def flowSnapGitBranch = (buildInfo.getProperty('FLOWSNAP_GIT_BRANCH')
+        ?: System.getenv('FLOWSNAP_GIT_BRANCH')
+        ?: '')
+def flowSnapWorktreeClean = (buildInfo.getProperty('FLOWSNAP_WORKTREE_CLEAN')
+        ?: System.getenv('FLOWSNAP_WORKTREE_CLEAN')
+        ?: 'unknown')
+def flowSnapApkName = (buildInfo.getProperty('FLOWSNAP_APK_NAME')
+        ?: System.getenv('FLOWSNAP_APK_NAME')
+        ?: "flowsnap-debug-${flowSnapVersionCode}.apk")
 
 android {
     namespace "com.flowsnap.app"
@@ -7,19 +40,45 @@ android {
         applicationId "com.flowsnap.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        versionCode flowSnapVersionCode
+        versionName flowSnapVersionName
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField "String", "FLOWSNAP_BUILD_DATE", "\"${flowSnapBuildDate.replace('\"', '\\\"')}\""
+        buildConfigField "String", "FLOWSNAP_BUILD_TYPE", "\"Debug\""
+        buildConfigField "String", "FLOWSNAP_GIT_SHA", "\"${flowSnapGitSha}\""
+        buildConfigField "String", "FLOWSNAP_GIT_SHORT", "\"${flowSnapGitShort}\""
+        buildConfigField "String", "FLOWSNAP_GIT_BRANCH", "\"${flowSnapGitBranch}\""
+        buildConfigField "String", "FLOWSNAP_WORKTREE_CLEAN", "\"${flowSnapWorktreeClean}\""
+        resValue "string", "flowsnap_version_name", flowSnapVersionName
+        resValue "string", "flowsnap_version_code", flowSnapVersionCode.toString()
+        resValue "string", "flowsnap_build_date", flowSnapBuildDate
+        resValue "string", "flowsnap_build_type", "Debug"
+        resValue "string", "flowsnap_git_sha", flowSnapGitSha
+        resValue "string", "flowsnap_git_branch", flowSnapGitBranch
+        resValue "string", "flowsnap_worktree_clean", flowSnapWorktreeClean
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
              // Default: https://android.googlesource.com/platform/frameworks/base/+/282e181b58cf72b6ca770dc7ca5f91f135444502/tools/aapt/AaptAssets.cpp#61
             ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+    buildFeatures {
+        buildConfig true
+    }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            // Version/build identity is supplied via android/build-info.properties (generated).
+        }
+    }
+    applicationVariants.all { variant ->
+        variant.outputs.all { output ->
+            if (variant.buildType.name == 'debug' && flowSnapApkName) {
+                outputFileName = flowSnapApkName
+            }
         }
     }
 }

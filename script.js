@@ -561,6 +561,8 @@ prepareButton?.addEventListener(
 document.getElementById('year').textContent =
   new Date().getFullYear();
 
+renderBuildInfo();
+
 void warmBackend();
 
 if ('serviceWorker' in navigator) {
