@@ -255,6 +255,25 @@ export function buildDownloadUrl(
 }
 
 
+export function isNativePlatform(capacitor = globalThis.Capacitor) {
+  return Boolean(capacitor?.isNativePlatform?.());
+}
+
+export function sanitizeDownloadFilename(filename, fallback = 'flowsnap-download') {
+  const base = String(filename ?? '').trim() || fallback;
+  const cleaned = base
+    .replace(/[<>:"/\\|?*\u0000-\u001F]/g, '_')
+    .replace(/\s+/g, ' ')
+    .trim();
+  return cleaned || fallback;
+}
+
+export function buildNativeDownloadPath(filename) {
+  const safeName = sanitizeDownloadFilename(filename);
+  const stamp = Date.now();
+  return `FlowSnap/${stamp}-${safeName}`;
+}
+
 export function startBrowserDownload(
   documentObject,
   downloadUrl,
@@ -276,8 +295,18 @@ export function startBrowserDownload(
   return true;
 }
 
+async function readDownloadErrorMessage(response) {
+  let apiMessage = '';
+  try {
+    const data = await response.json();
+    apiMessage = data.detail?.message || data.detail?.[0]?.msg || '';
+  } catch {
+    // The backend may return a non-JSON proxy or server error.
+  }
+  return apiMessage || 'FlowSnap could not download this media.';
+}
 
-export async function downloadPreparedFile(
+async function downloadPreparedFileWeb(
   documentObject,
   downloadUrl,
   filename,
@@ -287,18 +316,7 @@ export async function downloadPreparedFile(
   const response = await fetchFunction(downloadUrl);
 
   if (!response.ok) {
-    let apiMessage = '';
-
-    try {
-      const data = await response.json();
-      apiMessage = data.detail?.message || data.detail?.[0]?.msg || '';
-    } catch {
-      // The backend may return a non-JSON proxy or server error.
-    }
-
-    throw new Error(
-      apiMessage || 'FlowSnap could not download this media.',
-    );
+    throw new Error(await readDownloadErrorMessage(response));
   }
 
   const fileBlob = await response.blob();
@@ -311,6 +329,168 @@ export async function downloadPreparedFile(
   } finally {
     urlObject.revokeObjectURL(objectUrl);
   }
+
+  return {
+    mode: 'web',
+    filename: sanitizeDownloadFilename(filename),
+  };
+}
+
+async function downloadPreparedFileNative(
+  downloadUrl,
+  filename,
+  {
+    capacitor = globalThis.Capacitor,
+    filesystem = globalThis.Capacitor?.Plugins?.Filesystem,
+    directory = 'DOCUMENTS',
+    onProgress,
+  } = {},
+) {
+  if (!isNativePlatform(capacitor)) {
+    throw new Error('Native download is not available on this platform.');
+  }
+
+  if (!filesystem || typeof filesystem.downloadFile !== 'function') {
+    throw new Error(
+      'File download is not available on this device. Missing Filesystem plugin.',
+    );
+  }
+
+  const safeName = sanitizeDownloadFilename(filename);
+  const path = buildNativeDownloadPath(safeName);
+
+  if (typeof filesystem.mkdir === 'function') {
+    try {
+      await filesystem.mkdir({
+        path: 'FlowSnap',
+        directory,
+        recursive: true,
+      });
+    } catch {
+      // Directory may already exist.
+    }
+  }
+
+  let progressHandle = null;
+  if (
+    typeof onProgress === 'function' &&
+    typeof filesystem.addListener === 'function'
+  ) {
+    try {
+      progressHandle = await filesystem.addListener('progress', (status) => {
+        if (status && status.url === downloadUrl) {
+          onProgress({
+            bytes: Number(status.bytes) || 0,
+            contentLength: Number(status.contentLength) || 0,
+          });
+        }
+      });
+    } catch {
+      progressHandle = null;
+    }
+  }
+
+  let result;
+  try {
+    result = await filesystem.downloadFile({
+      url: downloadUrl,
+      path,
+      directory,
+      progress: Boolean(progressHandle),
+    });
+  } finally {
+    if (progressHandle && typeof progressHandle.remove === 'function') {
+      try {
+        await progressHandle.remove();
+      } catch {
+        // Ignore listener cleanup errors.
+      }
+    }
+  }
+
+  if (result && typeof result === 'object' && 'error' in result && result.error) {
+    throw new Error(
+      String(result.error?.message || result.error) ||
+        'FlowSnap could not save the downloaded file.',
+    );
+  }
+
+  let size = null;
+  if (typeof filesystem.stat === 'function') {
+    try {
+      const stat = await filesystem.stat({ path, directory });
+      size = typeof stat?.size === 'number' ? stat.size : null;
+    } catch {
+      size = null;
+    }
+  }
+
+  if (size !== null && size <= 0) {
+    throw new Error('FlowSnap saved an empty file. Please try again.');
+  }
+
+  let uri = result?.path || path;
+  if (typeof filesystem.getUri === 'function') {
+    try {
+      const info = await filesystem.getUri({ path, directory });
+      if (info?.uri) {
+        uri = info.uri;
+      }
+    } catch {
+      // Keep file path.
+    }
+  }
+
+  return {
+    mode: 'native',
+    filename: safeName,
+    path,
+    uri,
+    size,
+    directory,
+  };
+}
+
+export async function downloadPreparedFile(
+  documentObject,
+  downloadUrl,
+  filename,
+  fetchFunctionOrOptions = globalThis.fetch,
+  urlObjectArg = globalThis.URL,
+) {
+  let options = {};
+  if (typeof fetchFunctionOrOptions === 'function') {
+    options = {
+      fetchFunction: fetchFunctionOrOptions,
+      urlObject: urlObjectArg,
+    };
+  } else if (fetchFunctionOrOptions && typeof fetchFunctionOrOptions === 'object') {
+    options = fetchFunctionOrOptions;
+  }
+
+  const {
+    fetchFunction = globalThis.fetch,
+    urlObject = globalThis.URL,
+    capacitor = globalThis.Capacitor,
+    filesystem = globalThis.Capacitor?.Plugins?.Filesystem,
+    onProgress,
+  } = options;
+
+  if (isNativePlatform(capacitor)) {
+    return downloadPreparedFileNative(downloadUrl, filename, {
+      capacitor,
+      filesystem,
+      onProgress,
+    });
+  }
+
+  return downloadPreparedFileWeb(
+    documentObject,
+    downloadUrl,
+    filename,
+    fetchFunction,
+    urlObject,
+  );
 }
 
 

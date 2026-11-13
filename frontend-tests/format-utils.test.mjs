@@ -3,13 +3,16 @@ import assert from 'node:assert/strict';
 
 import {
   buildDownloadUrl,
+  buildNativeDownloadPath,
   buildPreparePayload,
   chooseDefaultFormat,
   describeAudioNotice,
   describeFormat,
   downloadPreparedFile,
   formatFileSize,
+  isNativePlatform,
   resolveApiBaseUrl,
+  sanitizeDownloadFilename,
   startBrowserDownload,
 } from '../format-utils.mjs';
 
@@ -552,4 +555,102 @@ test('describeAudioNotice stays empty when audio is included', () => {
 
 test('describeAudioNotice stays empty without a format', () => {
   assert.equal(describeAudioNotice(null), '');
+});
+
+test('isNativePlatform detects Capacitor native runtime', () => {
+  assert.equal(isNativePlatform({ isNativePlatform: () => true }), true);
+  assert.equal(isNativePlatform({ isNativePlatform: () => false }), false);
+  assert.equal(isNativePlatform(null), false);
+});
+
+test('sanitizeDownloadFilename removes unsafe characters', () => {
+  assert.equal(sanitizeDownloadFilename('a/b:c?.mp4'), 'a_b_c_.mp4');
+  assert.equal(sanitizeDownloadFilename('   '), 'flowsnap-download');
+});
+
+test('buildNativeDownloadPath places file in FlowSnap directory', () => {
+  const path = buildNativeDownloadPath('video.mp4');
+  assert.match(path, /^FlowSnap\/\d+-video\.mp4$/);
+});
+
+test('downloadPreparedFile uses native Filesystem on native platforms', async () => {
+  const calls = [];
+  const filesystem = {
+    async mkdir(opts) { calls.push(['mkdir', opts]); },
+    async downloadFile(opts) { calls.push(['downloadFile', opts]); return { path: opts.path }; },
+    async stat(opts) { calls.push(['stat', opts]); return { size: 1234 }; },
+    async getUri(opts) { calls.push(['getUri', opts]); return { uri: 'file:///storage/emulated/0/Documents/FlowSnap/1-video.mp4' }; },
+  };
+  const capacitor = { isNativePlatform: () => true, Plugins: { Filesystem: filesystem } };
+
+  const result = await downloadPreparedFile(
+    null,
+    'https://flowsnap-api.onrender.com/api/media/download/job-123',
+    'video.mp4',
+    { capacitor, filesystem },
+  );
+
+  assert.equal(result.mode, 'native');
+  assert.equal(result.filename, 'video.mp4');
+  assert.equal(result.size, 1234);
+  assert.match(result.uri, /^file:\/\//);
+  assert.equal(calls[1][0], 'downloadFile');
+  assert.equal(calls[1][1].url, 'https://flowsnap-api.onrender.com/api/media/download/job-123');
+  assert.equal(calls[1][1].directory, 'DOCUMENTS');
+  assert.match(calls[1][1].path, /^FlowSnap\/\d+-video\.mp4$/);
+});
+
+test('downloadPreparedFile native reports progress via listener when available', async () => {
+  let progressCb = null;
+  const handle = { removed: false, async remove() { this.removed = true; } };
+  const filesystem = {
+    async mkdir() {},
+    async addListener(event, cb) {
+      assert.equal(event, 'progress');
+      progressCb = cb;
+      return handle;
+    },
+    async downloadFile(opts) {
+      assert.equal(opts.progress, true);
+      if (progressCb) progressCb({ url: opts.url, bytes: 500000, contentLength: 1000000 });
+      return { path: opts.path };
+    },
+    async stat() { return { size: 1000000 }; },
+    async getUri(opts) { return { uri: 'file:///x/' + opts.path }; },
+  };
+  const capacitor = { isNativePlatform: () => true };
+  const seen = [];
+  const result = await downloadPreparedFile(
+    null,
+    'https://flowsnap-api.onrender.com/api/media/download/job-1',
+    'v.mp4',
+    { capacitor, filesystem, onProgress: (p) => seen.push(p) },
+  );
+  assert.equal(result.mode, 'native');
+  assert.equal(handle.removed, true);
+  assert.equal(seen.length, 1);
+  assert.equal(seen[0].bytes, 500000);
+  assert.equal(seen[0].contentLength, 1000000);
+});
+
+
+test('downloadPreparedFile native fails on zero-byte saved file', async () => {
+  const filesystem = {
+    async mkdir() {},
+    async downloadFile(opts) { return { path: opts.path }; },
+    async stat() { return { size: 0 }; },
+  };
+  const capacitor = { isNativePlatform: () => true };
+  await assert.rejects(
+    downloadPreparedFile(null, 'https://api/x', 'v.mp4', { capacitor, filesystem }),
+    /empty file/,
+  );
+});
+
+test('downloadPreparedFile native requires Filesystem plugin', async () => {
+  const capacitor = { isNativePlatform: () => true, Plugins: {} };
+  await assert.rejects(
+    downloadPreparedFile(null, 'https://api/x', 'v.mp4', { capacitor, filesystem: null }),
+    /Missing Filesystem plugin/,
+  );
 });

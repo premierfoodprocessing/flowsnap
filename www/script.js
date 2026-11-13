@@ -504,17 +504,44 @@ prepareButton?.addEventListener(
       }
 
       prepareStatus.textContent =
-        'Downloading your selected format…';
+        'Downloading and saving your selected format…';
 
-      await downloadPreparedFile(
+      const saved = await downloadPreparedFile(
         document,
         downloadUrl,
         data.filename,
+        {
+          onProgress: ({ bytes, contentLength }) => {
+            if (!Number.isFinite(bytes) || bytes <= 0) {
+              return;
+            }
+            const mb = bytes / 1000000;
+            const received = `${mb.toFixed(mb >= 10 ? 0 : 1)} MB received`;
+            if (Number.isFinite(contentLength) && contentLength > 0) {
+              const totalMb = contentLength / 1000000;
+              prepareStatus.textContent =
+                `Downloading and saving… ${mb.toFixed(mb >= 10 ? 0 : 1)} of ${totalMb.toFixed(totalMb >= 10 ? 0 : 1)} MB`;
+            } else {
+              prepareStatus.textContent =
+                `Downloading and saving… ${received}`;
+            }
+          },
+        },
       );
 
-      prepareStatus.textContent =
-        `${data.filename || 'Your file'} is ready. ` +
-        'Your download has started.';
+      if (saved?.mode === 'native') {
+        const location = saved.uri || saved.path || 'device storage';
+        const sizeText = Number.isFinite(saved.size) && saved.size > 0
+          ? ` (${Math.round(saved.size / 1024)} KB)`
+          : '';
+        prepareStatus.textContent =
+          `${saved.filename || data.filename || 'Your file'} saved${sizeText}. ` +
+          `Saved to: ${location}. Open it from your file manager if needed.`;
+      } else {
+        prepareStatus.textContent =
+          `${data.filename || 'Your file'} is ready. ` +
+          'Your download has started.';
+      }
     } catch (error) {
       if (error instanceof TypeError) {
         prepareStatus.textContent =
