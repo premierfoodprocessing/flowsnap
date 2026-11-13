@@ -50,6 +50,16 @@ test('resolveApiBaseUrl uses Render on native mobile app protocols', () => {
   }
 });
 
+test('resolveApiBaseUrl uses Render for Capacitor https localhost origin', () => {
+  assert.equal(
+    resolveApiBaseUrl({
+      hostname: 'localhost',
+      protocol: 'https:',
+    }),
+    'https://flowsnap-api.onrender.com',
+  );
+});
+
 
 test('resolveApiBaseUrl defaults safely to Render', () => {
   assert.equal(

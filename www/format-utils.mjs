@@ -43,14 +43,18 @@ export function resolveApiBaseUrl(locationObject) {
     (typeof window !== 'undefined' && window.Capacitor !== undefined)
   );
 
-  if (
-    !isNativeApp &&
-    (
-      hostname === '127.0.0.1' ||
-      hostname === 'localhost' ||
-      hostname === '[::1]'
-    )
-  ) {
+  const isLocalDevHost = (
+    hostname === '127.0.0.1' ||
+    hostname === 'localhost' ||
+    hostname === '[::1]'
+  );
+
+  // Capacitor Android can serve the bundled app from https://localhost.
+  const isCapacitorAppOrigin = (
+    protocol === 'https:' && hostname === 'localhost'
+  );
+
+  if (!isNativeApp && !isCapacitorAppOrigin && isLocalDevHost) {
     return 'http://127.0.0.1:8001';
   }
 
